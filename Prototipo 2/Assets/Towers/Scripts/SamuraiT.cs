@@ -1,4 +1,4 @@
-// SamuraiT.cs (Versão Corrigida)
+// SamuraiT.cs (Versão Final e Funcional)
 using UnityEngine;
 
 public class SamuraiT : MonoBehaviour
@@ -27,6 +27,7 @@ public class SamuraiT : MonoBehaviour
         }
     }
 
+    // --- MÉTODO Attack() MODIFICADO ---
     void Attack()
     {
         // Encontra TODOS os colisores dentro do raio de ataque
@@ -38,16 +39,19 @@ public class SamuraiT : MonoBehaviour
             // Verifica se o colisor pertence a um objeto com a tag "Enemy"
             if (col.CompareTag("Enemy"))
             {
-                // --- A PARTE QUE FALTAVA ---
+                // --- MUDANÇA IMPLEMENTADA AQUI ---
 
-                // 1. Tenta pegar o script "EnemyController" do objeto que colidiu
-                EnemyController enemy = col.GetComponent<EnemyController>();
+                // 1. Tenta pegar a referência do script "EnemyController" do objeto que entrou no raio.
+                EnemyController enemyScript = col.GetComponent<EnemyController>();
 
-                // 2. Se o script foi encontrado (não é nulo), aplica o dano
-                if (enemy != null)
+                // 2. Verifica se a referência foi encontrada (para evitar erros).
+                if (enemyScript != null)
                 {
-                    enemy.TakeDamage(damage);
-                    Debug.Log("Torre Samurai atingiu " + col.name + " e causou " + damage + " de dano.");
+                    // 3. Se encontrou, chama a função pública "TakeDamage" do inimigo e passa o dano da torre.
+                    enemyScript.TakeDamage(damage);
+
+                    // O Debug.Log agora confirma que o dano foi enviado com sucesso.
+                    Debug.Log("Torre Samurai atacou " + col.name + " e causou " + damage + " de dano.");
                 }
             }
         }

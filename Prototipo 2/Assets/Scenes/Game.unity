@@ -119,6 +119,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &49940496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 49940498}
+  - component: {fileID: 49940497}
+  m_Layer: 0
+  m_Name: EnemySpawner (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &49940497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49940496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &49940498
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49940496}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.38, y: 2.33, z: 146.25061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &195402894
 GameObject:
   m_ObjectHideFlags: 0
@@ -2130,6 +2177,53 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &307595881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 307595883}
+  - component: {fileID: 307595882}
+  m_Layer: 0
+  m_Name: EnemySpawner (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &307595882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307595881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &307595883
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307595881}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8.41, y: 5.77, z: 146.25061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &413568141
 GameObject:
   m_ObjectHideFlags: 0
@@ -2174,12 +2268,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aba973b0589ba9240a6d771db9e6399a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerPrefabs:
-  - {fileID: 5432193743708378846, guid: f28e9ac00c2129747a4c2f7f9aab1fe8, type: 3}
-  - {fileID: 913347861008555710, guid: 85107114c2976bb449232eb465357757, type: 3}
-  - {fileID: 1615690275470888860, guid: b2c7d14333d45f54b9a1482b0197603f, type: 3}
-  towerCosts: 320000003200000032000000
-  currentGold: 100
+--- !u!1 &436627408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 436627410}
+  - component: {fileID: 436627409}
+  m_Layer: 0
+  m_Name: EnemySpawner (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &436627409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 436627408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &436627410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 436627408}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.59, y: -6.5, z: 146.25061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &621958747
 GameObject:
   m_ObjectHideFlags: 0
@@ -2286,6 +2421,13 @@ MonoBehaviour:
   moveSpeed: 5
   maxMana: 200
   currentMana: 100
+  availableTowers:
+  - {fileID: 5138217210277932832, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+  - {fileID: 1615690275470888860, guid: b2c7d14333d45f54b9a1482b0197603f, type: 3}
+  - {fileID: 913347861008555710, guid: 85107114c2976bb449232eb465357757, type: 3}
+  towerSlotLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!50 &621958751
 Rigidbody2D:
   serializedVersion: 5
@@ -2437,6 +2579,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718350630}
   m_CullTransparentMesh: 1
+--- !u!1 &805900884
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 805900886}
+  - component: {fileID: 805900885}
+  m_Layer: 0
+  m_Name: EnemySpawner (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &805900885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805900884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &805900886
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805900884}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.02, y: 6.2, z: 146.25061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1062785762
 GameObject:
   m_ObjectHideFlags: 0
@@ -2556,6 +2745,53 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1399156551
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1399156553}
+  - component: {fileID: 1399156552}
+  m_Layer: 0
+  m_Name: EnemySpawner (7)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1399156552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399156551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &1399156553
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399156551}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.21, y: -7.33, z: 146.25061}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2698,6 +2934,157 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1001 &1603645171
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5138217210277932832, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_Name
+      value: "Drag\xE3o Evo"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.5783408
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.2456427
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+--- !u!1 &1650539648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1650539650}
+  - component: {fileID: 1650539649}
+  m_Layer: 0
+  m_Name: EnemySpawner (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1650539649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650539648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &1650539650
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650539648}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.65, y: -7.08, z: 146.25061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1652031708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1652031710}
+  - component: {fileID: 1652031709}
+  m_Layer: 0
+  m_Name: EnemySpawner (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1652031709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1652031708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  spawnInterval: 3
+  initialDelay: 3
+--- !u!4 &1652031710
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1652031708}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.63, y: -6.68, z: 146.25061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1719024386
 GameObject:
   m_ObjectHideFlags: 0
@@ -2847,6 +3234,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2054582303
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5138217210277932832, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_Name
+      value: "Drag\xE3o Evo (1)"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2858,3 +3302,12 @@ SceneRoots:
   - {fileID: 413568142}
   - {fileID: 1062785764}
   - {fileID: 1860809006}
+  - {fileID: 307595883}
+  - {fileID: 805900886}
+  - {fileID: 1650539650}
+  - {fileID: 436627410}
+  - {fileID: 1652031710}
+  - {fileID: 49940498}
+  - {fileID: 1399156553}
+  - {fileID: 1603645171}
+  - {fileID: 2054582303}
