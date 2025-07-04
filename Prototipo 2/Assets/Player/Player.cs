@@ -1,17 +1,28 @@
-﻿using UnityEngine;
+﻿// PlayerController.cs
+using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Velocidade do jogador
+    [Header("Configurações do Jogador")]
+    public float moveSpeed = 5f;
+
+    [Header("Recursos do Jogador")]
+    public float maxMana = 100f;
+    public float currentMana;
+
+    // --- Variáveis Internas ---
     private Rigidbody2D rb;
     private Vector2 moveInput;
-
-    // Variável para controlar se estamos no modo de construção
     private bool isBuilding = false;
+
+    // --- NOVA VARIÁVEL PARA O FLIP ---
+    private bool isFacingRight = true; // Assumimos que o sprite começa virado para a direita
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        currentMana = maxMana;
     }
 
     void Update()
@@ -19,10 +30,13 @@ public class PlayerController : MonoBehaviour
         // Se NÃO estivermos no modo de construção, o player pode se mover.
         if (!isBuilding)
         {
-            // Captura input de movimento
+            // --- CAPTURA DE INPUT DE MOVIMENTO ---
             moveInput.x = Input.GetAxisRaw("Horizontal"); // A e D
             moveInput.y = Input.GetAxisRaw("Vertical");   // W e S
-            moveInput.Normalize(); // Impede movimento mais rápido na diagonal
+            moveInput.Normalize();
+
+            // --- NOVA LÓGICA DE FLIP ---
+            HandleFlip();
         }
         else
         {
@@ -31,44 +45,87 @@ public class PlayerController : MonoBehaviour
         }
 
         // --- Lógica de Construção ---
-        // Pressionar ESPAÇO alterna o modo de construção
+        // (seu código de construção permanece aqui, sem alterações)
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            isBuilding = !isBuilding; // Inverte o valor (true vira false, false vira true)
+            isBuilding = !isBuilding;
 
             if (isBuilding)
             {
-                // Avisa o BuildManager para entrar no modo de construção
-                BuildManager.instance.EnterBuildMode();
+                //BuildManager.instance.EnterBuildMode();
             }
             else
             {
-                // Se já estávamos construindo, agora vamos tentar colocar a torre
-                BuildManager.instance.TryPlaceTower(transform.position);
-                // E saímos do modo de construção
-                BuildManager.instance.ExitBuildMode();
+                //BuildManager.instance.TryPlaceTower(transform.position);
+                //BuildManager.instance.ExitBuildMode();
             }
         }
 
-        // Se estivermos no modo de construção, A e D trocam a torre selecionada
         if (isBuilding)
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A)) { /* BuildManager.instance.SelectPreviousTower(); */ }
+            if (Input.GetKeyDown(KeyCode.D)) { /* BuildManager.instance.SelectNextTower(); */ }
+            if (Input.GetKeyDown(KeyCode.S))
             {
-                BuildManager.instance.SelectPreviousTower();
-            }
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                BuildManager.instance.SelectNextTower();
+                isBuilding = false;
+                //BuildManager.instance.ExitBuildMode();
             }
         }
     }
 
     void FixedUpdate()
     {
-        // Aplica o movimento no Rigidbody
         rb.linearVelocity = moveInput * moveSpeed;
     }
-}
 
-// tá indo, devagar mas tá indo
+    // --- NOVO MÉTODO PARA CONTROLAR O FLIP ---
+    private void HandleFlip()
+    {
+        // Se o jogador está se movendo para a esquerda (input.x < 0) e está virado para a direita...
+        if (moveInput.x < 0 && isFacingRight)
+        {
+            Flip(); // ...vira para a esquerda.
+        }
+        // Se o jogador está se movendo para a direita (input.x > 0) e está virado para a esquerda...
+        else if (moveInput.x > 0 && !isFacingRight)
+        {
+            Flip(); // ...vira para a direita.
+        }
+    }
+
+    // --- NOVO MÉTODO QUE FAZ A MÁGICA DO FLIP ---
+    private void Flip()
+    {
+        // Inverte o estado da direção
+        isFacingRight = !isFacingRight;
+
+        // Inverte a escala do objeto no eixo X para espelhar o sprite
+        Vector3 aEscala = transform.localScale;
+        aEscala.x *= -1; // Multiplica por -1 (ex: 1 vira -1, -1 vira 1)
+        transform.localScale = aEscala;
+    }
+
+    // --- Outros Métodos (Mana, Morte) ---
+    public void AddMana(float amount)
+    {
+        currentMana += amount;
+        if (currentMana > maxMana)
+        {
+            currentMana = maxMana;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("O JOGADOR MORREU!");
+        gameObject.SetActive(false);
+    }
+}

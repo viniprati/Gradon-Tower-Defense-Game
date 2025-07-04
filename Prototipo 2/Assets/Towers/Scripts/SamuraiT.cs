@@ -1,4 +1,4 @@
-// Dentro do script MeleeTower.cs
+// SamuraiT.cs (Versão Corrigida)
 using UnityEngine;
 
 public class SamuraiT : MonoBehaviour
@@ -12,10 +12,17 @@ public class SamuraiT : MonoBehaviour
 
     void Update()
     {
-        attackCooldown -= Time.deltaTime;
+        // Reduz o tempo de espera para o próximo ataque
+        if (attackCooldown > 0f)
+        {
+            attackCooldown -= Time.deltaTime;
+        }
+
+        // Se o tempo de espera acabou, ataca
         if (attackCooldown <= 0f)
         {
             Attack();
+            // Reseta o tempo de espera
             attackCooldown = 1f / attackRate;
         }
     }
@@ -25,14 +32,23 @@ public class SamuraiT : MonoBehaviour
         // Encontra TODOS os colisores dentro do raio de ataque
         Collider2D[] collidersInRange = Physics2D.OverlapCircleAll(transform.position, attackRange);
 
+        // Itera sobre cada colisor encontrado
         foreach (var col in collidersInRange)
         {
-            // Verifica se o colisor pertence a um inimigo
+            // Verifica se o colisor pertence a um objeto com a tag "Enemy"
             if (col.CompareTag("Enemy"))
             {
-                Debug.Log("Torre Samurai atingiu " + col.name);
-                // Aqui você chamaria uma função no script do inimigo para dar dano
-                // Ex: col.GetComponent<EnemyHealth>().TakeDamage(damage);
+                // --- A PARTE QUE FALTAVA ---
+
+                // 1. Tenta pegar o script "EnemyController" do objeto que colidiu
+                EnemyController enemy = col.GetComponent<EnemyController>();
+
+                // 2. Se o script foi encontrado (não é nulo), aplica o dano
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                    Debug.Log("Torre Samurai atingiu " + col.name + " e causou " + damage + " de dano.");
+                }
             }
         }
     }
