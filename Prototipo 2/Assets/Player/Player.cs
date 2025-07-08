@@ -1,4 +1,4 @@
-﻿// PlayerController.cs
+﻿// PlayerController.cs (Versão Corrigida para Tablet com Construção)
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -12,9 +12,11 @@ public class PlayerController : MonoBehaviour
     public float maxMana = 100f;
     public float currentMana;
 
-    [Header("Construção de Torres")]
+    [Header("Referências de Construção")]
     public List<GameObject> availableTowers;
     public LayerMask towerSlotLayer;
+    [Tooltip("Arraste aqui um painel de UI que só aparece no modo de construção, se tiver um.")]
+    public GameObject buildModeUI;
 
     // --- Variáveis Internas ---
     private Rigidbody2D rb;
@@ -24,130 +26,128 @@ public class PlayerController : MonoBehaviour
     private int selectedTowerIndex = 0;
     private GameObject ghostTowerInstance;
 
+    private float inputCooldownTimer = 0f;
+    private const float INPUT_COOLDOWN = 0.2f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         currentMana = maxMana;
+        moveInput = Vector2.zero;
+        if (buildModeUI != null) buildModeUI.SetActive(false);
     }
 
     void Update()
     {
+        if (inputCooldownTimer > 0)
+        {
+            inputCooldownTimer -= Time.deltaTime;
+        }
+
         if (isBuilding)
         {
-            HandleBuildMode();
-        }
-        else
-        {
-            HandleMovementMode();
+            UpdateGhostTowerPosition();
         }
     }
 
     void FixedUpdate()
     {
-        // CORREÇÃO: A propriedade correta é 'velocity'
-        if (!isBuilding)
+        // Se estivermos no modo de construção, a velocidade é zero.
+        if (isBuilding)
         {
-            rb.linearVelocity = moveInput * moveSpeed;
+            rb.linearVelocity = Vector2.zero;
+            return; // Sai do método para não aplicar o movimento abaixo
+        }
+
+        // Se NÃO estiver construindo, aplica o movimento normalmente.
+        if (moveInput.magnitude > 1)
+        {
+            moveInput.Normalize();
+        }
+        // CORREÇÃO: A propriedade correta do Rigidbody2D é 'velocity'.
+        rb.linearVelocity = moveInput * moveSpeed;
+    }
+
+    // --- MÉTODOS PÚBLICOS PARA OS BOTÕES ---
+
+    public void OnUpButtonPressed() { if (!isBuilding) moveInput.y = 1; }
+    public void OnDownButtonPressed() { if (!isBuilding) moveInput.y = -1; }
+
+    public void OnLeftButtonPressed()
+    {
+        if (isBuilding)
+        {
+            CycleTowerSelection(-1);
         }
         else
         {
-            rb.linearVelocity = Vector2.zero;
+            moveInput.x = -1;
+            if (isFacingRight) Flip();
         }
     }
 
-    // --- LÓGICA DE CADA MODO ---
-
-    private void HandleMovementMode()
+    public void OnRightButtonPressed()
     {
-        moveInput.x = Input.GetAxisRaw("Horizontal");
-        moveInput.y = Input.GetAxisRaw("Vertical");
-        moveInput.Normalize();
-        HandleFlip();
+        if (isBuilding)
+        {
+            CycleTowerSelection(1);
+        }
+        else
+        {
+            moveInput.x = 1;
+            if (!isFacingRight) Flip();
+        }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+    public void OnVerticalButtonReleased() { moveInput.y = 0; }
+    public void OnHorizontalButtonReleased() { moveInput.x = 0; }
+
+    public void OnBuildActionButtonPressed()
+    {
+        if (inputCooldownTimer > 0) return;
+
+        if (!isBuilding)
         {
             EnterBuildMode();
         }
-    }
-
-    // --- MÉTODO HandleBuildMode MODIFICADO ---
-    private void HandleBuildMode()
-    {
-        // Selecionar torre com A e D
-        if (Input.GetKeyDown(KeyCode.A)) CycleTowerSelection(-1);
-        if (Input.GetKeyDown(KeyCode.D)) CycleTowerSelection(1);
-
-        // NOVO: Cancelar com a tecla S
-        if (Input.GetKeyDown(KeyCode.S))
+        else
         {
-            ExitBuildMode();
-            return; // Sai da função para não tentar construir no mesmo frame
-        }
-
-        // Construir com ESPAÇO
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            // NOVA LÓGICA: Chama a função que tenta construir a torre
             TryPlaceTower();
         }
-
-        UpdateGhostTowerPosition();
     }
 
-    // --- FUNÇÃO TryPlaceTower (NOVA) ---
+    // --- LÓGICA DE CONSTRUÇÃO ---
+
     private void TryPlaceTower()
     {
-        // Verifica se a pré-visualização está ativa (ou seja, se o local é válido)
         if (ghostTowerInstance == null || !ghostTowerInstance.activeSelf)
         {
-            Debug.Log("Não é possível construir aqui! Encontre um local válido.");
+            Debug.Log("Não é possível construir aqui!");
             return;
         }
 
-        // Pega o prefab da torre selecionada
         GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
+        int towerCost = 10; // Custo de exemplo
 
-        // --- LÓGICA DE CUSTO ---
-        // Pega o custo do script da torre (assumindo que todas têm um script de torre com custo)
-        int towerCost = 0;
-        var samuraiScript = towerToBuildPrefab.GetComponent<SamuraiT>();
-        // Adicione 'else if' para outras torres (Dragon, Kirin, etc.)
-        if (samuraiScript != null)
-        {
-            // Aqui você precisaria adicionar uma variável 'public int cost' no seu script SamuraiT
-            // towerCost = samuraiScript.cost; 
-        }
-
-        // Verifica se tem mana suficiente
         if (currentMana >= towerCost)
         {
-            // Gasta a mana
             SpendMana(towerCost);
-
-            // Pega a posição do fantasma para construir a torre real
             Vector3 buildPosition = ghostTowerInstance.transform.position;
-
-            // CRIA A TORRE DE VERDADE
             Instantiate(towerToBuildPrefab, buildPosition, Quaternion.identity);
-            Debug.Log(towerToBuildPrefab.name + " construída com sucesso!");
-
-            // Adicionar lógica para marcar o slot como ocupado aqui (se necessário)
-
-            // Sai do modo de construção após o sucesso
             ExitBuildMode();
         }
         else
         {
-            Debug.Log("Mana insuficiente para construir " + towerToBuildPrefab.name + "!");
+            Debug.Log("Mana insuficiente!");
         }
     }
 
-
-    // --- FUNÇÕES DO MODO DE CONSTRUÇÃO (sem grandes alterações) ---
     private void EnterBuildMode()
     {
         isBuilding = true;
-        Debug.Log("Entrou no modo de construção.");
+        moveInput = Vector2.zero; // Reseta o input para parar o movimento
+        inputCooldownTimer = INPUT_COOLDOWN;
+        if (buildModeUI != null) buildModeUI.SetActive(true);
         selectedTowerIndex = 0;
         SpawnGhostTower();
     }
@@ -155,7 +155,8 @@ public class PlayerController : MonoBehaviour
     private void ExitBuildMode()
     {
         isBuilding = false;
-        Debug.Log("Saiu do modo de construção.");
+        inputCooldownTimer = INPUT_COOLDOWN;
+        if (buildModeUI != null) buildModeUI.SetActive(false);
         if (ghostTowerInstance != null)
         {
             Destroy(ghostTowerInstance);
@@ -167,21 +168,18 @@ public class PlayerController : MonoBehaviour
         selectedTowerIndex += direction;
         if (selectedTowerIndex >= availableTowers.Count) selectedTowerIndex = 0;
         if (selectedTowerIndex < 0) selectedTowerIndex = availableTowers.Count - 1;
-
         Destroy(ghostTowerInstance);
         SpawnGhostTower();
-        Debug.Log("Torre selecionada: " + availableTowers[selectedTowerIndex].name);
     }
 
     private void SpawnGhostTower()
     {
         if (availableTowers.Count == 0) return;
         ghostTowerInstance = Instantiate(availableTowers[selectedTowerIndex]);
-
+        ghostTowerInstance.name = "GHOST_TOWER";
         ghostTowerInstance.GetComponent<Collider2D>().enabled = false;
         var samuraiScript = ghostTowerInstance.GetComponent<SamuraiT>();
         if (samuraiScript != null) samuraiScript.enabled = false;
-
         SpriteRenderer sr = ghostTowerInstance.GetComponentInChildren<SpriteRenderer>();
         if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f);
     }
@@ -190,8 +188,7 @@ public class PlayerController : MonoBehaviour
     {
         if (ghostTowerInstance == null) return;
         Collider2D slotCollider = Physics2D.OverlapCircle(transform.position, 0.2f, towerSlotLayer);
-
-        if (slotCollider != null /* && !slotCollider.GetComponent<TowerSlot>().isOccupied */)
+        if (slotCollider != null)
         {
             ghostTowerInstance.transform.position = slotCollider.transform.position;
             ghostTowerInstance.SetActive(true);
@@ -202,46 +199,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-// --- NOVOS MÉTODOS PARA O FLIP ---
-private void HandleFlip()
-    {
-        // Se o jogador está se movendo para a esquerda (input.x < 0) e ainda está virado para a direita...
-        if (moveInput.x < 0 && isFacingRight)
-        {
-            Flip(); // ...vira para a esquerda.
-        }
-        // Se o jogador está se movendo para a direita (input.x > 0) e está virado para a esquerda...
-        else if (moveInput.x > 0 && !isFacingRight)
-        {
-            Flip(); // ...vira para a direita (volta ao normal).
-        }
-    }
-
     private void Flip()
     {
-        // Inverte o estado da direção
         isFacingRight = !isFacingRight;
-
-        // Pega a escala atual, inverte o valor de X e aplica de volta.
-        // Isso espelha o sprite horizontalmente.
         Vector3 newScale = transform.localScale;
         newScale.x *= -1;
         transform.localScale = newScale;
     }
 
-    // --- MÉTODOS DE MANA E MORTE (sem alterações) ---
-    public void AddMana(float amount)
+
+// --- MÉTODOS DE MANA E MORTE ---
+public void AddMana(float amount)
     {
         currentMana += amount;
         if (currentMana > maxMana) currentMana = maxMana;
-        Debug.Log($"Jogador ganhou {amount} de mana. Mana atual: {currentMana}");
     }
 
     public void SpendMana(float amount)
     {
         currentMana -= amount;
         if (currentMana < 0) currentMana = 0;
-        Debug.Log($"Jogador gastou {amount} de mana. Mana atual: {currentMana}");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
