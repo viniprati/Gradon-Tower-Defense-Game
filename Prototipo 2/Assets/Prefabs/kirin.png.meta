@@ -1,28 +1,13 @@
 fileFormatVersion: 2
-guid: b8f8227df4e1bd442b3be159bd10f7de
+guid: 979382697f6833a45876c9894916744f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3799071692879639014
-    second: Samurai Brabo Imortal Evo 2 1 (4)_0
+      213: 4773117178677697770
+    second: kirin_0
   - first:
-      213: 6329357595359188806
-    second: Samurai Brabo Imortal Evo 2 1 (4)_1
-  - first:
-      213: -4923533638949707009
-    second: Samurai Brabo Imortal Evo 2 1 (4)_2
-  - first:
-      213: 2430573821935970552
-    second: Samurai Brabo Imortal Evo 2 1 (4)_3
-  - first:
-      213: 6336870796716875489
-    second: Samurai Brabo Imortal Evo 2 1 (4)_4
-  - first:
-      213: -8938796725037075293
-    second: Samurai Brabo Imortal Evo 2 1 (4)_5
-  - first:
-      213: -657038575452147239
-    second: Samurai Brabo Imortal Evo 2 1 (4)_6
+      213: -5635178892956342029
+    second: kirin_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -157,51 +142,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Samurai Brabo Imortal Evo 2 1 (4)_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 128
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ec7ce34d7d302354faee311a12b2b7ff
-      internalID: 1265334331
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Samurai Brabo Imortal Evo 2 1 (4)_1
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 128
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 21d61b37b0a89d641a9f19b7bc39a804
-      internalID: -180824297
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Samurai Brabo Imortal Evo 2 1 (4)_2
+      name: kirin_0
       rect:
         serializedVersion: 2
         x: 0
@@ -214,38 +155,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 881878febf9f084429d2737d116df758
-      internalID: -1642952912
+      spriteID: aec1662f8c48d3240800000000000000
+      internalID: 4773117178677697770
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Samurai Brabo Imortal Evo 2 1 (4)_3
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 64
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8412592f0db11f44c95e615faff091f3
-      internalID: -459476146
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Samurai Brabo Imortal Evo 2 1 (4)_4
+      name: kirin_1
       rect:
         serializedVersion: 2
         x: 0
@@ -258,32 +177,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5f0dca3668b04f240b10e28e1c0f70da
-      internalID: -874073922
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Samurai Brabo Imortal Evo 2 1 (4)_5
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bf6d866116a24b84ba4ee272c1c45d1b
-      internalID: -1393545451
+      spriteID: 3f8ee8f37a2dbc1b0800000000000000
+      internalID: -5635178892956342029
       vertices: []
       indices: 
       edges: []
@@ -292,7 +189,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a8300938c34daaf4ba8a6b857395cb9a
+    spriteID: e2d1285c9c6138443bfd32ede5b10d0f
     internalID: 0
     vertices: []
     indices: 
@@ -302,12 +199,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Samurai Brabo Imortal Evo 2 1 (4)_0: 1265334331
-      Samurai Brabo Imortal Evo 2 1 (4)_1: -180824297
-      Samurai Brabo Imortal Evo 2 1 (4)_2: -1642952912
-      Samurai Brabo Imortal Evo 2 1 (4)_3: -459476146
-      Samurai Brabo Imortal Evo 2 1 (4)_4: -874073922
-      Samurai Brabo Imortal Evo 2 1 (4)_5: -1393545451
+      kirin_0: 4773117178677697770
+      kirin_1: -5635178892956342029
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
