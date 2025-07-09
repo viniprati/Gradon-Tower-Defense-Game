@@ -4533,7 +4533,7 @@ MonoBehaviour:
   availableTowers:
   - {fileID: 5138217210277932832, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
   - {fileID: 1615690275470888860, guid: b2c7d14333d45f54b9a1482b0197603f, type: 3}
-  - {fileID: 913347861008555710, guid: 85107114c2976bb449232eb465357757, type: 3}
+  - {fileID: 0}
 --- !u!50 &621958751
 Rigidbody2D:
   serializedVersion: 5
@@ -5469,7 +5469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ghoulPrefab: {fileID: 5445403853361994426, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
+  ghoulPrefab: {fileID: 987579927361604588, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
   spawnInterval: 3
   initialDelay: 3
 --- !u!4 &1860809006
