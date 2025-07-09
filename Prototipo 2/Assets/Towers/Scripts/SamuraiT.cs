@@ -1,66 +1,86 @@
-// SamuraiT.cs (Versão Final e Funcional)
+// SamuraiT.cs (Versão com Trigger)
 using UnityEngine;
+using System.Collections.Generic; // Para usar List<>
 
 public class SamuraiT : MonoBehaviour
 {
     [Header("Atributos da Torre")]
-    public float attackRange = 2f;
-    public float attackRate = 1f; // Ataques por segundo
+    public float attackRate = 1f;  // Ataques por segundo
     public int damage = 10;
 
+    // Lista para guardar todos os inimigos que estão atualmente dentro do trigger.
+    private List<EnemyController> enemiesInRange = new List<EnemyController>();
     private float attackCooldown = 0f;
+
+    // --- Não precisamos mais da variável 'attackRange' aqui,
+    // pois o raio do Collider 2D (que é o Trigger) definirá o alcance. ---
 
     void Update()
     {
-        // Reduz o tempo de espera para o próximo ataque
         if (attackCooldown > 0f)
         {
             attackCooldown -= Time.deltaTime;
         }
 
-        // Se o tempo de espera acabou, ataca
-        if (attackCooldown <= 0f)
+        // Se o tempo de espera acabou E existem inimigos no alcance...
+        if (attackCooldown <= 0f && enemiesInRange.Count > 0)
         {
             Attack();
-            // Reseta o tempo de espera
             attackCooldown = 1f / attackRate;
         }
     }
 
-    // --- MÉTODO Attack() MODIFICADO ---
-    void Attack()
+    // --- MÉTODOS DE TRIGGER ---
+
+    // Este método é chamado AUTOMATICAMENTE pela Unity quando um outro Collider 2D ENTRA no nosso Trigger.
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Encontra TODOS os colisores dentro do raio de ataque
-        Collider2D[] collidersInRange = Physics2D.OverlapCircleAll(transform.position, attackRange);
-
-        // Itera sobre cada colisor encontrado
-        foreach (var col in collidersInRange)
+        // Verifica se o objeto que entrou tem a tag "Enemy".
+        if (other.CompareTag("Enemy"))
         {
-            // Verifica se o colisor pertence a um objeto com a tag "Enemy"
-            if (col.CompareTag("Enemy"))
+            // Pega o script do inimigo.
+            EnemyController enemy = other.GetComponent<EnemyController>();
+            // Se encontrou o script e ele ainda não está na nossa lista, adiciona.
+            if (enemy != null && !enemiesInRange.Contains(enemy))
             {
-                // --- MUDANÇA IMPLEMENTADA AQUI ---
-
-                // 1. Tenta pegar a referência do script "EnemyController" do objeto que entrou no raio.
-                EnemyController enemyScript = col.GetComponent<EnemyController>();
-
-                // 2. Verifica se a referência foi encontrada (para evitar erros).
-                if (enemyScript != null)
-                {
-                    // 3. Se encontrou, chama a função pública "TakeDamage" do inimigo e passa o dano da torre.
-                    enemyScript.TakeDamage(damage);
-
-                    // O Debug.Log agora confirma que o dano foi enviado com sucesso.
-                    Debug.Log("Torre Samurai atacou " + col.name + " e causou " + damage + " de dano.");
-                }
+                enemiesInRange.Add(enemy);
             }
         }
     }
 
-    // Desenha o raio de ataque no editor para facilitar o debug
-    void OnDrawGizmosSelected()
+    // Este método é chamado AUTOMATICAMENTE quando um outro Collider 2D SAI do nosso Trigger.
+    private void OnTriggerExit2D(Collider2D other)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        if (other.CompareTag("Enemy"))
+        {
+            EnemyController enemy = other.GetComponent<EnemyController>();
+            // Se o inimigo que saiu está na nossa lista, remove-o.
+            if (enemy != null && enemiesInRange.Contains(enemy))
+            {
+                enemiesInRange.Remove(enemy);
+            }
+        }
+    }
+
+    // --- LÓGICA DE ATAQUE ---
+
+    void Attack()
+    {
+        // Itera sobre todos os inimigos que estão atualmente na lista.
+        // Usamos um loop 'for' reverso para poder remover itens da lista sem causar erros.
+        for (int i = enemiesInRange.Count - 1; i >= 0; i--)
+        {
+            // Se o inimigo foi destruído por outra torre enquanto estava na lista,
+            // ele se tornará 'null', então o removemos da lista.
+            if (enemiesInRange[i] == null)
+            {
+                enemiesInRange.RemoveAt(i);
+                continue; // Pula para a próxima iteração
+            }
+
+            // Aplica o dano ao inimigo
+            enemiesInRange[i].TakeDamage(damage);
+            Debug.Log("Torre Samurai atingiu " + enemiesInRange[i].name);
+        }
     }
 }

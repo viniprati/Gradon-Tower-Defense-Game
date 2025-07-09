@@ -174,7 +174,7 @@ MonoBehaviour:
   attackRange: 5
   attackRate: 1
   damage: 5
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 3950316309871899730, guid: 6d068d958fbe61e4f9da9a6793b9d7af, type: 3}
 --- !u!50 &8005229199218711118
 Rigidbody2D:
   serializedVersion: 5

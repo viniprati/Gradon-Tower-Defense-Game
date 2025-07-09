@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1265334331, guid: b8f8227df4e1bd442b3be159bd10f7de, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -120,7 +120,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6533242076757428266}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -151,6 +151,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c25ca007e2784cb4bb6267157c7859a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 2
   attackRate: 1
-  damage: 10
+  damage: 100

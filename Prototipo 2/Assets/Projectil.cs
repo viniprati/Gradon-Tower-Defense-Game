@@ -25,7 +25,7 @@ public class Projectil : MonoBehaviour
         if (other.transform == target)
         {
             Debug.Log("Projétil atingiu " + target.name);
-            // col.GetComponent<EnemyHealth>().TakeDamage(damage);
+            other.GetComponent<EnemyController>().TakeDamage(damage);
             Destroy(gameObject);
         }
     }

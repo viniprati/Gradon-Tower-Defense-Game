@@ -1,4 +1,4 @@
-// EnemyController.cs (Com a lógica de desaparecimento corrigida)
+// EnemyController.cs (Com a correção de 'velocity')
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -19,14 +19,14 @@ public class EnemyController : MonoBehaviour
     private int currentWaypointIndex = 0;
     private Transform playerTransform;
     private bool isChasingPlayer = false;
-    private bool isDead = false; // NOVA: Variável para garantir que a morte só aconteça uma vez
+    private bool isDead = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
 
-        PlayerController player = FindFirstObjectByType<PlayerController>(); // Corrigido para o método mais novo
+        PlayerController player = FindFirstObjectByType<PlayerController>();
         if (player != null)
         {
             playerTransform = player.transform;
@@ -49,17 +49,13 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
-        // Se o inimigo já está morto, não faz mais nada.
         if (isDead) return;
-
         HandleDecision();
     }
 
     void FixedUpdate()
     {
-        // Se o inimigo já está morto, não se move.
         if (isDead) return;
-
         Move();
     }
 
@@ -102,7 +98,8 @@ public class EnemyController : MonoBehaviour
                 {
                     ReachedEnd();
                 }
-                // CORREÇÃO: a propriedade correta é 'velocity'
+
+                // CORREÇÃO: Usar 'velocity'
                 rb.linearVelocity *= 0.9f;
                 return;
             }
@@ -114,24 +111,19 @@ public class EnemyController : MonoBehaviour
             Vector2 movementForce = direction * speed * 10f;
             rb.AddForce(movementForce);
 
-            // CORREÇÃO: a propriedade correta é 'velocity'
+            // CORREÇÃO: Usar 'velocity'
             if (rb.linearVelocity.magnitude > speed)
             {
-                // CORREÇÃO: a propriedade correta é 'velocity'
+                // CORREÇÃO: Usar 'velocity'
                 rb.linearVelocity = rb.linearVelocity.normalized * speed;
             }
         }
     }
 
-    // --- FUNÇÃO TakeDamage MODIFICADA ---
     public void TakeDamage(float damage)
     {
-        // Se o inimigo já está morto, ignora qualquer dano adicional.
         if (isDead) return;
-
         currentHealth -= damage;
-
-        // Se a vida acabou E ele ainda não foi marcado como morto...
         if (currentHealth <= 0)
         {
             Die();
@@ -140,32 +132,21 @@ public class EnemyController : MonoBehaviour
 
     private void ReachedEnd()
     {
-        // Se o inimigo já está morto, ele não pode chegar ao fim.
         if (isDead) return;
-
         Debug.Log("Inimigo chegou à base!");
         Destroy(gameObject);
     }
 
-    // --- FUNÇÃO Die MODIFICADA ---
     private void Die()
     {
-        // Marca o inimigo como morto para que esta função não seja chamada novamente.
         isDead = true;
-
         Debug.Log(gameObject.name + " foi derrotado!");
 
-        // Dá a mana ao jogador.
-        PlayerController player = FindFirstObjectByType<PlayerController>(); // Corrigido para o método mais novo
+        PlayerController player = FindFirstObjectByType<PlayerController>();
         if (player != null && player.gameObject.activeInHierarchy)
         {
             player.AddMana(manaOnDeath);
         }
-
-        // AQUI: É o lugar perfeito para adicionar um efeito de morte, como partículas ou som.
-        // Exemplo: Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-
-        // Finalmente, destrói o objeto do inimigo, fazendo-o desaparecer da cena.
         Destroy(gameObject);
     }
 

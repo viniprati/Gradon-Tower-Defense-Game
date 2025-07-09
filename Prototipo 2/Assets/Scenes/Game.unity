@@ -4532,8 +4532,8 @@ MonoBehaviour:
   currentMana: 100
   availableTowers:
   - {fileID: 5138217210277932832, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
-  - {fileID: 1615690275470888860, guid: b2c7d14333d45f54b9a1482b0197603f, type: 3}
-  - {fileID: 0}
+  - {fileID: 2197220436071929077, guid: 23822ed7a0c296b45986ae9026a16807, type: 3}
+  - {fileID: 6533242076757428266, guid: 85107114c2976bb449232eb465357757, type: 3}
 --- !u!50 &621958751
 Rigidbody2D:
   serializedVersion: 5
@@ -4959,6 +4959,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1240237334
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5138217210277932832, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_Name
+      value: "Drag\xE3o Evo"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.6766493
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.3009443
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223762708673854963, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3f7e0501969580c4eb995f4e78c71263, type: 3}
 --- !u!1 &1472109162
 GameObject:
   m_ObjectHideFlags: 0
@@ -5470,8 +5527,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ghoulPrefab: {fileID: 987579927361604588, guid: ab17594d5d12d7341a650e9bd89dd39a, type: 3}
-  spawnInterval: 3
-  initialDelay: 3
+  spawnInterval: 4
+  initialDelay: 6
 --- !u!4 &1860809006
 Transform:
   m_ObjectHideFlags: 0
@@ -5498,3 +5555,4 @@ SceneRoots:
   - {fileID: 413568142}
   - {fileID: 1062785764}
   - {fileID: 1860809006}
+  - {fileID: 1240237334}
