@@ -4,14 +4,18 @@ using System.Collections.Generic;
 
 public class BuildManager : MonoBehaviour
 {
-    // Padrão Singleton: permite que qualquer script acesse este manager facilmente.
+    // --- Padrão Singleton ---
     public static BuildManager instance;
 
+    // --- Referências e Estado ---
     private PlayerController playerController;
     private List<GameObject> availableTowers;
     private int selectedTowerIndex = 0;
     private GameObject ghostTowerInstance;
-    private LayerMask towerSlotLayer;
+    private bool isBuilding = false;
+
+    // Propriedade pública para que outros scripts possam saber se estamos no modo de construção
+    public bool IsInBuildMode { get { return isBuilding; } }
 
     void Awake()
     {
@@ -22,7 +26,7 @@ public class BuildManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // Garante que só exista um
         }
     }
 
@@ -32,40 +36,37 @@ public class BuildManager : MonoBehaviour
         playerController = FindFirstObjectByType<PlayerController>();
         if (playerController != null)
         {
+            // Pega a lista de torres que o jogador pode construir
             this.availableTowers = playerController.availableTowers;
-            this.towerSlotLayer = playerController.towerSlotLayer;
         }
     }
 
     void Update()
     {
-        // Se estivermos no modo de construção, atualiza a posição do fantasma.
-        if (ghostTowerInstance != null)
+        // Se estivermos no modo de construção, a pré-visualização segue o jogador.
+        if (isBuilding && ghostTowerInstance != null)
         {
             UpdateGhostTowerPosition();
         }
     }
 
-    // Chamado pelo PlayerController para entrar no modo de construção
-    public void EnterBuildMode()
-    {
-        if (availableTowers.Count == 0) return;
-        selectedTowerIndex = 0;
-        SpawnGhostTower();
-    }
+    // --- Métodos Públicos chamados pelo PlayerController ---
 
-    // Chamado pelo PlayerController para sair/cancelar
-    public void ExitBuildMode()
+    public void ToggleBuildMode()
     {
-        if (ghostTowerInstance != null)
+        if (!isBuilding)
         {
-            Destroy(ghostTowerInstance);
+            EnterBuildMode();
+        }
+        else
+        {
+            TryPlaceTower();
         }
     }
 
-    // Chamado pelo PlayerController para trocar a torre
     public void SelectNextTower()
     {
+        if (!isBuilding) return;
         selectedTowerIndex++;
         if (selectedTowerIndex >= availableTowers.Count) selectedTowerIndex = 0;
         UpdateGhostTower();
@@ -73,50 +74,66 @@ public class BuildManager : MonoBehaviour
 
     public void SelectPreviousTower()
     {
+        if (!isBuilding) return;
         selectedTowerIndex--;
         if (selectedTowerIndex < 0) selectedTowerIndex = availableTowers.Count - 1;
         UpdateGhostTower();
     }
 
-    // O coração da lógica de construção
-    public void TryPlaceTower(Vector3 playerPosition)
+    // --- Lógica Interna de Construção ---
+
+    private void EnterBuildMode()
     {
-        if (ghostTowerInstance == null || !ghostTowerInstance.activeSelf)
+        // Verifica se há torres para construir
+        if (availableTowers == null || availableTowers.Count == 0)
         {
-            Debug.Log("Local inválido para construção!");
+            Debug.LogError("A lista 'Available Towers' no PlayerController está vazia!");
             return;
         }
 
-        GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
-
-        // Assumindo que a torre tem um script 'SamuraiT' ou similar com um custo
-        // Vamos pegar o custo do prefab.
-        int towerCost = 0; // Você precisa implementar a lógica de custo nas suas torres
-        // Exemplo: if (towerToBuildPrefab.GetComponent<SamuraiT>() != null) towerCost = towerToBuildPrefab.GetComponent<SamuraiT>().cost;
-
-        if (playerController.currentMana >= towerCost)
+        // Verifica se há mana suficiente para a torre mais barata (exemplo)
+        int towerCost = 10; // Custo de exemplo
+        if (playerController.currentMana < towerCost)
         {
-            // TEM MANA SUFICIENTE
-            playerController.SpendMana(towerCost);
-
-            // Encontra o slot e constrói a torre REAL
-            Collider2D slotCollider = Physics2D.OverlapCircle(playerPosition, 0.2f, towerSlotLayer);
-            if (slotCollider != null)
-            {
-                // AQUI ESTÁ A LINHA QUE CRIA A TORRE DE VERDADE
-                Instantiate(towerToBuildPrefab, slotCollider.transform.position, Quaternion.identity);
-                Debug.Log(towerToBuildPrefab.name + " construída com sucesso!");
-                // Adicionar lógica para marcar o slot como ocupado aqui.
-            }
+            Debug.Log("Mana insuficiente para iniciar a construção!");
+            return;
         }
-        else
+
+        isBuilding = true;
+        selectedTowerIndex = 0;
+        SpawnGhostTower();
+    }
+
+    private void ExitBuildMode()
+    {
+        isBuilding = false;
+        if (ghostTowerInstance != null)
         {
-            // NÃO TEM MANA
-            Debug.Log("Mana insuficiente para construir " + towerToBuildPrefab.name);
+            Destroy(ghostTowerInstance);
         }
     }
 
-    // --- Funções Auxiliares para a pré-visualização ---
+    private void TryPlaceTower()
+    {
+        if (ghostTowerInstance == null) return;
+
+        GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
+        int towerCost = 10; // Custo de exemplo
+
+        if (playerController.currentMana >= towerCost)
+        {
+            playerController.SpendMana(towerCost);
+            // Constrói a torre na posição do jogador
+            Instantiate(towerToBuildPrefab, playerController.transform.position, Quaternion.identity);
+            ExitBuildMode();
+        }
+        else
+        {
+            Debug.Log("Mana insuficiente!");
+        }
+    }
+
+    // --- Funções Auxiliares da Pré-Visualização ---
 
     private void UpdateGhostTower()
     {
@@ -127,26 +144,23 @@ public class BuildManager : MonoBehaviour
     private void SpawnGhostTower()
     {
         ghostTowerInstance = Instantiate(availableTowers[selectedTowerIndex]);
+        ghostTowerInstance.name = "GHOST_TOWER";
 
-        ghostTowerInstance.GetComponent<Collider2D>().enabled = false;
-        if (ghostTowerInstance.GetComponent<SamuraiT>() != null) ghostTowerInstance.GetComponent<SamuraiT>().enabled = false;
+        var collider = ghostTowerInstance.GetComponent<Collider2D>();
+        if (collider != null) collider.enabled = false;
 
-        SpriteRenderer sr = ghostTowerInstance.GetComponentInChildren<SpriteRenderer>();
-        if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f);
+        var samuraiScript = ghostTowerInstance.GetComponent<SamuraiT>();
+        if (samuraiScript != null) samuraiScript.enabled = false;
+
+        var spriteRenderer = ghostTowerInstance.GetComponentInChildren<SpriteRenderer>();
+        if (spriteRenderer != null) spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
     }
 
     private void UpdateGhostTowerPosition()
     {
-        Collider2D slotCollider = Physics2D.OverlapCircle(playerController.transform.position, 0.2f, towerSlotLayer);
-
-        if (slotCollider != null)
+        if (playerController != null)
         {
-            ghostTowerInstance.transform.position = slotCollider.transform.position;
-            ghostTowerInstance.SetActive(true);
-        }
-        else
-        {
-            ghostTowerInstance.SetActive(false);
+            ghostTowerInstance.transform.position = playerController.transform.position;
         }
     }
 }
