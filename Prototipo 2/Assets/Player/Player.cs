@@ -1,4 +1,4 @@
-﻿// PlayerController.cs (Versão Final para Construção Livre)
+﻿// PlayerController.cs
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Referências de Construção")]
     public List<GameObject> availableTowers;
-    // As variáveis 'towerSlotLayer' e 'buildModeUI' foram removidas, pois não são mais necessárias para esta lógica.
 
     // --- Variáveis Internas ---
     private Rigidbody2D rb;
@@ -32,6 +31,9 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         currentMana = maxMana;
         moveInput = Vector2.zero;
+
+        // Atualiza a UI com os valores iniciais de mana assim que o jogo começa.
+        UpdateManaUI();
     }
 
     void Update()
@@ -41,7 +43,6 @@ public class PlayerController : MonoBehaviour
             inputCooldownTimer -= Time.deltaTime;
         }
 
-        // Se estiver no modo de construção, a pré-visualização segue o jogador.
         if (isBuilding)
         {
             UpdateGhostTowerPosition();
@@ -62,6 +63,7 @@ public class PlayerController : MonoBehaviour
             moveInput.Normalize();
         }
 
+        // Aplica o movimento ao Rigidbody
         rb.linearVelocity = moveInput * moveSpeed;
     }
 
@@ -87,16 +89,9 @@ public class PlayerController : MonoBehaviour
 
         if (!isBuilding)
         {
-            // Checa se há mana suficiente ANTES de entrar no modo de construção
-            int towerCost = 10; // Custo de exemplo, idealmente pegaria o custo da primeira torre
-            if (currentMana >= towerCost)
-            {
-                EnterBuildMode();
-            }
-            else
-            {
-                Debug.Log("Mana insuficiente para iniciar a construção!");
-            }
+            int towerCost = 10;
+            if (currentMana >= towerCost) EnterBuildMode();
+            else Debug.Log("Mana insuficiente para iniciar a construção!");
         }
         else
         {
@@ -104,25 +99,23 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- LÓGICA DE CONSTRUÇÃO SIMPLIFICADA ---
+    // --- LÓGICA DE CONSTRUÇÃO ---
     private void TryPlaceTower()
     {
         if (ghostTowerInstance == null) return;
 
         GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
-        int towerCost = 10; // Custo de exemplo
+        int towerCost = 10;
 
         if (currentMana >= towerCost)
         {
             SpendMana(towerCost);
-            // Constrói a torre na posição atual da pré-visualização (que é a posição do jogador).
             Instantiate(towerToBuildPrefab, ghostTowerInstance.transform.position, Quaternion.identity);
             ExitBuildMode();
         }
         else
         {
             Debug.Log("Mana insuficiente!");
-            // O jogador permanece no modo de construção até ter mana ou cancelar
         }
     }
 
@@ -150,7 +143,6 @@ public class PlayerController : MonoBehaviour
         selectedTowerIndex += direction;
         if (selectedTowerIndex >= availableTowers.Count) selectedTowerIndex = 0;
         if (selectedTowerIndex < 0) selectedTowerIndex = availableTowers.Count - 1;
-
         Destroy(ghostTowerInstance);
         SpawnGhostTower();
     }
@@ -193,22 +185,30 @@ public class PlayerController : MonoBehaviour
     {
         currentMana += amount;
         if (currentMana > maxMana) currentMana = maxMana;
+
+        // Avisa o UIManager para atualizar a barra de mana.
+        UpdateManaUI();
     }
 
     public void SpendMana(float amount)
     {
         currentMana -= amount;
         if (currentMana < 0) currentMana = 0;
+
+        // Avisa o UIManager para atualizar a barra de mana.
+        UpdateManaUI();
+    }
+
+    private void UpdateManaUI()
+    {
+        // Verifica se o UIManager existe na cena antes de tentar usá-lo
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateManaUI(currentMana, maxMana);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Enemy"))
-        {
-            Die();
-        }
-    }
-    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {

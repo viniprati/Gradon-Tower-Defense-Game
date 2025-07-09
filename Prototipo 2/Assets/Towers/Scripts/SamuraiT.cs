@@ -1,86 +1,75 @@
-// SamuraiT.cs (Versão com Trigger)
+// SamuraiT.cs (Versão Refeita - Confiável)
 using UnityEngine;
-using System.Collections.Generic; // Para usar List<>
 
 public class SamuraiT : MonoBehaviour
 {
-    [Header("Atributos da Torre")]
-    public float attackRate = 1f;  // Ataques por segundo
-    public int damage = 10;
+    [Header("Atributos da Torre Samurai")]
+    [Tooltip("O raio de alcance do corte da torre.")]
+    [SerializeField] private float attackRange = 2f;
 
-    // Lista para guardar todos os inimigos que estão atualmente dentro do trigger.
-    private List<EnemyController> enemiesInRange = new List<EnemyController>();
+    [Tooltip("Quantas vezes por segundo a torre aplica o dano em área.")]
+    [SerializeField] private float attackRate = 1.5f; // Ex: 1.5 ataques por segundo
+
+    [Tooltip("O dano de cada 'pulso' de ataque.")]
+    [SerializeField] private int damage = 10;
+
+    // Variável interna para controlar o tempo entre os ataques
     private float attackCooldown = 0f;
-
-    // --- Não precisamos mais da variável 'attackRange' aqui,
-    // pois o raio do Collider 2D (que é o Trigger) definirá o alcance. ---
 
     void Update()
     {
+        // Reduz o tempo de espera para o próximo ataque
         if (attackCooldown > 0f)
         {
             attackCooldown -= Time.deltaTime;
         }
 
-        // Se o tempo de espera acabou E existem inimigos no alcance...
-        if (attackCooldown <= 0f && enemiesInRange.Count > 0)
+        // Se o tempo de espera acabou, tenta atacar.
+        if (attackCooldown <= 0f)
         {
             Attack();
+            // Reseta o tempo de espera baseado na cadência de tiro.
             attackCooldown = 1f / attackRate;
         }
     }
 
-    // --- MÉTODOS DE TRIGGER ---
-
-    // Este método é chamado AUTOMATICAMENTE pela Unity quando um outro Collider 2D ENTRA no nosso Trigger.
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // Verifica se o objeto que entrou tem a tag "Enemy".
-        if (other.CompareTag("Enemy"))
-        {
-            // Pega o script do inimigo.
-            EnemyController enemy = other.GetComponent<EnemyController>();
-            // Se encontrou o script e ele ainda não está na nossa lista, adiciona.
-            if (enemy != null && !enemiesInRange.Contains(enemy))
-            {
-                enemiesInRange.Add(enemy);
-            }
-        }
-    }
-
-    // Este método é chamado AUTOMATICAMENTE quando um outro Collider 2D SAI do nosso Trigger.
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            EnemyController enemy = other.GetComponent<EnemyController>();
-            // Se o inimigo que saiu está na nossa lista, remove-o.
-            if (enemy != null && enemiesInRange.Contains(enemy))
-            {
-                enemiesInRange.Remove(enemy);
-            }
-        }
-    }
-
-    // --- LÓGICA DE ATAQUE ---
-
     void Attack()
     {
-        // Itera sobre todos os inimigos que estão atualmente na lista.
-        // Usamos um loop 'for' reverso para poder remover itens da lista sem causar erros.
-        for (int i = enemiesInRange.Count - 1; i >= 0; i--)
-        {
-            // Se o inimigo foi destruído por outra torre enquanto estava na lista,
-            // ele se tornará 'null', então o removemos da lista.
-            if (enemiesInRange[i] == null)
-            {
-                enemiesInRange.RemoveAt(i);
-                continue; // Pula para a próxima iteração
-            }
+        // 1. Encontra TODOS os colisores de objetos dentro do raio de ataque.
+        // É importante especificar a Layer "Enemies" para otimização, se você a tiver.
+        Collider2D[] collidersInRange = Physics2D.OverlapCircleAll(transform.position, attackRange);
 
-            // Aplica o dano ao inimigo
-            enemiesInRange[i].TakeDamage(damage);
-            Debug.Log("Torre Samurai atingiu " + enemiesInRange[i].name);
+        bool hasHitEnemy = false; // Para saber se acertamos alguém neste ataque
+
+        // 2. Itera sobre cada colisor encontrado.
+        foreach (var col in collidersInRange)
+        {
+            // 3. Verifica se o objeto tem a tag "Enemy".
+            if (col.CompareTag("Enemy"))
+            {
+                // 4. Tenta pegar o script EnemyController do objeto.
+                EnemyController enemy = col.GetComponent<EnemyController>();
+
+                // 5. Se o script foi encontrado, aplica o dano.
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                    hasHitEnemy = true; // Marcamos que um inimigo foi atingido
+                }
+            }
         }
+
+        // Opcional: Log para depuração
+        if (hasHitEnemy)
+        {
+            Debug.Log("Ataque do Samurai atingiu alvos!");
+        }
+    }
+
+    // Desenha o raio de ataque no editor para facilitar a visualização e o balanceamento.
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

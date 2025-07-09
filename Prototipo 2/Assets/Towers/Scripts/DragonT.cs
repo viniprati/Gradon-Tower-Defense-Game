@@ -9,10 +9,12 @@ public class RangedTower : MonoBehaviour
     public int damage = 5;
 
     [Header("Referências")]
-    public GameObject projectilePrefab; // Arraste o prefab do projétil aqui
+    public GameObject projectilePrefab; 
 
     private Transform currentTarget;
     private float attackCooldown = 0f;
+    [Header("Atributos da Torre de Dragão")]
+    public int cost = 50; 
 
     void Update()
     {

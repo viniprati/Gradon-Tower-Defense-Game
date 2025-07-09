@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 public class BuildManager : MonoBehaviour
 {
-    // --- Padrão Singleton ---
     public static BuildManager instance;
+
+    [Header("Configurações de Construção")]
+    [Tooltip("O custo em mana para construir QUALQUER torre.")]
+    [SerializeField] private int towerCost = 50; // MODIFICAÇÃO: Variável para o custo
 
     // --- Referências e Estado ---
     private PlayerController playerController;
@@ -14,36 +17,25 @@ public class BuildManager : MonoBehaviour
     private GameObject ghostTowerInstance;
     private bool isBuilding = false;
 
-    // Propriedade pública para que outros scripts possam saber se estamos no modo de construção
     public bool IsInBuildMode { get { return isBuilding; } }
 
     void Awake()
     {
-        // Configuração do Singleton
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject); // Garante que só exista um
-        }
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
     }
 
     void Start()
     {
-        // Pega as referências do PlayerController para poder usar suas variáveis
         playerController = FindFirstObjectByType<PlayerController>();
         if (playerController != null)
         {
-            // Pega a lista de torres que o jogador pode construir
             this.availableTowers = playerController.availableTowers;
         }
     }
 
     void Update()
     {
-        // Se estivermos no modo de construção, a pré-visualização segue o jogador.
         if (isBuilding && ghostTowerInstance != null)
         {
             UpdateGhostTowerPosition();
@@ -84,15 +76,13 @@ public class BuildManager : MonoBehaviour
 
     private void EnterBuildMode()
     {
-        // Verifica se há torres para construir
         if (availableTowers == null || availableTowers.Count == 0)
         {
             Debug.LogError("A lista 'Available Towers' no PlayerController está vazia!");
             return;
         }
 
-        // Verifica se há mana suficiente para a torre mais barata (exemplo)
-        int towerCost = 10; // Custo de exemplo
+        // MODIFICAÇÃO: Usa a nova variável de custo para a verificação
         if (playerController.currentMana < towerCost)
         {
             Debug.Log("Mana insuficiente para iniciar a construção!");
@@ -117,14 +107,14 @@ public class BuildManager : MonoBehaviour
     {
         if (ghostTowerInstance == null) return;
 
-        GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
-        int towerCost = 10; // Custo de exemplo
-
+        // MODIFICAÇÃO: Usa a nova variável de custo para a verificação
         if (playerController.currentMana >= towerCost)
         {
             playerController.SpendMana(towerCost);
-            // Constrói a torre na posição do jogador
+
+            GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
             Instantiate(towerToBuildPrefab, playerController.transform.position, Quaternion.identity);
+
             ExitBuildMode();
         }
         else
@@ -132,10 +122,9 @@ public class BuildManager : MonoBehaviour
             Debug.Log("Mana insuficiente!");
         }
     }
+// --- Funções Auxiliares da Pré-Visualização ---
 
-    // --- Funções Auxiliares da Pré-Visualização ---
-
-    private void UpdateGhostTower()
+private void UpdateGhostTower()
     {
         if (ghostTowerInstance != null) Destroy(ghostTowerInstance);
         SpawnGhostTower();
