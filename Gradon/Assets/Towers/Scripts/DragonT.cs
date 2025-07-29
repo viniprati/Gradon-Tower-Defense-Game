@@ -1,78 +1,36 @@
-// Dentro do script RangedTower.cs
+// RangedTower.cs
 using UnityEngine;
 
-public class RangedTower : MonoBehaviour
+public class RangedTower : TowerWithBuffs
 {
-    [Header("Atributos da Torre")]
-    public float attackRange = 5f;
-    public float attackRate = 1f;
-    public int damage = 5;
-
-    [Header("Referências")]
-    public GameObject projectilePrefab; 
-
-    private Transform currentTarget;
-    private float attackCooldown = 0f;
-    [Header("Atributos da Torre de Dragão")]
-    public int cost = 50; 
-
-    void Update()
+    [Header("Atributos Ranged")]
+    [SerializeField] private int damage = 10;
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform firePoint; // Ponto de onde o projétil sai
+    protected override void Start()
     {
-        FindTarget();
-
-        attackCooldown -= Time.deltaTime;
-        if (currentTarget != null && attackCooldown <= 0f)
-        {
-            Shoot();
-            attackCooldown = 1f / attackRate;
-        }
+        base.Start();
+        originalDamage = damage; // Guarda o dano original
     }
 
-    void FindTarget()
+    protected override void HandleDamageBuff(float multiplier, bool isApplying)
     {
-        // Encontra o inimigo MAIS PRÓXIMO dentro do raio
-        Collider2D[] collidersInRange = Physics2D.OverlapCircleAll(transform.position, attackRange);
-        float shortestDistance = Mathf.Infinity;
-        Transform nearestEnemy = null;
-
-        foreach (var col in collidersInRange)
-        {
-            if (col.CompareTag("Enemy"))
-            {
-                float distanceToEnemy = Vector2.Distance(transform.position, col.transform.position);
-                if (distanceToEnemy < shortestDistance)
-                {
-                    shortestDistance = distanceToEnemy;
-                    nearestEnemy = col.transform;
-                }
-            }
-        }
-
-        if (nearestEnemy != null && shortestDistance <= attackRange)
-        {
-            currentTarget = nearestEnemy;
-        }
-        else
-        {
-            currentTarget = null;
-        }
+        damage = isApplying ? Mathf.RoundToInt(originalDamage * multiplier) : originalDamage;
     }
-
-    void Shoot()
+    protected override void Attack()
     {
-        GameObject projGO = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        Projectil projectile = projGO.GetComponent<Projectil>();
+        if (projectilePrefab == null || firePoint == null || currentTarget == null) return;
 
-        if (projectile != null)
+        Vector3 spawnPosition = firePoint.position;
+        Vector2 direction = currentTarget.position - spawnPosition;
+        GameObject projGO = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
+
+        Projectile projectileScript = projGO.GetComponent<Projectile>();
+        if (projectileScript != null)
         {
-            projectile.target = currentTarget;
-            projectile.damage = this.damage; // Passa o dano da torre para o projétil
+            // CHAMADA ATUALIZADA: Passa a direção E o dano atual da torre.
+            // A variável 'damage' aqui já pode ter sido alterada pelo sistema de buff.
+            projectileScript.Launch(direction, this.damage);
         }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

@@ -1,31 +1,42 @@
-// EnemyController.cs (Com a correção de 'velocity')
+// EnemyBase.cs
 using UnityEngine;
+using UnityEngine.UI; // Para a barra de vida
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class EnemyController : MonoBehaviour
+public abstract class EnemyBase : MonoBehaviour, IDamageable
 {
-    [Header("Atributos do Inimigo")]
-    [SerializeField] private float maxHealth = 50f;
-    [SerializeField] private float speed = 3f;
-    [SerializeField] private float manaOnDeath = 10f;
+    [Header("Atributos Base")]
+    [SerializeField] protected float maxHealth = 100f;
+    [SerializeField] protected float speed = 2f;
+    [SerializeField] protected int scoreValue = 10;
 
-    [Header("Comportamento de Ataque")]
-    [SerializeField] private float detectionRange = 7f;
+    [Header("Referências")]
+    [SerializeField] protected Transform playerTransform;
+    [SerializeField] protected GameObject coinPrefab; // Prefab da moeda a ser dropada
+    [SerializeField] protected Image healthBarFill; // Imagem com Fill Method = Filled
 
     // --- Variáveis Internas ---
-    private Rigidbody2D rb;
-    private float currentHealth;
-    private Transform[] waypoints;
-    private int currentWaypointIndex = 0;
-    private Transform playerTransform;
-    private bool isChasingPlayer = false;
-    private bool isDead = false;
+    protected Rigidbody2D rb;
+    protected float currentHealth;
+    protected bool isDead = false;
+    protected Vector2 moveDirection;
+    private bool isFacingRight = true;
 
-    void Start()
+    [Header("Comportamento de Separação")]
+    [Tooltip("Se marcado, inimigos tentarão não se sobrepor.")]
+    [SerializeField] private bool avoidStacking = true;
+    [Tooltip("O quão forte os inimigos se repelem.")]
+    [SerializeField] private float separationForce = 5f;
+    [Tooltip("O raio no qual um inimigo detecta outros para se separar.")]
+    [SerializeField] private float separationRadius = 1f;
+
+    // O 'virtual' permite que classes filhas sobrescrevam este método se precisarem
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
 
+        // Tenta encontrar o jogador automaticamente
         PlayerController player = FindFirstObjectByType<PlayerController>();
         if (player != null)
         {
@@ -33,126 +44,165 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Jogador não encontrado na cena! O inimigo não saberá quem perseguir.");
+            Debug.LogError("Jogador não encontrado! Inimigos não funcionarão corretamente.", this);
         }
 
-        GameObject pathGO = GameObject.Find("Path");
-        if (pathGO != null)
+        UpdateHealthBar();
+    }
+
+    // Adicione este método público para que outros scripts possam verificar se o inimigo está morto.
+    public bool IsDead()
+    {
+        return isDead;
+    }
+
+    // Update é usado para decisões e lógicas que não envolvem física
+    protected virtual void Update()
+    {
+        if (isDead || playerTransform == null || !playerTransform.gameObject.activeInHierarchy)
         {
-            waypoints = new Transform[pathGO.transform.childCount];
-            for (int i = 0; i < pathGO.transform.childCount; i++)
-            {
-                waypoints[i] = pathGO.transform.GetChild(i);
-            }
-        }
-    }
-
-    void Update()
-    {
-        if (isDead) return;
-        HandleDecision();
-    }
-
-    void FixedUpdate()
-    {
-        if (isDead) return;
-        Move();
-    }
-
-    private void HandleDecision()
-    {
-        if (playerTransform == null || !playerTransform.gameObject.activeInHierarchy)
-        {
-            isChasingPlayer = false;
+            // Se o inimigo está morto ou o player não existe mais, para de se mover
+            if (rb != null) rb.linearVelocity = Vector2.zero;
             return;
         }
 
-        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-        isChasingPlayer = (distanceToPlayer <= detectionRange);
+        // Determina a direção do movimento e vira o sprite
+        moveDirection = (playerTransform.position - transform.position).normalized;
+        FlipTowardsPlayer();
     }
 
-    private void Move()
+    private void FixedUpdate()
     {
-        Vector2 targetPosition;
-        bool hasTarget = false;
-
-        if (isChasingPlayer && playerTransform != null)
+        if (isDead)
         {
-            targetPosition = playerTransform.position;
-            hasTarget = true;
-        }
-        else
-        {
-            if (waypoints != null && currentWaypointIndex < waypoints.Length)
-            {
-                targetPosition = waypoints[currentWaypointIndex].position;
-                hasTarget = true;
-                if (Vector2.Distance(transform.position, targetPosition) < 0.2f)
-                {
-                    currentWaypointIndex++;
-                }
-            }
-            else
-            {
-                if (waypoints != null && currentWaypointIndex >= waypoints.Length)
-                {
-                    ReachedEnd();
-                }
-
-                // CORREÇÃO: Usar 'velocity'
-                rb.linearVelocity *= 0.9f;
-                return;
-            }
+            rb.linearVelocity = Vector2.zero; // Garante que o inimigo pare ao morrer
+            return;
         }
 
-        if (hasTarget)
-        {
-            Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
-            Vector2 movementForce = direction * speed * 10f;
-            rb.AddForce(movementForce);
+        // A lógica de movimento agora será composta
+        Vector2 finalVelocity = Vector2.zero;
 
-            // CORREÇÃO: Usar 'velocity'
-            if (rb.linearVelocity.magnitude > speed)
+        // 1. Calcula o vetor de movimento principal (definido pelas classes filhas)
+        Vector2 movementVector = HandleMovement();
+
+        // 2. Calcula o vetor de separação (se habilitado)
+        Vector2 separationVector = Vector2.zero;
+        if (avoidStacking)
+        {
+            separationVector = CalculateSeparationVector();
+        }
+
+        // 3. Combina os vetores
+        // O movimento principal tem peso 1, a separação tem um peso definido por 'separationForce'.
+        finalVelocity = (movementVector + (separationVector * separationForce)).normalized * speed;
+
+        // 4. Aplica a velocidade final ao Rigidbody
+        rb.linearVelocity = finalVelocity;
+    }
+
+    // Método abstrato: FORÇA as classes filhas a implementarem sua própria lógica de movimento
+    // MODIFICAÇÃO: HandleMovement agora retorna um vetor de direção
+    protected abstract Vector2 HandleMovement();
+
+    // NOVO MÉTODO: Calcula a força de repulsão dos vizinhos
+    private Vector2 CalculateSeparationVector()
+    {
+        Vector2 steer = Vector2.zero;
+        int neighborsCount = 0;
+
+        // Encontra todos os outros inimigos dentro do raio de separação
+        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, separationRadius);
+
+        foreach (var neighbor in neighbors)
+        {
+            // Ignora a si mesmo
+            if (neighbor.gameObject == this.gameObject) continue;
+
+            // Verifica se o vizinho também é um inimigo
+            if (neighbor.CompareTag("Enemy"))
             {
-                // CORREÇÃO: Usar 'velocity'
-                rb.linearVelocity = rb.linearVelocity.normalized * speed;
+                // Calcula um vetor apontando para longe do vizinho
+                Vector2 difference = transform.position - neighbor.transform.position;
+                // A força é maior quanto mais perto o vizinho está
+                steer += difference.normalized / (difference.magnitude + 0.01f); // Adiciona 0.01f para evitar divisão por zero
+                neighborsCount++;
             }
+        }
+
+        if (neighborsCount > 0)
+        {
+            // Tira a média do vetor de repulsão
+            steer /= neighborsCount;
+        }
+
+        return steer;
+    }
+    // Vira o sprite do inimigo para encarar o jogador
+    protected void FlipTowardsPlayer()
+    {
+        if (moveDirection.x > 0 && !isFacingRight)
+        {
+            Flip();
+        }
+        else if (moveDirection.x < 0 && isFacingRight)
+        {
+            Flip();
         }
     }
+
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 newScale = transform.localScale;
+        newScale.x *= -1;
+        transform.localScale = newScale;
+    }
+
 
     public void TakeDamage(float damage)
     {
         if (isDead) return;
+
         currentHealth -= damage;
+        UpdateHealthBar();
+
         if (currentHealth <= 0)
         {
             Die();
         }
     }
 
-    private void ReachedEnd()
+    protected void UpdateHealthBar()
+    {
+        if (healthBarFill != null)
+        {
+            healthBarFill.fillAmount = currentHealth / maxHealth;
+        }
+    }
+
+    // 'virtual' para que o inimigo explosivo possa adicionar sua própria lógica
+    protected virtual void Die()
     {
         if (isDead) return;
-        Debug.Log("Inimigo chegou à base!");
-        Destroy(gameObject);
-    }
-
-    private void Die()
-    {
         isDead = true;
-        Debug.Log(gameObject.name + " foi derrotado!");
 
-        PlayerController player = FindFirstObjectByType<PlayerController>();
-        if (player != null && player.gameObject.activeInHierarchy)
+        // Desativa o colisor para não interagir mais
+        GetComponent<Collider2D>().enabled = false;
+        rb.linearVelocity = Vector2.zero; // Para o movimento imediatamente
+
+        // Dá score ao jogador através do GameManager
+        if (GameManager.instance != null)
         {
-            player.AddMana(manaOnDeath);
+            GameManager.instance.AddScore(scoreValue);
         }
-        Destroy(gameObject);
-    }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        // Dropa a moeda
+        if (coinPrefab != null)
+        {
+            Instantiate(coinPrefab, transform.position, Quaternion.identity);
+        }
+
+        // Destrói o objeto após um pequeno delay para efeitos visuais
+        Destroy(gameObject, 0.1f);
     }
 }

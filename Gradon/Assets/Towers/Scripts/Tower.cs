@@ -1,62 +1,98 @@
-// Tower.cs
+// TowerBase.cs
 using UnityEngine;
 
-public abstract class Tower : MonoBehaviour
+public abstract class TowerBase : MonoBehaviour
 {
-    [Header("Atributos da Torre (Base)")]
-    [Tooltip("O alcance de detecção e ataque da torre.")]
+    [Header("Atributos Gerais da Torre")]
     [SerializeField] protected float attackRange = 5f;
-
-    [Tooltip("O custo para construir esta torre.")]
+    [SerializeField] protected float attackRate = 1f;
     [SerializeField] public int cost = 50;
+    [SerializeField] public Sprite towerIcon;
 
+    [Header("Referências (Setup no Prefab)")]
+    [Tooltip("A parte da torre que deve girar para encarar o inimigo.")]
+    [SerializeField] protected Transform partToRotate;
+    [Tooltip("O objeto SpriteRenderer que visualmente representa o alcance da torre.")]
+    [SerializeField] protected SpriteRenderer rangeIndicator; // MUDANÇA: Agora é um SpriteRenderer direto.
+
+    [Header("Configurações Visuais")]
+    [Tooltip("A opacidade do indicador de alcance (0 = invisível, 1 = opaco).")]
+    [Range(0f, 1f)]
+    [SerializeField] private float rangeIndicatorOpacity = 0.15f; // Opacidade padrão de 15%
+
+    // --- Variáveis Internas ---
     protected Transform currentTarget;
-    private string enemyTag = "Enemy";
+    protected float attackCooldown = 0f;
+    private static readonly int EnemyLayer = 1 << 6; // Layer "Enemy"
 
-    // A lógica agora é mais simples: encontrar um alvo e, se tiver um, atacar todo frame.
+    protected virtual void Start()
+    {
+        // Garante que o indicador de alcance esteja configurado corretamente
+        if (rangeIndicator != null)
+        {
+            // O indicador agora fica SEMPRE ATIVO
+            rangeIndicator.gameObject.SetActive(true);
+
+            // Ajusta a escala do indicador para corresponder ao alcance
+            // A escala deve ser o dobro do alcance, pois a escala é baseada no diâmetro.
+            float diameter = attackRange * 2f;
+            rangeIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+
+            // AJUSTA A OPACIDADE
+            Color currentColor = rangeIndicator.color;
+            rangeIndicator.color = new Color(currentColor.r, currentColor.g, currentColor.b, rangeIndicatorOpacity);
+        }
+        attackCooldown = 0f;
+    }
+
     protected virtual void Update()
     {
-        FindTarget();
+        if (currentTarget == null || Vector3.Distance(transform.position, currentTarget.position) > attackRange)
+        {
+            FindTarget();
+        }
 
         if (currentTarget != null)
         {
-            Attack();
+            HandleRotation();
+            attackCooldown -= Time.deltaTime;
+            if (attackCooldown <= 0f)
+            {
+                Attack();
+                attackCooldown = 1f / attackRate;
+            }
         }
     }
 
     private void FindTarget()
     {
-        // Se já temos um alvo, verifica se ele ainda está no alcance ou se foi destruído
-        if (currentTarget != null && Vector2.Distance(transform.position, currentTarget.position) > attackRange)
-        {
-            currentTarget = null;
-        }
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange, EnemyLayer);
+        float closestDistance = Mathf.Infinity;
+        Transform newTarget = null;
 
-        // Se não temos alvo, procura um novo que esteja mais próximo
-        if (currentTarget == null)
+        foreach (Collider2D collider in colliders)
         {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
-            float closestDistance = Mathf.Infinity;
-            Transform newTarget = null;
-
-            foreach (Collider2D collider in colliders)
+            float distance = Vector2.Distance(transform.position, collider.transform.position);
+            if (distance < closestDistance)
             {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    newTarget = collider.transform;
-                }
+                closestDistance = distance;
+                newTarget = collider.transform;
             }
-            currentTarget = newTarget;
         }
+        currentTarget = newTarget;
     }
 
-    // Método abstrato para o ataque, que agora será chamado continuamente.
+    private void HandleRotation()
+    {
+        if (partToRotate == null) return;
+        Vector2 direction = currentTarget.position - partToRotate.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        partToRotate.rotation = Quaternion.Euler(0, 0, angle);
+    }
+
     protected abstract void Attack();
 
-    // Desenha o alcance no editor da Unity para facilitar o debug.
-    void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, attackRange);

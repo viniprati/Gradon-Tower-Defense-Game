@@ -1,92 +1,44 @@
-// ---- CÓDIGO CORRETO PARA MeleeTower.cs ----
-
+// KirinT.cs (Buff Tower)
 using UnityEngine;
+using System.Collections.Generic;
 
-public class MeleeTower : MonoBehaviour
-{ // A "caixa" da classe começa aqui
+public class KirinT : TowerBase
+{
+    [Header("Atributos de Buff")]
+    [Tooltip("Multiplicador de dano (1.5 = +50% de dano)")]
+    [SerializeField] private float damageMultiplier = 1.5f;
+    [Tooltip("Multiplicador da taxa de ataque (1.5 = 50% mais rápido)")]
+    [SerializeField] private float rateMultiplier = 1.5f;
+    [Tooltip("Por quanto tempo o buff dura após ser aplicado")]
+    [SerializeField] private float buffDuration = 3f;
 
-    // --- Atributos Originais da Torre ---
-    [Header("Atributos da Torre")]
-    public float attackRange = 2f;
-    public float attackRate = 1f; // Ataques por segundo
-    public int damage = 10;
-
-    private float attackCooldown = 0f;
-    // ------------------------------------
-
-
-    // --- Variáveis para o Sistema de Buff ---
-    private float originalAttackRate;
-    private float originalAttackRange;
-    private int originalDamage;
-    private bool isBuffed = false;
-    // ----------------------------------------
-
-
-    // O MÉTODO START - Inicializa TUDO
-    void Start()
+    // Kirin não ataca, então vamos sobrescrever o Update para não procurar inimigos
+    protected override void Update()
     {
-        // Guardamos os valores originais para poder restaurá-los depois
-        originalAttackRate = attackRate;
-        originalAttackRange = attackRange;
-        originalDamage = damage;
-    }
-
-    // O MÉTODO UPDATE - Lógica principal da torre
-    void Update()
-    {
+        // A lógica de ataque/cooldown é usada para aplicar o buff periodicamente
         attackCooldown -= Time.deltaTime;
         if (attackCooldown <= 0f)
         {
-            Attack();
+            Attack(); // O "Ataque" aqui é aplicar o buff
             attackCooldown = 1f / attackRate;
         }
     }
 
-    void Attack()
+    // O ataque da Kirin é dar buff nas torres ao redor
+    protected override void Attack()
     {
-        Collider2D[] collidersInRange = Physics2D.OverlapCircleAll(transform.position, attackRange);
-        foreach (var col in collidersInRange)
+        // Encontra todas as torres no raio de alcance (buffRange)
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
+
+        foreach (var col in colliders)
         {
-            if (col.CompareTag("Enemy"))
+            // Tenta pegar o script de outra torre (que não seja esta)
+            TowerWithBuffs tower = col.GetComponent<TowerWithBuffs>();
+            if (tower != null && tower != this)
             {
-                Debug.Log("Torre Melee atingiu " + col.name + " com dano " + damage);
-                // Ex: col.GetComponent<EnemyHealth>().TakeDamage(damage);
+                // Aplica o buff na torre encontrada
+                tower.ApplyBuff(damageMultiplier, rateMultiplier, buffDuration);
             }
         }
     }
-
-
-    // --- Métodos para RECEBER e REMOVER o Buff ---
-    public void ApplyBuff(float rateMultiplier, float rangeMultiplier, float damageMultiplier)
-    {
-        if (isBuffed) return;
-
-        isBuffed = true;
-        attackRate *= rateMultiplier;
-        attackRange *= rangeMultiplier;
-        damage = Mathf.RoundToInt(damage * damageMultiplier);
-        Debug.Log(gameObject.name + " BUFF APLICADO!");
-    }
-
-    public void RemoveBuff()
-    {
-        if (!isBuffed) return;
-
-        isBuffed = false;
-        attackRate = originalAttackRate;
-        attackRange = originalAttackRange;
-        damage = originalDamage;
-        Debug.Log(gameObject.name + " BUFF REMOVIDO!");
-    }
-    // ------------------------------------------------
-
-
-    // Apenas para ver o raio de ataque no Editor
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-    }
-
-} // A "caixa" da classe termina aqui. TODO o código deve estar antes desta chave.
+}

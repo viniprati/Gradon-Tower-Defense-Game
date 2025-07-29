@@ -1,75 +1,43 @@
-// SamuraiT.cs (Versão Refeita - Confiável)
+// SamuraiTower.cs
 using UnityEngine;
 
-public class SamuraiT : MonoBehaviour
+public class SamuraiTower : TowerWithBuffs
 {
-    [Header("Atributos da Torre Samurai")]
-    [Tooltip("O raio de alcance do corte da torre.")]
-    [SerializeField] private float attackRange = 2f;
+    [Header("Atributos Samurai (Área)")]
+    [SerializeField] private int damage = 15;
+    [SerializeField] private GameObject attackEffectPrefab; // Efeito visual do corte
 
-    [Tooltip("Quantas vezes por segundo a torre aplica o dano em área.")]
-    [SerializeField] private float attackRate = 1.5f; // Ex: 1.5 ataques por segundo
-
-    [Tooltip("O dano de cada 'pulso' de ataque.")]
-    [SerializeField] private int damage = 10;
-
-    // Variável interna para controlar o tempo entre os ataques
-    private float attackCooldown = 0f;
-
-    void Update()
+    protected override void Start()
     {
-        // Reduz o tempo de espera para o próximo ataque
-        if (attackCooldown > 0f)
-        {
-            attackCooldown -= Time.deltaTime;
-        }
-
-        // Se o tempo de espera acabou, tenta atacar.
-        if (attackCooldown <= 0f)
-        {
-            Attack();
-            // Reseta o tempo de espera baseado na cadência de tiro.
-            attackCooldown = 1f / attackRate;
-        }
+        base.Start();
+        originalDamage = damage; // Guarda o dano original
     }
 
-    void Attack()
+    protected override void HandleDamageBuff(float multiplier, bool isApplying)
     {
-        // 1. Encontra TODOS os colisores de objetos dentro do raio de ataque.
-        // É importante especificar a Layer "Enemies" para otimização, se você a tiver.
-        Collider2D[] collidersInRange = Physics2D.OverlapCircleAll(transform.position, attackRange);
+        damage = isApplying ? Mathf.RoundToInt(originalDamage * multiplier) : originalDamage;
+    }
 
-        bool hasHitEnemy = false; // Para saber se acertamos alguém neste ataque
-
-        // 2. Itera sobre cada colisor encontrado.
-        foreach (var col in collidersInRange)
+    // A rotação da base não faz muito sentido aqui, mas a lógica de alvo ainda é útil.
+    protected override void Attack()
+    {
+        // Opcional: Instancia um efeito visual para o ataque
+        if (attackEffectPrefab != null)
         {
-            // 3. Verifica se o objeto tem a tag "Enemy".
-            if (col.CompareTag("Enemy"))
-            {
-                // 4. Tenta pegar o script EnemyController do objeto.
-                EnemyController enemy = col.GetComponent<EnemyController>();
+            Instantiate(attackEffectPrefab, transform.position, Quaternion.identity);
+        }
 
-                // 5. Se o script foi encontrado, aplica o dano.
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(damage);
-                    hasHitEnemy = true; // Marcamos que um inimigo foi atingido
-                }
+        // Encontra todos os inimigos no alcance para dar dano em área
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange, 1 << 6); // Layer "Enemy"
+
+        foreach (var col in colliders)
+        {
+            // Pega o script base do inimigo para aplicar o dano
+            EnemyBase enemy = col.GetComponent<EnemyBase>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
             }
         }
-
-        // Opcional: Log para depuração
-        if (hasHitEnemy)
-        {
-            Debug.Log("Ataque do Samurai atingiu alvos!");
-        }
-    }
-
-    // Desenha o raio de ataque no editor para facilitar a visualização e o balanceamento.
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

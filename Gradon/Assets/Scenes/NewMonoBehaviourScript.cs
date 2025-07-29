@@ -1,28 +1,23 @@
-// MenuController.cs (Modificado para Toque/Clique)
 using UnityEngine;
-using UnityEngine.SceneManagement; // Essencial para trocar de cena
+using UnityEngine.SceneManagement; // trocar de cena
 
 public class MenuController : MonoBehaviour
 {
     // A função Update é chamada uma vez por frame
     void Update()
     {
-        // --- LÓGICA DE INPUT PARA TOQUE/CLIQUE ---
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            StartGame(); 
-        }
-
+        // Verifica se a tecla ESPAÇO foi pressionada NESTE frame
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartGame();
+            StartGame(); // Chama a nossa função para iniciar o jogo
         }
     }
 
     // Função que carrega a cena do jogo
     public void StartGame()
     {
+        // Certifique-se de que o nome da cena está EXATAMENTE igual ao do seu arquivo.
+        // Pela sua imagem, o nome é "Game".
         SceneManager.LoadScene("Game");
     }
 }
