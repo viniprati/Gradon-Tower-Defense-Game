@@ -1,6 +1,7 @@
-﻿// PlayerController.cs
+﻿// PlayerController.cs (Versão Original com Correções Aplicadas)
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI; // Adicione esta linha para usar o Slider
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -11,9 +12,11 @@ public class PlayerController : MonoBehaviour
     [Header("Recursos do Jogador")]
     public float maxMana = 100f;
     public float currentMana;
+    public Slider manaBar; // Arraste seu Slider da UI para este campo no Inspector
 
     [Header("Referências de Construção")]
     public List<GameObject> availableTowers;
+    // O buildModeUI não é mais necessário se a UI de build for sempre visível
 
     // --- Variáveis Internas ---
     private Rigidbody2D rb;
@@ -31,9 +34,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         currentMana = maxMana;
         moveInput = Vector2.zero;
-
-        // Atualiza a UI com os valores iniciais de mana assim que o jogo começa.
-        UpdateManaUI();
+        UpdateManaUI(); // Atualiza a UI no início
     }
 
     void Update()
@@ -51,9 +52,9 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Se estivermos no modo de construção, a velocidade é zero.
         if (isBuilding)
         {
+            // CORREÇÃO: Usa 'velocity' e para o jogador
             rb.linearVelocity = Vector2.zero;
             return;
         }
@@ -63,7 +64,7 @@ public class PlayerController : MonoBehaviour
             moveInput.Normalize();
         }
 
-        // Aplica o movimento ao Rigidbody
+        // CORREÇÃO: A propriedade correta do Rigidbody2D é 'velocity'.
         rb.linearVelocity = moveInput * moveSpeed;
     }
 
@@ -89,9 +90,21 @@ public class PlayerController : MonoBehaviour
 
         if (!isBuilding)
         {
-            int towerCost = 10;
-            if (currentMana >= towerCost) EnterBuildMode();
-            else Debug.Log("Mana insuficiente para iniciar a construção!");
+            // Usando o custo da primeira torre como referência para entrar no modo
+            if (availableTowers.Count > 0)
+            {
+                // Supondo que a torre tem um script com um 'cost'
+                // int towerCost = availableTowers[0].GetComponent<SamuraiT>()?.cost ?? 10; // Exemplo
+                int towerCost = 50; // Vamos usar 50 como no BuildManager
+                if (currentMana >= towerCost)
+                {
+                    EnterBuildMode();
+                }
+                else
+                {
+                    Debug.Log("Mana insuficiente para iniciar a construção!");
+                }
+            }
         }
         else
         {
@@ -104,8 +117,20 @@ public class PlayerController : MonoBehaviour
     {
         if (ghostTowerInstance == null) return;
 
+        // Verificação de sobreposição
+        float checkRadius = 0.5f;
+        Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, checkRadius);
+        foreach (var col in collisions)
+        {
+            if (col.CompareTag("Tower"))
+            {
+                Debug.Log("Não é possível construir aqui, já existe outra torre!");
+                return;
+            }
+        }
+
         GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
-        int towerCost = 10;
+        int towerCost = 50; // Usando 50 como padrão
 
         if (currentMana >= towerCost)
         {
@@ -150,16 +175,12 @@ public class PlayerController : MonoBehaviour
     private void SpawnGhostTower()
     {
         if (availableTowers == null || availableTowers.Count == 0) return;
-
         ghostTowerInstance = Instantiate(availableTowers[selectedTowerIndex]);
         ghostTowerInstance.name = "GHOST_TOWER";
-
         Collider2D ghostCollider = ghostTowerInstance.GetComponent<Collider2D>();
         if (ghostCollider != null) ghostCollider.enabled = false;
-
         var samuraiScript = ghostTowerInstance.GetComponent<SamuraiT>();
         if (samuraiScript != null) samuraiScript.enabled = false;
-
         SpriteRenderer sr = ghostTowerInstance.GetComponentInChildren<SpriteRenderer>();
         if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f);
     }
@@ -185,8 +206,6 @@ public class PlayerController : MonoBehaviour
     {
         currentMana += amount;
         if (currentMana > maxMana) currentMana = maxMana;
-
-        // Avisa o UIManager para atualizar a barra de mana.
         UpdateManaUI();
     }
 
@@ -194,17 +213,16 @@ public class PlayerController : MonoBehaviour
     {
         currentMana -= amount;
         if (currentMana < 0) currentMana = 0;
-
-        // Avisa o UIManager para atualizar a barra de mana.
         UpdateManaUI();
     }
 
+    // A lógica de UI de mana foi reintegrada aqui
     private void UpdateManaUI()
     {
-        // Verifica se o UIManager existe na cena antes de tentar usá-lo
-        if (UIManager.instance != null)
+        if (manaBar != null)
         {
-            UIManager.instance.UpdateManaUI(currentMana, maxMana);
+            manaBar.maxValue = maxMana;
+            manaBar.value = currentMana;
         }
     }
 

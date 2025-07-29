@@ -1,4 +1,4 @@
-// BuildManager.cs
+// BuildManager.cs (Versão Corrigida e Completa)
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -7,10 +7,8 @@ public class BuildManager : MonoBehaviour
     public static BuildManager instance;
 
     [Header("Configurações de Construção")]
-    [Tooltip("O custo em mana para construir QUALQUER torre.")]
-    [SerializeField] private int towerCost = 50; // MODIFICAÇÃO: Variável para o custo
+    [SerializeField] private int towerCost = 50;
 
-    // --- Referências e Estado ---
     private PlayerController playerController;
     private List<GameObject> availableTowers;
     private int selectedTowerIndex = 0;
@@ -42,18 +40,10 @@ public class BuildManager : MonoBehaviour
         }
     }
 
-    // --- Métodos Públicos chamados pelo PlayerController ---
-
     public void ToggleBuildMode()
     {
-        if (!isBuilding)
-        {
-            EnterBuildMode();
-        }
-        else
-        {
-            TryPlaceTower();
-        }
+        if (!isBuilding) EnterBuildMode();
+        else TryPlaceTower();
     }
 
     public void SelectNextTower()
@@ -72,23 +62,14 @@ public class BuildManager : MonoBehaviour
         UpdateGhostTower();
     }
 
-    // --- Lógica Interna de Construção ---
-
     private void EnterBuildMode()
     {
-        if (availableTowers == null || availableTowers.Count == 0)
-        {
-            Debug.LogError("A lista 'Available Towers' no PlayerController está vazia!");
-            return;
-        }
-
-        // MODIFICAÇÃO: Usa a nova variável de custo para a verificação
+        if (availableTowers == null || availableTowers.Count == 0) return;
         if (playerController.currentMana < towerCost)
         {
             Debug.Log("Mana insuficiente para iniciar a construção!");
             return;
         }
-
         isBuilding = true;
         selectedTowerIndex = 0;
         SpawnGhostTower();
@@ -107,14 +88,23 @@ public class BuildManager : MonoBehaviour
     {
         if (ghostTowerInstance == null) return;
 
-        // MODIFICAÇÃO: Usa a nova variável de custo para a verificação
+        // VERIFICAÇÃO DE SOBREPOSIÇÃO
+        float checkRadius = 0.5f;
+        Collider2D[] collisions = Physics2D.OverlapCircleAll(playerController.transform.position, checkRadius);
+        foreach (var col in collisions)
+        {
+            if (col.CompareTag("Tower"))
+            {
+                Debug.Log("Não é possível construir aqui, já existe outra torre!");
+                return;
+            }
+        }
+
         if (playerController.currentMana >= towerCost)
         {
             playerController.SpendMana(towerCost);
-
             GameObject towerToBuildPrefab = availableTowers[selectedTowerIndex];
             Instantiate(towerToBuildPrefab, playerController.transform.position, Quaternion.identity);
-
             ExitBuildMode();
         }
         else
@@ -122,9 +112,8 @@ public class BuildManager : MonoBehaviour
             Debug.Log("Mana insuficiente!");
         }
     }
-// --- Funções Auxiliares da Pré-Visualização ---
 
-private void UpdateGhostTower()
+    private void UpdateGhostTower()
     {
         if (ghostTowerInstance != null) Destroy(ghostTowerInstance);
         SpawnGhostTower();
