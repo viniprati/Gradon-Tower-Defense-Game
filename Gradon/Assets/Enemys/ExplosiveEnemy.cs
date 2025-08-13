@@ -1,64 +1,59 @@
-// ExplosiveEnemy.cs
 using UnityEngine;
 
-public class ExplosiveEnemy : EnemyBase
+public class GhoulController : EnemyBase // Herda da classe base
 {
-    [Header("Atributos Explosivos")]
-    [SerializeField] private float explosionRadius = 3f;
-    [SerializeField] private float explosionDamage = 50f;
-    [SerializeField] private GameObject explosionEffectPrefab; // Efeito visual da explosão
+    [Header("Atributos de Ataque do Ghoul")]
+    [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private float attackRate = 1f; // 1 ataque por segundo
+    [SerializeField] private float attackDamage = 20f;
 
-    // Movimento igual ao inimigo normal
+    private float attackCooldown = 0f;
+
+    // A lógica de movimento do Ghoul é simplesmente avançar em direção ao alvo.
     protected override Vector2 HandleMovement()
     {
-        // Apenas retorna a direção para o jogador. A classe base cuidará da velocidade.
-        if (playerTransform != null)
+        // Se estivermos perto o suficiente para atacar, paramos de nos mover.
+        if (currentTarget != null && Vector2.Distance(transform.position, currentTarget.position) <= attackRange)
         {
-            return (playerTransform.position - transform.position).normalized;
+            return Vector2.zero; // Retorna um vetor zero para parar o movimento.
         }
-        return Vector2.zero;
+
+        // Caso contrário, retorna a direção normal para o alvo.
+        return moveDirection;
     }
 
-    // Sobrescrevemos o método Die para adicionar a lógica da explosão
-    protected override void Die()
+    // O Update é usado para controlar a lógica de ataque baseada em tempo.
+    protected override void Update()
     {
-        // Antes de chamar a lógica base de morte (que destrói o objeto),
-        // nós executamos a explosão.
+        base.Update(); // Executa a lógica do Update da classe base (virar o sprite, etc.)
 
-        // 1. Instancia o efeito visual da explosão
-        if (explosionEffectPrefab != null)
+        if (isDead || currentTarget == null) return;
+
+        // Lógica de cooldown do ataque
+        if (attackCooldown > 0)
         {
-            Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+            attackCooldown -= Time.deltaTime;
         }
 
-        // 2. Encontra todos os colisores dentro do raio de explosão
-        Collider2D[] collidersInExplosion = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-
-        // 3. Itera sobre os objetos encontrados e causa dano
-        foreach (Collider2D hitCollider in collidersInExplosion)
+        // Verifica se pode atacar
+        if (Vector2.Distance(transform.position, currentTarget.position) <= attackRange)
         {
-            // Tenta pegar o componente EnemyBase do objeto atingido
-            EnemyBase otherEnemy = hitCollider.GetComponent<EnemyBase>();
-
-            // Se for um inimigo e não for ele mesmo, causa dano
-            if (otherEnemy != null && otherEnemy != this)
+            if (attackCooldown <= 0)
             {
-                otherEnemy.TakeDamage(explosionDamage);
+                Attack();
+                attackCooldown = 1f / attackRate;
             }
-
-            // Você também pode adicionar dano ao player aqui se quiser
-            // PlayerController player = hitCollider.GetComponent<PlayerController>();
-            // if (player != null) { /* ... cause dano no player ... */ }
         }
-
-        // 4. Agora sim, executa a lógica base de morte (dar score, dropar moeda, destruir)
-        base.Die();
     }
 
-    // Desenha o raio da explosão no editor
-    private void OnDrawGizmosSelected()
+    private void Attack()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, explosionRadius);
+        // Tenta encontrar um componente que possa receber dano no alvo.
+        IDamageable targetHealth = currentTarget.GetComponent<IDamageable>();
+        if (targetHealth != null)
+        {
+            targetHealth.TakeDamage(attackDamage);
+            Debug.Log(gameObject.name + " atacou " + currentTarget.name);
+        }
     }
 }

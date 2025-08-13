@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: dcf403c6627b7104a9715ada571a087e
+guid: b364afd4e57222c4d86eb19f4b4cae98
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1463684611667751822
-    second: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_0
-  - first:
-      213: 7793384035612294225
-    second: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_1
-  - first:
-      213: -3720523912733038732
-    second: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_2
-  - first:
-      213: -1736756132080019173
-    second: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_3
+      213: -464344498758391414
+    second: Totem_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -83,8 +74,8 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 4
-    textureCompression: 2
+    textureFormat: -1
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -148,57 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_0
+      name: Totem_0
       rect:
         serializedVersion: 2
-        x: 14
-        y: 64
-        width: 36
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 27c8652c992ffabe0800000000000000
-      internalID: -1463684611667751822
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_1
-      rect:
-        serializedVersion: 2
-        x: 78
-        y: 64
-        width: 36
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 15cfed04d79a72c60800000000000000
-      internalID: 7793384035612294225
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_2
-      rect:
-        serializedVersion: 2
-        x: 14
+        x: 0
         y: 0
-        width: 36
-        height: 48
+        width: 64
+        height: 172
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -207,30 +154,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 477633ba63b0e5cc0800000000000000
-      internalID: -3720523912733038732
+      spriteID: a89691a73215e89f0800000000000000
+      internalID: -464344498758391414
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_3
+      name: Totem_1
       rect:
         serializedVersion: 2
-        x: 78
+        x: 64
         y: 0
-        width: 36
-        height: 47
+        width: 64
+        height: 172
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b1993e5ef7dc5e7e0800000000000000
-      internalID: -1736756132080019173
+      spriteID: 854e544adfa611d4480eb6a54049e39a
+      internalID: -1038485115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Totem_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 172
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 654938018cf62fe4aa5462bc7d2f5819
+      internalID: 1000404339
       vertices: []
       indices: 
       edges: []
@@ -239,7 +208,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 0303c83232e1e854d895e4c4826abf90
     internalID: 0
     vertices: []
     indices: 
@@ -249,10 +218,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_0: -1463684611667751822
-      ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_1: 7793384035612294225
-      ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_2: -3720523912733038732
-      ChatGPT Image 4 de jul. de 2025, 07_20_36-1.png (1) (2)_3: -1736756132080019173
+      Totem_0: -464344498758391414
+      Totem_1: -1038485115
+      Totem_2: 1000404339
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
