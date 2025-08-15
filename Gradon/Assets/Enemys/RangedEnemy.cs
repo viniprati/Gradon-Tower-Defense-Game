@@ -1,51 +1,63 @@
 // RangedEnemy.cs
 using UnityEngine;
 
-public class RangedEnemy : EnemyBase
+public class RangedEnemy : EnemyController // Garante que herda da classe base correta
 {
-    [Header("Atributos Ranged")]
-    [SerializeField] private float attackRange = 8f;
+    [Header("Atributos do Inimigo a Distância")]
+    [Tooltip("O alcance no qual este inimigo para de se mover e começa a atirar.")]
+    [SerializeField] private float attackRange = 8f; // VARIÁVEL REINTRODUZIDA AQUI
+
     [SerializeField] private float fireRate = 1f; // Tiros por segundo
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint; // Ponto de onde o projétil sai
-    [SerializeField] private int damage = 1000; // ADICIONE ESTA LINHA para 
+    [SerializeField] private int damage = 10; // Dano específico deste inimigo
+
     private float fireCooldownTimer;
 
+    // O Update agora controla a lógica de ataque baseada em tempo
     protected override void Update()
     {
-        // Chama a lógica base (virar para o player, etc)
+        // Chama a lógica do Update da classe base (ex: virar o sprite para o alvo)
         base.Update();
+
+        // Se o inimigo está morto ou não tem alvo, não faz nada
+        if (isDead || currentTarget == null) return;
 
         // Reduz o cooldown do tiro
         if (fireCooldownTimer > 0)
         {
             fireCooldownTimer -= Time.deltaTime;
         }
+
+        // Verifica se pode atacar (se está no alcance E o cooldown acabou)
+        if (Vector2.Distance(transform.position, currentTarget.position) <= attackRange)
+        {
+            TryAttack();
+        }
     }
 
+    // A lógica de movimento para o inimigo a distância é parar QUANDO estiver no alcance
     protected override Vector2 HandleMovement()
     {
-        if (playerTransform == null || isDead) return Vector2.zero;
+        if (currentTarget == null || isDead) return Vector2.zero;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
+        // Calcula a distância até o alvo
+        float distanceToTarget = Vector2.Distance(transform.position, currentTarget.position);
 
-        if (distanceToPlayer <= attackRange)
+        // Se estiver DENTRO do alcance de ataque, para de se mover.
+        if (distanceToTarget <= attackRange)
         {
-            // Perto o suficiente: para de mover e tenta atirar
-            TryAttack();
-            return Vector2.zero; // Retorna um vetor zero para indicar que deve parar
+            return Vector2.zero;
         }
-        else
+        else // Se estiver longe demais, continua se movendo em direção ao alvo.
         {
-            // Longe demais: move-se em direção ao jogador
-            return (playerTransform.position - transform.position).normalized;
+            return moveDirection; // 'moveDirection' é calculado na classe base
         }
     }
-
 
     private void TryAttack()
     {
-        if (fireCooldownTimer <= 0f && projectilePrefab != null)
+        if (fireCooldownTimer <= 0f)
         {
             Fire();
             fireCooldownTimer = 1f / fireRate; // Reseta o cooldown
@@ -54,21 +66,20 @@ public class RangedEnemy : EnemyBase
 
     private void Fire()
     {
-        if (projectilePrefab == null || firePoint == null || playerTransform == null) return;
+        if (projectilePrefab == null || firePoint == null || currentTarget == null) return;
 
         Vector3 spawnPosition = firePoint.position;
-        Vector2 direction = playerTransform.position - spawnPosition;
+        Vector2 direction = (Vector2)currentTarget.position - (Vector2)spawnPosition;
         GameObject projectileGO = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
-        Projectile projectileScript = projectileGO.GetComponent<Projectile>();
 
-        if (projectileScript != null)
-        {
-            // CHAMADA ATUALIZADA: Passa a direção E o dano do inimigo.
-            projectileScript.Launch(direction, this.damage);
-        }
+        // Assumindo que você tem um script 'Projectile.cs'
+        // Projectile projectileScript = projectileGO.GetComponent<Projectile>();
+        // if (projectileScript != null) { projectileScript.Launch(direction, this.damage); }
+
+        Debug.Log(gameObject.name + " atirou em " + currentTarget.name);
     }
 
-    // Desenha o range de ataque no editor para facilitar o debug
+    // Gizmo para visualizar o alcance de ataque específico deste inimigo
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

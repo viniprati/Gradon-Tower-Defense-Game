@@ -33,7 +33,7 @@ public class SamuraiTower : TowerWithBuffs
         foreach (var col in colliders)
         {
             // Pega o script base do inimigo para aplicar o dano
-            EnemyBase enemy = col.GetComponent<EnemyBase>();
+            EnemyController enemy = col.GetComponent<EnemyController>();
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);

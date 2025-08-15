@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4490854171793042209}
   - component: {fileID: -2628615904987776795}
   m_Layer: 0
-  m_Name: Totem_0
+  m_Name: Totem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

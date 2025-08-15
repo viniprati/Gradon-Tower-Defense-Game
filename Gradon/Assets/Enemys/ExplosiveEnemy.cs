@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GhoulController : EnemyBase // Herda da classe base
+public class GhoulController : EnemyController // Herda da classe base
 {
     [Header("Atributos de Ataque do Ghoul")]
     [SerializeField] private float attackRange = 1.5f;

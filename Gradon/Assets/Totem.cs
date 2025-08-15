@@ -1,62 +1,125 @@
+// Totem.cs
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic; // Para a lista de torres
 
-public class TotemHealth : MonoBehaviour
+public class Totem : MonoBehaviour, IDamageable
 {
-    [Header("Configurações da Base")]
-    [Tooltip("A vida máxima do totem.")]
+    // --- Singleton para acesso global ---
+    public static Totem instance;
+
+    [Header("Atributos da Base")]
     [SerializeField] private float maxHealth = 1000f;
 
-    [Tooltip("Referência opcional para uma barra de vida na UI.")]
+    [Header("Recursos do Jogador")]
+    [SerializeField] private float maxMana = 100f;
+    public float currentMana { get; private set; }
+
+    [Header("Referências de Construção")]
+    [Tooltip("Arraste os PREFABS de todas as torres que o jogador pode construir.")]
+    public List<GameObject> availableTowers;
+
+    [Header("Referências da UI")]
     [SerializeField] private Slider healthBar;
+    [SerializeField] private Slider manaBar;
 
-    public float CurrentHealth { get; private set; }
-
+    // --- Variáveis Internas ---
+    public float currentHealth { get; private set; }
     private bool isDestroyed = false;
+
+    #region Ciclo de Vida Unity
+
+    void Awake()
+    {
+        // Configuração do Singleton
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
-        CurrentHealth = maxHealth;
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+
+        // Inicializa as barras de UI
         UpdateHealthBar();
+        UpdateManaBar();
     }
 
+    #endregion
+
+    #region Lógica de Vida e Morte
+
+    // Método da interface IDamageable, chamado pelos inimigos.
     public void TakeDamage(float damage)
     {
         if (isDestroyed) return;
 
-        CurrentHealth -= damage;
-
-        if (CurrentHealth < 0)
-        {
-            CurrentHealth = 0;
-        }
-
+        currentHealth -= damage;
         UpdateHealthBar();
-        Debug.Log($"Base sofreu {damage} de dano! Vida restante: {CurrentHealth}");
 
-        if (CurrentHealth <= 0)
+        if (currentHealth <= 0)
         {
+            currentHealth = 0;
             Die();
         }
     }
+
+    private void Die()
+    {
+        if (isDestroyed) return;
+        isDestroyed = true;
+
+        Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
+
+        // Adicione aqui a lógica de fim de jogo (chamar uma tela de derrota, etc.)
+
+        gameObject.SetActive(false);
+    }
+
+    #endregion
+
+    #region Lógica de Mana
+
+    public void AddMana(float amount)
+    {
+        currentMana = Mathf.Min(currentMana + amount, maxMana);
+        UpdateManaBar();
+    }
+
+    public void SpendMana(float amount)
+    {
+        currentMana = Mathf.Max(currentMana - amount, 0);
+        UpdateManaBar();
+    }
+
+    #endregion
+
+    #region Lógica de UI
 
     private void UpdateHealthBar()
     {
         if (healthBar != null)
         {
             healthBar.maxValue = maxHealth;
-            healthBar.value = CurrentHealth;
+            healthBar.value = currentHealth;
         }
     }
 
-    // --- MÉTODO Die ---
-    private void Die()
+    private void UpdateManaBar()
     {
-        isDestroyed = true;
-
-        Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
-
-
-        gameObject.SetActive(false);
+        if (manaBar != null)
+        {
+            manaBar.maxValue = maxMana;
+            manaBar.value = currentMana;
+        }
     }
+
+    #endregion
 }
