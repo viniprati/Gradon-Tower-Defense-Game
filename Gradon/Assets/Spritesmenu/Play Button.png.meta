@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6701402eb13bb2e48a06e897321d1099
+guid: e0a0b98bf0864cc45ac2ba5bee3d6de7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5107331083323868225
-    second: imagem (4)_0
+      213: 6055045571043105099
+    second: Play Button_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -48,10 +48,10 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: imagem (4)_0
+      name: Play Button_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14484db7f82e0e640800000000000000
-      internalID: 5107331083323868225
+      spriteID: b4993d8add7d70450800000000000000
+      internalID: 6055045571043105099
       vertices: []
       indices: 
       edges: []
@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Play Button_0: 6055045571043105099
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
