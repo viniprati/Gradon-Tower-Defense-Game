@@ -1,66 +1,92 @@
 // Projectile.cs
+
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public class Projectile : MonoBehaviour
 {
-    [Header("Configurações do Projétil")]
+    [Header("Configuraï¿½ï¿½es do Projï¿½til")]
+    [Tooltip("A velocidade com que o projï¿½til se move.")]
     [SerializeField] private float speed = 20f;
-    // [SerializeField] private float damage = 10f; // REMOVA OU COMENTE ESTA LINHA
+    [Tooltip("Tempo em segundos antes que o projï¿½til se destrua, caso nï¿½o acerte nada.")]
     [SerializeField] private float lifetime = 3f;
 
-    [Header("Identificação do Alvo")]
-    [SerializeField] private string targetTag;
-
     [Header("Efeitos")]
+    [Tooltip("Prefab do efeito a ser criado no momento do impacto (opcional).")]
     [SerializeField] private GameObject hitEffectPrefab;
 
-    // --- Variáveis Internas ---
+    // --- Variï¿½veis Internas ---
     private Rigidbody2D rb;
-    private float currentDamage; // NOVA VARIÁVEL: Armazena o dano para este projétil específico
+    private Transform target;      // O alvo que o projï¿½til deve perseguir
+    private int currentDamage;     // O dano que este projï¿½til especï¿½fico irï¿½ causar
 
     void Awake()
     {
+        // Pega a referï¿½ncia do componente de fï¿½sica do projï¿½til
         rb = GetComponent<Rigidbody2D>();
+        // Garante que o colisor do projï¿½til estï¿½ configurado como 'Trigger'
         GetComponent<Collider2D>().isTrigger = true;
     }
 
     void Start()
     {
+        // Agenda a destruiï¿½ï¿½o do projï¿½til apï¿½s 'lifetime' segundos
         Destroy(gameObject, lifetime);
     }
 
-    // MÉTODO 'LAUNCH' MODIFICADO
-    // Agora ele aceita a direção e o valor do dano
-    public void Launch(Vector2 direction, float damageFromAttacker)
+    /// <summary>
+    /// Mï¿½todo pï¿½blico que a torre chama para configurar o projï¿½til com suas "ordens".
+    /// </summary>
+    /// <param name="_target">O Transform do inimigo que deve ser perseguido.</param>
+    /// <param name="damageFromAttacker">A quantidade de dano a ser aplicada no impacto.</param>
+    public void Seek(Transform _target, int damageFromAttacker)
     {
-        // 1. Armazena o dano recebido do atirador
+        this.target = _target;
         this.currentDamage = damageFromAttacker;
-
-        // 2. Define a velocidade na direção fornecida
-        rb.linearVelocity = direction.normalized * speed;
-
-        // 3. Gira o projétil
-        transform.right = direction.normalized;
     }
 
+    // FixedUpdate ï¿½ chamado em um intervalo de tempo fixo, ideal para fï¿½sica.
+    void FixedUpdate()
+    {
+        // Se o alvo for destruï¿½do no meio do caminho, o projï¿½til se autodestrï¿½i.
+        if (target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // --- Lï¿½gica de Perseguiï¿½ï¿½o (Homing) ---
+        // 1. Calcula a direï¿½ï¿½o do projï¿½til atï¿½ a posiï¿½ï¿½o atual do alvo
+        Vector2 direction = (target.position - transform.position).normalized;
+        // 2. Aplica a velocidade ao Rigidbody nessa direï¿½ï¿½o
+        rb.linearVelocity = direction * speed;
+        // 3. (Opcional) Rotaciona o sprite do projï¿½til para "olhar" na direï¿½ï¿½o do movimento
+        transform.up = direction;
+    }
+
+    // Chamado quando este colisor (marcado como 'Is Trigger') entra em contato com outro.
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(targetTag))
+        // Verifica se o objeto com o qual colidimos ï¿½ de fato o nosso alvo.
+        if (other.transform == target)
         {
-            IDamageable damageableObject = other.GetComponent<IDamageable>();
-            if (damageableObject != null)
+            // Tenta pegar um script no alvo que possa receber dano.
+            // (Certifique-se que seu inimigo tenha um script com este mï¿½todo!)
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null)
             {
-                // USA A NOVA VARIÁVEL 'currentDamage'
-                damageableObject.TakeDamage(currentDamage);
-
-                if (hitEffectPrefab != null)
-                {
-                    Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
-                }
-                Destroy(gameObject);
+                enemy.TakeDamage(currentDamage);
             }
+
+            // Cria um efeito de impacto visual, se um prefab foi configurado.
+            if (hitEffectPrefab != null)
+            {
+                Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+            }
+
+            // Destrï¿½i o projï¿½til apï¿½s o impacto.
+            Destroy(gameObject);
         }
     }
 }
