@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-public class DragaoAtirador : MonoBehaviour
+public class DragonT : TowerCardUI
 {
     [Header("Atributos de Ataque")]
     [Tooltip("Dano que cada projétil causa.")]
