@@ -1,4 +1,4 @@
-// Projectile.cs
+// Projectile.cs (Modificado para Tiro Reto / Não-Teleguiado)
 
 using UnityEngine;
 
@@ -6,73 +6,74 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class Projectile : MonoBehaviour
 {
-    [Header("Configura��es do Proj�til")]
-    [Tooltip("A velocidade com que o proj�til se move.")]
+    [Header("Configurações do Projétil")]
+    [Tooltip("A velocidade com que o projétil se move.")]
     [SerializeField] private float speed = 20f;
-    [Tooltip("Tempo em segundos antes que o proj�til se destrua, caso n�o acerte nada.")]
+    [Tooltip("Tempo em segundos antes que o projétil se destrua, caso não acerte nada.")]
     [SerializeField] private float lifetime = 3f;
 
     [Header("Efeitos")]
     [Tooltip("Prefab do efeito a ser criado no momento do impacto (opcional).")]
     [SerializeField] private GameObject hitEffectPrefab;
 
-    // --- Vari�veis Internas ---
+    // --- MUDANÇA #1: Variável de tag para colisão ---
+    // Adicionamos uma tag para tornar a colisão mais flexível.
+    [Header("Identificação do Alvo")]
+    [SerializeField] private string enemyTag = "Enemy";
+
+    // --- Variáveis Internas ---
     private Rigidbody2D rb;
-    private Transform target;      // O alvo que o proj�til deve perseguir
-    private int currentDamage;     // O dano que este proj�til espec�fico ir� causar
+    private int currentDamage;
 
     void Awake()
     {
-        // Pega a refer�ncia do componente de f�sica do proj�til
         rb = GetComponent<Rigidbody2D>();
-        // Garante que o colisor do proj�til est� configurado como 'Trigger'
         GetComponent<Collider2D>().isTrigger = true;
     }
 
     void Start()
     {
-        // Agenda a destrui��o do proj�til ap�s 'lifetime' segundos
+        // Agenda a destruição do projétil após 'lifetime' segundos
         Destroy(gameObject, lifetime);
     }
 
     /// <summary>
-    /// M�todo p�blico que a torre chama para configurar o proj�til com suas "ordens".
+    /// Método público que a torre chama para configurar e DISPARAR o projétil.
     /// </summary>
-    /// <param name="_target">O Transform do inimigo que deve ser perseguido.</param>
-    /// <param name="damageFromAttacker">A quantidade de dano a ser aplicada no impacto.</param>
     public void Seek(Transform _target, int damageFromAttacker)
     {
-        this.target = _target;
+        // --- MUDANÇA #2: LÓGICA DE DISPARO MOVIDA PARA CÁ ---
+
+        // 1. Armazena o dano que o projétil causará.
         this.currentDamage = damageFromAttacker;
-    }
 
-    // FixedUpdate � chamado em um intervalo de tempo fixo, ideal para f�sica.
-    void FixedUpdate()
-    {
-        // Se o alvo for destru�do no meio do caminho, o proj�til se autodestr�i.
-        if (target == null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        // 2. Calcula a direção para o alvo UMA ÚNICA VEZ.
+        Vector2 direction = (_target.position - transform.position).normalized;
 
-        // --- L�gica de Persegui��o (Homing) ---
-        // 1. Calcula a dire��o do proj�til at� a posi��o atual do alvo
-        Vector2 direction = (target.position - transform.position).normalized;
-        // 2. Aplica a velocidade ao Rigidbody nessa dire��o
+        // 3. Define a velocidade do Rigidbody nessa direção fixa.
+        // A partir daqui, o motor de física da Unity cuidará do movimento.
         rb.linearVelocity = direction * speed;
-        // 3. (Opcional) Rotaciona o sprite do proj�til para "olhar" na dire��o do movimento
+
+        // 4. (Opcional) Rotaciona o projétil para "olhar" na direção do disparo.
         transform.up = direction;
     }
 
-    // Chamado quando este colisor (marcado como 'Is Trigger') entra em contato com outro.
+    // --- MUDANÇA #3: REMOÇÃO DA LÓGICA DE PERSEGUIÇÃO ---
+    // O método FixedUpdate() foi completamente removido, pois não precisamos mais
+    // recalcular a direção do projétil a cada frame.
+
+    /// <summary>
+    /// Chamado quando o colisor do projétil entra em contato com outro.
+    /// </summary>
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Verifica se o objeto com o qual colidimos � de fato o nosso alvo.
-        if (other.transform == target)
+        // --- MUDANÇA #4: DETECÇÃO DE COLISÃO MELHORADA ---
+        // Em vez de checar por um alvo específico, agora checamos se o objeto
+        // atingido tem a tag de inimigo. Isso permite que o tiro acerte
+        // qualquer inimigo que entrar no seu caminho.
+        if (other.CompareTag(enemyTag))
         {
-            // Tenta pegar um script no alvo que possa receber dano.
-            // (Certifique-se que seu inimigo tenha um script com este m�todo!)
+            // Tenta pegar o script do inimigo para aplicar dano.
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
             {
@@ -85,7 +86,7 @@ public class Projectile : MonoBehaviour
                 Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
             }
 
-            // Destr�i o proj�til ap�s o impacto.
+            // Destrói o projétil após o impacto.
             Destroy(gameObject);
         }
     }

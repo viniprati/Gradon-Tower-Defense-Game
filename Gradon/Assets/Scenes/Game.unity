@@ -119,37 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &88192914
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 88192916}
-  m_Layer: 0
-  m_Name: EnemySpawner_3
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &88192916
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 88192914}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.66, y: 8.14, z: 146.25061}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 853323025}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &202541262
 GameObject:
   m_ObjectHideFlags: 0
@@ -5553,37 +5522,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 407762491}
   m_CullTransparentMesh: 1
---- !u!1 &428567261
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 428567263}
-  m_Layer: 0
-  m_Name: EnemySpawner_6
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &428567263
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 428567261}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.58, y: 9.3, z: 146.25061}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 853323025}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &446783846
 GameObject:
   m_ObjectHideFlags: 0
@@ -6155,6 +6093,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabDaTorre: {fileID: 1352232675757444498, guid: 6bf1e8fb95cd8944aaec4ddd546e701b, type: 3}
+  totemTransform: {fileID: 0}
+  zonaProibidaRaio: 3
   corValida: {r: 0, g: 1, b: 0, a: 0.5}
   corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
 --- !u!1 &853323024
@@ -6189,11 +6129,7 @@ Transform:
   m_Children:
   - {fileID: 1860809006}
   - {fileID: 1205794919}
-  - {fileID: 88192916}
-  - {fileID: 1360749573}
   - {fileID: 202541264}
-  - {fileID: 428567263}
-  - {fileID: 1601273831}
   - {fileID: 622795112}
   - {fileID: 256882322}
   m_Father: {fileID: 0}
@@ -6223,11 +6159,7 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 1860809006}
   - {fileID: 1205794919}
-  - {fileID: 88192916}
-  - {fileID: 1360749573}
   - {fileID: 202541264}
-  - {fileID: 428567263}
-  - {fileID: 1601273831}
   - {fileID: 622795112}
   - {fileID: 256882322}
   initialSpawnInterval: 2.5
@@ -7266,37 +7198,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1302972384}
   m_CullTransparentMesh: 1
---- !u!1 &1360749571
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1360749573}
-  m_Layer: 0
-  m_Name: EnemySpawner_4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1360749573
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360749571}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.43, y: 8.75, z: 146.25061}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 853323025}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1472109162
 GameObject:
   m_ObjectHideFlags: 0
@@ -7523,39 +7424,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabDaTorre: {fileID: 5794353119682970950, guid: 3eda036f2f3c4d147b91bcd4be9a039f, type: 3}
+  totemTransform: {fileID: 1642438061}
+  zonaProibidaRaio: 3
   corValida: {r: 0, g: 1, b: 0, a: 0.5}
   corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
---- !u!1 &1601273829
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1601273831}
-  m_Layer: 0
-  m_Name: EnemySpawner_7
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1601273831
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1601273829}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.26, y: 1.35, z: 146.25061}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 853323025}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1613327664
 GameObject:
   m_ObjectHideFlags: 0
@@ -7710,6 +7582,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1641787694}
   m_CullTransparentMesh: 1
+--- !u!4 &1642438061 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5015497741115453697, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
+  m_PrefabInstance: {fileID: 1991000057}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1660971979
 GameObject:
   m_ObjectHideFlags: 0
@@ -8013,7 +7890,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1860809006}
-  - component: {fileID: 1860809007}
   m_Layer: 0
   m_Name: EnemySpawner_1
   m_TagString: Untagged
@@ -8036,35 +7912,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 853323025}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1860809007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1860809004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyProgression: []
-  spawnPoints:
-  - {fileID: 1860809006}
-  - {fileID: 1205794919}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  initialSpawnInterval: 2.5
-  minSpawnInterval: 0.4
-  timeToIncreaseDifficulty: 15
-  intervalReduction: 0.1
-  timeToIncreaseBurstCount: 45
-  maxEnemiesInBurst: 4
 --- !u!1 &1886071143
 GameObject:
   m_ObjectHideFlags: 0
@@ -8215,20 +8062,11 @@ MonoBehaviour:
     enemyPrefab: {fileID: 4536836196174038044, guid: 8c5542a994ccfe94d867f3031ee01dc9, type: 3}
     timeToStartSpawning: 25
   spawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 1360749573}
+  - {fileID: 1860809006}
+  - {fileID: 1205794919}
   - {fileID: 202541264}
-  - {fileID: 428567263}
-  - {fileID: 1601273831}
   - {fileID: 622795112}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 256882322}
   initialSpawnInterval: 2.5
   minSpawnInterval: 0.4
   timeToIncreaseDifficulty: 10
@@ -8324,6 +8162,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabDaTorre: {fileID: 854159167483999540, guid: 56be550a1a674424787f7cdd60964c82, type: 3}
+  totemTransform: {fileID: 0}
+  zonaProibidaRaio: 3
   corValida: {r: 0, g: 1, b: 0, a: 0.5}
   corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
 --- !u!1001 &1991000057

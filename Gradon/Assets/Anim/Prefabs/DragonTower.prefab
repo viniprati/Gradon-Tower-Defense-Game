@@ -157,16 +157,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79fa946a69a1acb4f9144e6a706956e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 5
-  attackRate: 1
-  cost: 100
-  towerIcon: {fileID: -1886673211, guid: c00ccb1f4c8319345bd6ec8ec4f9c5cd, type: 3}
-  partToRotate: {fileID: 6681964514558788178}
-  rangeIndicator: {fileID: 5835657509532804546}
-  rangeIndicatorOpacity: 0.02
   damage: 20
+  attackRate: 1
+  attackRange: 5
   projectilePrefab: {fileID: 35575416600363125, guid: 0e1d3fcc1f983bd4dbf94a1f5770a2fe, type: 3}
   firePoint: {fileID: 2909323965156911943}
+  enemyTag: Enemy
 --- !u!58 &4906639104749834356
 CircleCollider2D:
   m_ObjectHideFlags: 0

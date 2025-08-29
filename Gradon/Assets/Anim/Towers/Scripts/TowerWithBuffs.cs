@@ -116,7 +116,7 @@ public abstract class TowerWithBuffs : TowerBase // Supondo que TowerBase é sua 
         currentBuffCoroutine = null;
     }
 
-    private void RemoveBuff()
+    public virtual void RemoveBuff()
     {
         // Restaura para os status BASE do nível atual
         attackRate = baseAttackRate;

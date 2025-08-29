@@ -1,8 +1,11 @@
-// ArcadeEnemySpawner.cs
+//EnemySpawner.cs
+
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+// Este script vai funcionar perfeitamente, pois ele usará a definição de 'EnemyProgression'
+// que está no seu outro arquivo, 'EnemyProgression.cs'.
 public class ArcadeEnemySpawner : MonoBehaviour
 {
     [Header("Progressão de Inimigos")]
@@ -26,23 +29,13 @@ public class ArcadeEnemySpawner : MonoBehaviour
     private int enemiesPerBurst = 1;
     private List<GameObject> availableEnemies = new List<GameObject>();
 
-    // Awake é chamado antes de Start, ideal para configurar referências.
     void Awake()
     {
-        // --- LÓGICA DE PREENCHIMENTO AUTOMÁTICO ---
-
-        // Se a lista de spawnPoints não foi preenchida manualmente no Inspector...
         if (spawnPoints == null || spawnPoints.Count == 0)
         {
-            Debug.Log("A lista 'Spawn Points' está vazia. Preenchendo automaticamente com os objetos filhos.");
-
-            // Inicializa a lista para evitar erros.
             spawnPoints = new List<Transform>();
-
-            // Itera sobre cada 'Transform' que é filho direto deste objeto.
             foreach (Transform child in transform)
             {
-                // Adiciona o filho à lista.
                 spawnPoints.Add(child);
             }
         }
@@ -50,10 +43,9 @@ public class ArcadeEnemySpawner : MonoBehaviour
 
     void Start()
     {
-        // A validação agora acontece depois da tentativa de preenchimento automático.
         if (spawnPoints.Count == 0)
         {
-            Debug.LogError("Nenhum ponto de spawn foi encontrado (nem no Inspector, nem como filho)! Desativando o spawner.");
+            Debug.LogError("ERRO: Nenhum ponto de spawn foi configurado para o '" + gameObject.name + "'. Desativando o spawner.", this.gameObject);
             this.enabled = false;
             return;
         }
@@ -75,7 +67,6 @@ public class ArcadeEnemySpawner : MonoBehaviour
         {
             if (progressionEntry.enemyPrefab != null && gameTime >= progressionEntry.timeToStartSpawning && !availableEnemies.Contains(progressionEntry.enemyPrefab))
             {
-                Debug.Log($"<color=cyan>NOVO INIMIGO DESBLOQUEADO: {progressionEntry.enemyPrefab.name}!</color>");
                 availableEnemies.Add(progressionEntry.enemyPrefab);
             }
         }
@@ -114,14 +105,4 @@ public class ArcadeEnemySpawner : MonoBehaviour
         Instantiate(enemyToSpawn, spawnPoint.position, spawnPoint.rotation);
     }
 }
-
-// Lembre-se de que a classe EnemyProgression precisa estar definida
-// ou neste arquivo (após o final da classe ArcadeEnemySpawner) ou em seu próprio arquivo.
-/*
-[System.Serializable]
-public class EnemyProgression
-{
-    public GameObject enemyPrefab;
-    public float timeToStartSpawning;
-}
-*/
+// NÃO HÁ NADA AQUI EMBAIXO! A definição duplicada foi removida.

@@ -1,15 +1,20 @@
 // TowerBase.cs
 using UnityEngine;
 
-// A palavra-chave 'abstract' significa que este script serve como uma base
-// para outros scripts de torre (como SamuraiT, DragonT), mas não pode ser usado sozinho.
 public abstract class TowerBase : MonoBehaviour
 {
     [Header("Atributos Gerais da Torre")]
     [SerializeField] protected float attackRange = 5f;
-    [SerializeField] protected float attackRate = 1f; // Ataques por segundo
+    [SerializeField] protected float attackRate = 1f;
     [SerializeField] public int cost = 50;
     [SerializeField] public Sprite towerIcon;
+
+    // --- MUDANÇA #1: ADICIONADO CAMPO PARA A TAG DO INIMIGO ---
+    // Adicionamos esta variável para que CADA torre possa saber qual tag procurar.
+    // Isso centraliza a lógica e nos permite corrigir o erro diretamente no Inspector.
+    [Header("Configuração de Alvo")]
+    [Tooltip("A tag que esta torre irá procurar para atacar.")]
+    [SerializeField] protected string enemyTag = "Enemy";
 
     [Header("Referências (Setup no Prefab)")]
     [Tooltip("A parte da torre que deve girar para encarar o inimigo.")]
@@ -25,15 +30,10 @@ public abstract class TowerBase : MonoBehaviour
     // --- Variáveis Internas ---
     protected Transform currentTarget;
     protected float attackCooldown = 0f;
-    private static readonly int EnemyLayer = 1 << 6; // Assume que a layer "Enemy" é a 6ª. Ajuste se necessário.
+    protected float originalAttackRate;
 
-    // --- Variáveis para o Sistema de Buffs ---
-    protected float originalAttackRate; // Guarda a cadência de tiro original da torre
-
-    // O método 'virtual' permite que classes filhas (como SamuraiT) possam adicionar mais lógica ao Start se precisarem.
     protected virtual void Start()
     {
-        // Garante que o indicador de alcance esteja configurado corretamente
         if (rangeIndicator != null)
         {
             rangeIndicator.gameObject.SetActive(true);
@@ -44,24 +44,19 @@ public abstract class TowerBase : MonoBehaviour
         }
 
         attackCooldown = 0f;
-
-        // Guarda a cadência de tiro original no início, antes de qualquer buff ser aplicado.
         originalAttackRate = attackRate;
     }
 
     protected virtual void Update()
     {
-        // Se o alvo foi destruído ou saiu do alcance, procura por um novo.
         if (currentTarget == null || Vector3.Distance(transform.position, currentTarget.position) > attackRange)
         {
             FindTarget();
         }
 
-        // Se, após a busca, um alvo foi encontrado...
         if (currentTarget != null)
         {
             HandleRotation();
-
             attackCooldown -= Time.deltaTime;
             if (attackCooldown <= 0f)
             {
@@ -71,19 +66,26 @@ public abstract class TowerBase : MonoBehaviour
         }
     }
 
+    // --- MUDANÇA #2: LÓGICA DE BUSCA ALTERADA PARA USAR TAGS ---
+    // Este método agora usa GameObject.FindGameObjectsWithTag, que é a fonte do seu erro.
+    // Ao centralizar a lógica aqui, garantimos que todas as torres usem o valor correto do Inspector.
     private void FindTarget()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange, EnemyLayer);
+        // Esta linha vai nos ajudar a depurar, mostrando qual torre está procurando qual tag.
+        // Debug.Log(gameObject.name + " está procurando pela tag: '" + enemyTag + "'");
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
         float closestDistance = Mathf.Infinity;
         Transform newTarget = null;
 
-        foreach (Collider2D collider in colliders)
+        foreach (GameObject enemy in enemies)
         {
-            float distance = Vector2.Distance(transform.position, collider.transform.position);
-            if (distance < closestDistance)
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            // Verifica se o inimigo está dentro do alcance E se é o mais próximo até agora.
+            if (distance < closestDistance && distance <= attackRange)
             {
                 closestDistance = distance;
-                newTarget = collider.transform;
+                newTarget = enemy.transform;
             }
         }
         currentTarget = newTarget;
@@ -91,31 +93,26 @@ public abstract class TowerBase : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (partToRotate == null) return;
+        if (partToRotate == null || currentTarget == null) return;
 
         Vector2 direction = currentTarget.position - partToRotate.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         partToRotate.rotation = Quaternion.Euler(0, 0, angle);
     }
 
-    // Este método é 'abstract', o que FORÇA as classes filhas (SamuraiT, DragonT) a criarem sua própria versão de "Attack".
     protected abstract void Attack();
 
-    // --- MÉTODOS PÚBLICOS PARA O SISTEMA DE BUFFS ---
-    // A torre KirinT irá chamar estas funções.
+    // --- MÉTODOS PARA O SISTEMA DE BUFFS ---
 
     public virtual void ApplyBuff(float rateMultiplier)
     {
-        // Multiplica a cadência de tiro ORIGINAL pelo multiplicador do buff.
         attackRate = originalAttackRate * rateMultiplier;
-        Debug.Log(gameObject.name + " recebeu buff! Nova cadência: " + attackRate);
     }
 
+    // O método foi tornado 'virtual' para permitir que classes filhas o substituam com 'override'.
     public virtual void RemoveBuff()
     {
-        // Restaura a cadência de tiro para o valor original que guardamos no Start.
         attackRate = originalAttackRate;
-        Debug.Log(gameObject.name + " perdeu o buff.");
     }
 
     protected virtual void OnDrawGizmosSelected()

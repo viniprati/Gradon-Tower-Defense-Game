@@ -18,7 +18,7 @@ public class DragaoAtirador : MonoBehaviour
     [Tooltip("Ponto exato de onde o projétil será disparado (ex: a boca do dragão).")]
     [SerializeField] private Transform firePoint;
     [Tooltip("A tag usada para identificar os inimigos na cena.")]
-    [SerializeField] private string enemyTag = "Inimigo";
+    [SerializeField] private string enemyTag = "Enemy";
 
     // --- Variáveis de Controle Interno ---
     private Transform currentTarget;     // O inimigo que está sendo focado atualmente

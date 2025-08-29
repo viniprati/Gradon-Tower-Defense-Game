@@ -1,7 +1,7 @@
 // Totem.cs
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic; // Para a lista de torres
+using System.Collections.Generic;
 
 public class Totem : MonoBehaviour, IDamageable
 {
@@ -10,6 +10,14 @@ public class Totem : MonoBehaviour, IDamageable
 
     [Header("Atributos da Base")]
     [SerializeField] private float maxHealth = 1000f;
+
+    // --- CORREÇÃO AQUI ---
+    // Adicionamos a variável pública para o raio da zona proibida.
+    // 'public' é a palavra-chave que permite que outros scripts (como o ArrastavelUI)
+    // leiam o valor desta variável.
+    [Header("Configuração da Zona de Construção")]
+    [Tooltip("O raio ao redor do Totem onde NÃO é permitido construir.")]
+    public float zonaProibidaRaio = 3f;
 
     [Header("Recursos do Jogador")]
     [SerializeField] private float maxMana = 100f;
@@ -31,7 +39,6 @@ public class Totem : MonoBehaviour, IDamageable
 
     void Awake()
     {
-        // Configuração do Singleton
         if (instance == null)
         {
             instance = this;
@@ -46,8 +53,6 @@ public class Totem : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
         currentMana = maxMana;
-
-        // Inicializa as barras de UI
         UpdateHealthBar();
         UpdateManaBar();
     }
@@ -56,14 +61,11 @@ public class Totem : MonoBehaviour, IDamageable
 
     #region Lógica de Vida e Morte
 
-    // Método da interface IDamageable, chamado pelos inimigos.
     public void TakeDamage(float damage)
     {
         if (isDestroyed) return;
-
         currentHealth -= damage;
         UpdateHealthBar();
-
         if (currentHealth <= 0)
         {
             currentHealth = 0;
@@ -75,11 +77,7 @@ public class Totem : MonoBehaviour, IDamageable
     {
         if (isDestroyed) return;
         isDestroyed = true;
-
         Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
-
-        // Adicione aqui a lógica de fim de jogo (chamar uma tela de derrota, etc.)
-
         gameObject.SetActive(false);
     }
 
@@ -119,6 +117,19 @@ public class Totem : MonoBehaviour, IDamageable
             manaBar.maxValue = maxMana;
             manaBar.value = currentMana;
         }
+    }
+
+    #endregion
+
+    #region Editor Visuals
+
+    /// <summary>
+    /// Desenha o círculo da zona proibida no editor da Unity.
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1, 0.2f, 0, 0.25f);
+        Gizmos.DrawWireSphere(transform.position, zonaProibidaRaio);
     }
 
     #endregion

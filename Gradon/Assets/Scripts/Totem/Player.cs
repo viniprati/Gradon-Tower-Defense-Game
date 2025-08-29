@@ -273,7 +273,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             // Opcional, mas recomendado: Destruir o inimigo que tocou o jogador
             // para que ele não continue causando dano a cada frame.
             // Isso assume que o inimigo tem um método Die() ou pode ser destruído.
-            EnemyController enemy = other.GetComponent<EnemyController>();
+            Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && !enemy.IsDead()) // Adicione um método IsDead() ao seu EnemyBase
             {
                 enemy.TakeDamage(9999); // Ou chame enemy.Die() diretamente

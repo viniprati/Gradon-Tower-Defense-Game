@@ -1,14 +1,17 @@
-// EnemyController.cs (Sua classe base, agora completa e corrigida)
+// Enemy.cs 
+
 using UnityEngine;
 using UnityEngine.UI;
 
+// --- MUDANÇA 1: O nome da classe agora é 'Enemy' para corresponder ao nome do arquivo
+// e ao que o projétil está procurando.
 [RequireComponent(typeof(Rigidbody2D))]
-public abstract class EnemyController : MonoBehaviour, IDamageable
+public abstract class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Atributos Base")]
-    [SerializeField] protected float maxHealth = 100f;
+    [SerializeField] protected int maxHealth = 100; // Ajustado para int
     [SerializeField] protected float speed = 2f;
-    [SerializeField] protected int scoreValue = 10; // Renomeado para manaValue seria mais claro
+    [SerializeField] protected int scoreValue = 10;
 
     [Header("Referências")]
     [SerializeField] protected Image healthBarFill;
@@ -17,7 +20,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     // --- Variáveis Internas ---
     protected Rigidbody2D rb;
-    protected float currentHealth;
+    protected int currentHealth; // Ajustado para int
     protected bool isDead = false;
     protected Vector2 moveDirection;
     private bool isFacingRight = true;
@@ -32,16 +35,13 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
 
-        // --- LÓGICA DE BUSCA DE ALVO MODIFICADA ---
-        // Primeiro, tenta encontrar o alvo usando o Singleton do Totem, que é mais rápido.
+        // A lógica de busca de alvo permanece a mesma
         if (Totem.instance != null)
         {
             currentTarget = Totem.instance.transform;
         }
         else
         {
-            // Se o Singleton falhar (por exemplo, se o Totem ainda não executou o Awake),
-            // tenta uma busca mais lenta na cena como um plano B.
             Totem totem = FindFirstObjectByType<Totem>();
             if (totem != null)
             {
@@ -49,7 +49,6 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
             }
             else
             {
-                // Se ambas as buscas falharem, aí sim mostra o erro.
                 Debug.LogError("Nenhuma base (Totem) encontrada na cena! Inimigos não têm um alvo.", this);
             }
         }
@@ -66,7 +65,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
     {
         if (isDead || currentTarget == null)
         {
-            if (rb != null) rb.linearVelocity = Vector2.zero; // Corrigido para 'velocity'
+            if (rb != null) rb.linearVelocity = Vector2.zero;
             return;
         }
 
@@ -78,7 +77,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
     {
         if (isDead || currentTarget == null)
         {
-            rb.linearVelocity = Vector2.zero; // Corrigido para 'velocity'
+            rb.linearVelocity = Vector2.zero;
             return;
         }
 
@@ -86,7 +85,6 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         Vector2 separationVector = avoidStacking ? CalculateSeparationVector() : Vector2.zero;
         Vector2 finalVelocity = (movementVector + (separationVector * separationForce)).normalized * speed;
 
-        // CORREÇÃO: A propriedade correta é 'velocity'.
         rb.linearVelocity = finalVelocity;
     }
 
@@ -128,7 +126,9 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         transform.localScale = newScale;
     }
 
-    public void TakeDamage(float damage)
+    // --- MUDANÇA 2: O método agora aceita um 'int' para o dano,
+    // que é o tipo de dado que o projétil envia por padrão.
+    public void TakeDamage(int damage)
     {
         if (isDead) return;
         currentHealth -= damage;
@@ -136,11 +136,19 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         if (currentHealth <= 0) Die();
     }
 
+    // Implementação da interface IDamageable que seu código antigo usava.
+    // Ele simplesmente chama o método principal.
+    public void TakeDamage(float damage)
+    {
+        TakeDamage(Mathf.RoundToInt(damage));
+    }
+
     protected void UpdateHealthBar()
     {
         if (healthBarFill != null)
         {
-            healthBarFill.fillAmount = currentHealth / maxHealth;
+            // Precisamos converter para float para a divisão funcionar corretamente
+            healthBarFill.fillAmount = (float)currentHealth / maxHealth;
         }
     }
 
@@ -150,7 +158,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         isDead = true;
 
         GetComponent<Collider2D>().enabled = false;
-        rb.linearVelocity = Vector2.zero; // Corrigido para 'velocity'
+        rb.linearVelocity = Vector2.zero;
 
         if (Totem.instance != null)
         {

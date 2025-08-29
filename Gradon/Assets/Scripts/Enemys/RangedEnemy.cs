@@ -1,7 +1,7 @@
 // RangedEnemy.cs
 using UnityEngine;
 
-public class RangedEnemy : EnemyController // Garante que herda da classe base correta
+public class RangedEnemy : Enemy // Garante que herda da classe base correta
 {
     [Header("Atributos do Inimigo a Distância")]
     [Tooltip("O alcance no qual este inimigo para de se mover e começa a atirar.")]

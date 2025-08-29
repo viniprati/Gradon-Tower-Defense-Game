@@ -1,7 +1,7 @@
 // NormalEnemy.cs
 using UnityEngine;
 
-public class NormalEnemy : EnemyController // Garante que está herdando da classe base correta
+public class NormalEnemy : Enemy // Garante que está herdando da classe base correta
 {
     // A única coisa que ele precisa fazer é definir como se mover.
     protected override Vector2 HandleMovement()
