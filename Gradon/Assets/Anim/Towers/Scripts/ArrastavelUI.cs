@@ -1,4 +1,4 @@
-// ArrastavelUI.cs (Atualizado com Lógica de Custo de Mana)
+// ArrastavelUI.cs (Atualizado com Lógica de Custo de Mana e Melhor Mensagem de Erro)
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,9 +20,9 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     private GameObject objetoFantasma;
     private SpriteRenderer fantasmaSpriteRenderer;
     private bool posicaoValida = false;
-    private bool temManaSuficiente = false; // <-- NOVA VARIÁVEL
+    private bool temManaSuficiente = false;
     private Camera mainCamera;
-    private TowerBase infoDaTorre; // <-- NOVA VARIÁVEL para guardar o custo
+    private TowerBase infoDaTorre;
 
     void Start()
     {
@@ -34,15 +34,17 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     {
         if (objetoFantasma == null && prefabDaTorre != null)
         {
-            // Pega as informações da torre ANTES de criar o fantasma
             infoDaTorre = prefabDaTorre.GetComponent<TowerBase>();
+
+            // --- MODIFICAÇÃO IMPORTANTE AQUI ---
+            // Se não encontrarmos um script de torre válido, mostramos um erro
+            // que nos diz EXATAMENTE qual prefab está com problema.
             if (infoDaTorre == null)
             {
-                Debug.LogError("O prefab da torre não tem um componente 'TowerBase'!", this.gameObject);
-                return;
+                Debug.LogError($"O prefab '{prefabDaTorre.name}' que está na carta '{this.gameObject.name}' não tem um componente que herde de 'TowerBase'!", this.gameObject);
+                return; // Para a execução para evitar mais erros.
             }
 
-            // Cria o fantasma
             objetoFantasma = Instantiate(prefabDaTorre, GetMouseWorldPosition(), Quaternion.identity);
             fantasmaSpriteRenderer = objetoFantasma.GetComponent<SpriteRenderer>();
 
@@ -58,18 +60,15 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
             Vector3 mousePos = GetMouseWorldPosition();
             objetoFantasma.transform.position = mousePos;
 
-            // --- LÓGICA DE FEEDBACK VISUAL ATUALIZADA ---
             posicaoValida = VerificarPosicao(mousePos);
             temManaSuficiente = totem.currentMana >= infoDaTorre.cost;
 
             if (posicaoValida)
             {
-                // Se a posição é válida, a cor depende se temos mana ou não
                 fantasmaSpriteRenderer.color = temManaSuficiente ? corValida : corSemMana;
             }
             else
             {
-                // Se a posição for inválida, a cor é sempre inválida
                 fantasmaSpriteRenderer.color = corInvalida;
             }
         }
@@ -79,21 +78,16 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     {
         if (objetoFantasma != null)
         {
-            // --- LÓGICA DE CONSTRUÇÃO ATUALIZADA ---
-            // A construção só é permitida se a posição for válida E se tivermos mana
             if (posicaoValida && temManaSuficiente)
             {
-                // Gasta a mana do jogador
                 totem.SpendMana(infoDaTorre.cost);
 
-                // Confirma a construção da torre
                 Collider2D fantasmaCollider = objetoFantasma.GetComponent<Collider2D>();
                 if (fantasmaCollider != null) fantasmaCollider.enabled = true;
                 objetoFantasma.GetComponent<SpriteRenderer>().color = Color.white;
             }
             else
             {
-                // Se a posição for inválida OU não tiver mana, destrói o fantasma
                 Destroy(objetoFantasma);
             }
 
