@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 280533162267460390}
   - component: {fileID: 1534146767938626016}
   - component: {fileID: 6211228331005078737}
+  - component: {fileID: -3267952047497457607}
   m_Layer: 0
   m_Name: DragonStop
   m_TagString: Untagged
@@ -127,3 +128,24 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
+--- !u!114 &-3267952047497457607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4109231360522392754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79fa946a69a1acb4f9144e6a706956e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerPrefab: {fileID: 0}
+  towerCost: 50
+  cooldownImage: {fileID: 0}
+  damage: 15
+  attackRate: 0.8
+  attackRange: 7
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  enemyTag: Enemy
