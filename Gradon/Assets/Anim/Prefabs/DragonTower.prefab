@@ -42,8 +42,8 @@ GameObject:
   - component: {fileID: 6681964514558788178}
   - component: {fileID: 5842792389134868649}
   - component: {fileID: 3952080365079412988}
-  - component: {fileID: 5986957134023387944}
   - component: {fileID: 4906639104749834356}
+  - component: {fileID: -198533027937101286}
   m_Layer: 0
   m_Name: DragonTower
   m_TagString: Untagged
@@ -145,27 +145,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5986957134023387944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5794353119682970950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79fa946a69a1acb4f9144e6a706956e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerPrefab: {fileID: 0}
-  towerCost: 50
-  cooldownImage: {fileID: 0}
-  damage: 20
-  attackRate: 1
-  attackRange: 5
-  projectilePrefab: {fileID: 35575416600363125, guid: 0e1d3fcc1f983bd4dbf94a1f5770a2fe, type: 3}
-  firePoint: {fileID: 2909323965156911943}
-  enemyTag: Enemy
 --- !u!58 &4906639104749834356
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -202,6 +181,23 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-198533027937101286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5794353119682970950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e50fe04dea102348bf091534876524b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabDaTorre: {fileID: 5794353119682970950}
+  totem: {fileID: -2628615904987776795, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
+  corValida: {r: 0, g: 1, b: 0, a: 0.5}
+  corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
+  corSemMana: {r: 0.5, g: 0.5, b: 1, a: 0.5}
 --- !u!1 &8700945638924780862
 GameObject:
   m_ObjectHideFlags: 0
