@@ -193,17 +193,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79fa946a69a1acb4f9144e6a706956e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabDaTorre: {fileID: 0}
-  totem: {fileID: 0}
-  corValida: {r: 0, g: 1, b: 0, a: 0.5}
-  corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
-  corSemMana: {r: 0.5, g: 0.5, b: 1, a: 0.5}
-  damage: 15
-  attackRate: 0.8
   attackRange: 7
-  projectilePrefab: {fileID: 0}
-  firePoint: {fileID: 0}
+  attackRate: 0.8
+  cost: 50
+  towerIcon: {fileID: 0}
   enemyTag: Enemy
+  partToRotate: {fileID: 0}
+  rangeIndicator: {fileID: 0}
+  rangeIndicatorOpacity: 0.15
+  upgradeLevels: []
+  initialDamage: 15
+  initialAttackRate: 0.8
+  initialAttackRange: 7
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 2909323965156911943}
 --- !u!1 &8700945638924780862
 GameObject:
   m_ObjectHideFlags: 0
