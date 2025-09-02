@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-public class DragonT : TowerCardUI
+public class DragonT : ArrastavelUI
 {
     [Header("Atributos de Ataque")]
     [Tooltip("Dano que cada projétil causa.")]
