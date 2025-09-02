@@ -205,7 +205,7 @@ MonoBehaviour:
   initialDamage: 15
   initialAttackRate: 0.8
   initialAttackRange: 7
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 6436078186388238282, guid: ccc9c874dcfb53648997fe353ec3c975, type: 3}
   firePoint: {fileID: 2909323965156911943}
 --- !u!1 &8700945638924780862
 GameObject:
