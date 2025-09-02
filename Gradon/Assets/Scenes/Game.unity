@@ -7439,7 +7439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e50fe04dea102348bf091534876524b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabDaTorre: {fileID: 5794353119682970950, guid: 3eda036f2f3c4d147b91bcd4be9a039f, type: 3}
+  prefabDaTorre: {fileID: 4109231360522392754, guid: 8990ae57a48f8094d8c7c0711f7f1113, type: 3}
   totem: {fileID: 1642438058}
   corValida: {r: 0, g: 1, b: 0, a: 0.5}
   corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
