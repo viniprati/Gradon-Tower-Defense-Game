@@ -1,113 +1,78 @@
-// DragaoAtirador.cs
+// DragonT.cs (Versão CORRETA e LIMPA)
 
 using UnityEngine;
 
-public class DragonT : ArrastavelUI
+// --- CORREÇÃO PRINCIPAL ---
+// A classe agora herda de 'TowerWithBuffs', que é uma classe filha de 'TowerBase'.
+// Isso a torna uma "torre válida" para o sistema e permite que ela use a lógica
+// de busca de alvos e timer de ataque da classe mãe.
+public class DragonT : TowerWithBuffs
 {
-    [Header("Atributos de Ataque")]
-    [Tooltip("Dano que cada projétil causa.")]
-    [SerializeField] private int damage = 15;
-    [Tooltip("Quantos ataques por segundo a torre realiza.")]
-    [SerializeField] private float attackRate = 0.8f;
-    [Tooltip("Distância máxima que a torre consegue enxergar e atacar inimigos.")]
-    [SerializeField] private float attackRange = 7.0f;
+    [Header("Atributos do Dragão (Nível 1)")]
+    [SerializeField] private int initialDamage = 15;
+    [SerializeField] private float initialAttackRate = 0.8f;
+    [SerializeField] private float initialAttackRange = 7.0f;
 
-    [Header("Referências")]
-    [Tooltip("Arraste o Prefab do projétil aqui.")]
+    [Header("Referências do Projétil")]
     [SerializeField] private GameObject projectilePrefab;
-    [Tooltip("Ponto exato de onde o projétil será disparado (ex: a boca do dragão).")]
     [SerializeField] private Transform firePoint;
-    [Tooltip("A tag usada para identificar os inimigos na cena.")]
-    [SerializeField] private string enemyTag = "Enemy";
 
-    // --- Variáveis de Controle Interno ---
-    private Transform currentTarget;     // O inimigo que está sendo focado atualmente
-    private float attackCountdown = 0f;  // Timer para controlar a cadência de tiro
+    // Variável interna para o dano atual, que será atualizada por buffs/upgrades
+    private int damage;
 
-    // Update é chamado a cada frame
-    void Update()
+    // --- LÓGICA DE HERANÇA ---
+    // Removemos Update(), UpdateTarget(), currentTarget e attackCountdown daqui,
+    // pois a classe mãe 'TowerBase' já cuida de tudo isso para nós!
+
+    /// <summary>
+    /// Configura os status iniciais da torre no momento em que ela é criada.
+    /// </summary>
+    protected override void Start()
     {
-        // Se não tem um alvo, tenta encontrar um novo.
-        if (currentTarget == null)
-        {
-            UpdateTarget();
-        }
-        else
-        {
-            // Se o alvo atual saiu do alcance, perde o foco nele.
-            if (Vector2.Distance(transform.position, currentTarget.position) > attackRange)
-            {
-                currentTarget = null;
-            }
-        }
+        // Define os status base que serão usados pela classe mãe
+        baseDamage = initialDamage;
+        baseAttackRate = initialAttackRate;
+        baseAttackRange = initialAttackRange;
 
-        // Diminui o contador do timer de ataque.
-        attackCountdown -= Time.deltaTime;
-
-        // Se o timer zerou e temos um alvo válido, ataca.
-        if (attackCountdown <= 0f && currentTarget != null)
-        {
-            Attack();
-            // Reseta o timer baseado na cadência de tiro (attackRate).
-            attackCountdown = 1f / attackRate;
-        }
+        // Chama o método Start() da classe mãe para aplicar esses status
+        base.Start();
     }
 
     /// <summary>
-    /// Procura por todos os inimigos na cena e define o mais próximo como alvo.
+    /// Define como o dano desta torre reage a um buff (exigido pela classe mãe).
     /// </summary>
-    void UpdateTarget()
+    protected override void HandleDamageBuff(float multiplier, bool isApplying)
     {
-        // Encontra todos os GameObjects com a tag de inimigo.
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-        float shortestDistance = Mathf.Infinity;
-        GameObject nearestEnemy = null;
-
-        // Itera por cada inimigo encontrado para achar o mais próximo.
-        foreach (GameObject enemy in enemies)
-        {
-            float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distanceToEnemy < shortestDistance)
-            {
-                shortestDistance = distanceToEnemy;
-                nearestEnemy = enemy;
-            }
-        }
-
-        // Se um inimigo foi encontrado e está dentro do alcance, define-o como o alvo.
-        if (nearestEnemy != null && shortestDistance <= attackRange)
-        {
-            currentTarget = nearestEnemy.transform;
-        }
+        damage = isApplying ? Mathf.RoundToInt(baseDamage * multiplier) : baseDamage;
     }
 
     /// <summary>
-    /// Contém a lógica para disparar um projétil.
+    /// Lógica de ataque específica do Dragão. É chamada AUTOMATICAMENTE pela classe mãe.
     /// </summary>
-    void Attack()
+    protected override void Attack()
     {
-        // Checagem de segurança para evitar erros.
-        if (projectilePrefab == null || firePoint == null) return;
+        // Checagens de segurança
+        if (projectilePrefab == null || firePoint == null || currentTarget == null) return;
 
-        // 1. Instancia (cria) uma cópia do prefab do projétil.
+        // Cria o projétil
         GameObject projectileGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
 
-        // 2. Obtém o componente de script do projétil recém-criado.
+        // Configura o projétil
         Projectile projectileScript = projectileGO.GetComponent<Projectile>();
-
-        // 3. Se o script foi encontrado, passa as "ordens" para ele.
         if (projectileScript != null)
         {
+            // Passa o alvo (encontrado pela classe mãe) e o dano atual para o projétil
             projectileScript.Seek(currentTarget, this.damage);
         }
     }
 
     /// <summary>
-    /// Desenha o raio de alcance da torre no Editor da Unity para facilitar o posicionamento.
+    /// Desenha o raio de alcance da torre no Editor da Unity.
     /// </summary>
-    void OnDrawGizmosSelected()
+    protected override void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        // Usa a variável 'attackRange' da classe mãe, que é atualizada por buffs/upgrades
+        Gizmos.DrawWireSphere(transform.position, Application.isPlaying ? attackRange : initialAttackRange);
     }
 }

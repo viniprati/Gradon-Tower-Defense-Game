@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 5842792389134868649}
   - component: {fileID: 3952080365079412988}
   - component: {fileID: 4906639104749834356}
-  - component: {fileID: -198533027937101286}
+  - component: {fileID: 2051406424041450909}
   m_Layer: 0
   m_Name: DragonTower
   m_TagString: Untagged
@@ -181,7 +181,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &-198533027937101286
+--- !u!114 &2051406424041450909
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -190,14 +190,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 5794353119682970950}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e50fe04dea102348bf091534876524b, type: 3}
+  m_Script: {fileID: 11500000, guid: 79fa946a69a1acb4f9144e6a706956e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabDaTorre: {fileID: 5794353119682970950}
-  totem: {fileID: -2628615904987776795, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
+  prefabDaTorre: {fileID: 0}
+  totem: {fileID: 0}
   corValida: {r: 0, g: 1, b: 0, a: 0.5}
   corInvalida: {r: 1, g: 0, b: 0, a: 0.5}
   corSemMana: {r: 0.5, g: 0.5, b: 1, a: 0.5}
+  damage: 15
+  attackRate: 0.8
+  attackRange: 7
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  enemyTag: Enemy
 --- !u!1 &8700945638924780862
 GameObject:
   m_ObjectHideFlags: 0
