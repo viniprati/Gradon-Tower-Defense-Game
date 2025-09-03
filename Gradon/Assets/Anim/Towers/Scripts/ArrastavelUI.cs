@@ -1,4 +1,4 @@
-// ArrastavelUI.cs (Atualizado com Lógica de Custo de Mana e Melhor Mensagem de Erro)
+// ArrastavelUI.cs 
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -36,13 +36,10 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         {
             infoDaTorre = prefabDaTorre.GetComponent<TowerBase>();
 
-            // --- MODIFICAÇÃO IMPORTANTE AQUI ---
-            // Se não encontrarmos um script de torre válido, mostramos um erro
-            // que nos diz EXATAMENTE qual prefab está com problema.
             if (infoDaTorre == null)
             {
                 Debug.LogError($"O prefab '{prefabDaTorre.name}' que está na carta '{this.gameObject.name}' não tem um componente que herde de 'TowerBase'!", this.gameObject);
-                return; // Para a execução para evitar mais erros.
+                return;
             }
 
             objetoFantasma = Instantiate(prefabDaTorre, GetMouseWorldPosition(), Quaternion.identity);
@@ -50,6 +47,8 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
 
             Collider2D fantasmaCollider = objetoFantasma.GetComponent<Collider2D>();
             if (fantasmaCollider != null) fantasmaCollider.enabled = false;
+
+            infoDaTorre.enabled = false;
         }
     }
 
@@ -82,8 +81,11 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
             {
                 totem.SpendMana(infoDaTorre.cost);
 
+                infoDaTorre.enabled = true;
+
                 Collider2D fantasmaCollider = objetoFantasma.GetComponent<Collider2D>();
                 if (fantasmaCollider != null) fantasmaCollider.enabled = true;
+
                 objetoFantasma.GetComponent<SpriteRenderer>().color = Color.white;
             }
             else
