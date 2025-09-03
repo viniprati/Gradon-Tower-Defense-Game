@@ -1,5 +1,3 @@
-// ArrastavelUI.cs 
-
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,7 +13,7 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     public Color corValida = new Color(0, 1, 0, 0.5f);
     public Color corInvalida = new Color(1, 0, 0, 0.5f);
     [Tooltip("Cor usada quando a posição é válida, mas não há mana suficiente.")]
-    public Color corSemMana = new Color(0.5f, 0.5f, 1, 0.5f); // Azul/Roxo semitransparente
+    public Color corSemMana = new Color(0.5f, 0.5f, 1, 0.5f); 
 
     private GameObject objetoFantasma;
     private SpriteRenderer fantasmaSpriteRenderer;
@@ -81,6 +79,7 @@ public class ArrastavelUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
             {
                 totem.SpendMana(infoDaTorre.cost);
 
+               
                 infoDaTorre.enabled = true;
 
                 Collider2D fantasmaCollider = objetoFantasma.GetComponent<Collider2D>();
