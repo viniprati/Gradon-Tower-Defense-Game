@@ -2,32 +2,34 @@
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic; 
 
 public class WaveSpawner : MonoBehaviour
 {
-    [Header("Configuração das Ondas")]
-    [Tooltip("Crie e configure todas as ondas para esta fase aqui no Inspector.")]
-    public Wave[] waves; 
-
-    [Header("Referências")]
-    [Tooltip("Arraste todos os objetos que servirão como pontos de spawn para esta lista.")]
+    [Header("Referências da Cena")]
     public Transform[] spawnPoints;
-
 
     void Start()
     {
         if (spawnPoints.Length == 0)
         {
             Debug.LogError("ERRO: Nenhum ponto de spawn foi configurado no WaveSpawner! Arraste os objetos para a lista no Inspector.", this.gameObject);
-            this.enabled = false; 
+            this.enabled = false;
             return;
         }
 
-        StartCoroutine(SpawnAllWaves());
+        if (LevelManager.instance != null && LevelManager.instance.currentLevelData != null)
+        {
+            Wave[] wavesForThisLevel = LevelManager.instance.currentLevelData.waves;
+            StartCoroutine(SpawnAllWaves(wavesForThisLevel));
+        }
+        else
+        {
+            Debug.LogError("WaveSpawner não conseguiu encontrar os dados da fase no LevelManager! Certifique-se de iniciar o jogo a partir do Menu Principal.", this.gameObject);
+            this.enabled = false;
+        }
     }
 
-    private IEnumerator SpawnAllWaves()
+    private IEnumerator SpawnAllWaves(Wave[] waves)
     {
         for (int i = 0; i < waves.Length; i++)
         {
@@ -50,7 +52,6 @@ public class WaveSpawner : MonoBehaviour
             for (int i = 0; i < group.count; i++)
             {
                 SpawnEnemy(group.enemyPrefab);
-
                 yield return new WaitForSeconds(group.spawnInterval);
             }
         }
@@ -60,12 +61,11 @@ public class WaveSpawner : MonoBehaviour
     {
         if (enemyPrefab == null)
         {
-            Debug.LogWarning("Tentativa de spawnar um inimigo, mas o prefab é nulo. Verifique a configuração das ondas no Inspector.");
+            Debug.LogWarning("Tentativa de spawnar um inimigo, mas o prefab é nulo. Verifique a configuração da fase no arquivo LevelData.");
             return;
         }
 
         Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-
         Instantiate(enemyPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
     }
 }

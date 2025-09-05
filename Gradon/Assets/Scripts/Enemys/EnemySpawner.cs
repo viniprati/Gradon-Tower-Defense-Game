@@ -1,33 +1,16 @@
-//EnemySpawner.cs
+//EnemySpawner.cs 
 
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-// Este script vai funcionar perfeitamente, pois ele usará a definição de 'EnemyProgression'
-// que está no seu outro arquivo, 'EnemyProgression.cs'.
 public class ArcadeEnemySpawner : MonoBehaviour
 {
-    [Header("Progressão de Inimigos")]
-    [Tooltip("Configure a lista de inimigos e quando eles devem começar a aparecer.")]
-    [SerializeField] private List<EnemyProgression> enemyProgression;
 
-    [Header("Pontos de Spawn")]
-    [Tooltip("Se esta lista estiver vazia, o spawner tentará usar todos os objetos filhos como pontos de spawn.")]
+    [Header("Referências da Cena")]
+    [Tooltip("Arraste todos os objetos que servirão como pontos de spawn para esta lista.")]
     [SerializeField] private List<Transform> spawnPoints;
 
-    [Header("Configuração de Dificuldade")]
-    [SerializeField] private float initialSpawnInterval = 2.5f;
-    [SerializeField] private float minSpawnInterval = 0.4f;
-    [SerializeField] private float timeToIncreaseDifficulty = 15f;
-    [SerializeField] private float intervalReduction = 0.1f;
-    [SerializeField] private float timeToIncreaseBurstCount = 45f;
-    [SerializeField] private int maxEnemiesInBurst = 4;
-
-    private float gameTime = 0f;
-    private float currentSpawnInterval;
-    private int enemiesPerBurst = 1;
-    private List<GameObject> availableEnemies = new List<GameObject>();
 
     void Awake()
     {
@@ -50,59 +33,52 @@ public class ArcadeEnemySpawner : MonoBehaviour
             return;
         }
 
-        currentSpawnInterval = initialSpawnInterval;
-        StartCoroutine(SpawnRoutine());
-    }
-
-    void Update()
-    {
-        gameTime += Time.deltaTime;
-        CheckForNewEnemyUnlocks();
-        HandleDifficultyScaling();
-    }
-
-    private void CheckForNewEnemyUnlocks()
-    {
-        foreach (var progressionEntry in enemyProgression)
+        if (LevelManager.instance != null && LevelManager.instance.currentLevelData != null)
         {
-            if (progressionEntry.enemyPrefab != null && gameTime >= progressionEntry.timeToStartSpawning && !availableEnemies.Contains(progressionEntry.enemyPrefab))
+            Wave[] wavesForThisLevel = LevelManager.instance.currentLevelData.waves;
+
+            StartCoroutine(SpawnAllWaves(wavesForThisLevel));
+        }
+        else
+        {
+            Debug.LogError("Spawner não conseguiu encontrar os dados da fase no LevelManager! Certifique-se de iniciar o jogo a partir do Menu Principal.", this.gameObject);
+            this.enabled = false;
+        }
+    }
+
+
+    private IEnumerator SpawnAllWaves(Wave[] waves)
+    {
+        for (int i = 0; i < waves.Length; i++)
+        {
+            Wave currentWave = waves[i];
+            yield return new WaitForSeconds(currentWave.delayBeforeWave);
+            Debug.Log($"<color=orange>Iniciando Onda {i + 1}: {currentWave.waveName}</color>");
+            yield return StartCoroutine(SpawnCurrentWave(currentWave));
+        }
+        Debug.Log("<color=green>FASE CONCLUÍDA! Todas as ondas foram derrotadas!</color>");
+    }
+
+    private IEnumerator SpawnCurrentWave(Wave wave)
+    {
+        foreach (EnemyGroup group in wave.enemyGroups)
+        {
+            for (int i = 0; i < group.count; i++)
             {
-                availableEnemies.Add(progressionEntry.enemyPrefab);
+                SpawnSingleEnemy(group.enemyPrefab);
+                yield return new WaitForSeconds(group.spawnInterval);
             }
         }
     }
 
-    private void HandleDifficultyScaling()
+    private void SpawnSingleEnemy(GameObject enemyPrefab)
     {
-        int difficultySteps = Mathf.FloorToInt(gameTime / timeToIncreaseDifficulty);
-        currentSpawnInterval = initialSpawnInterval - (difficultySteps * intervalReduction);
-        currentSpawnInterval = Mathf.Max(currentSpawnInterval, minSpawnInterval);
-
-        int burstSteps = Mathf.FloorToInt(gameTime / timeToIncreaseBurstCount);
-        enemiesPerBurst = Mathf.Min(1 + burstSteps, maxEnemiesInBurst);
-    }
-
-    private IEnumerator SpawnRoutine()
-    {
-        while (true)
+        if (enemyPrefab == null)
         {
-            yield return new WaitForSeconds(currentSpawnInterval);
-            if (availableEnemies.Count > 0 && spawnPoints.Count > 0)
-            {
-                for (int i = 0; i < enemiesPerBurst; i++)
-                {
-                    SpawnSingleEnemy();
-                    if (enemiesPerBurst > 1) yield return new WaitForSeconds(0.1f);
-                }
-            }
+            Debug.LogWarning("Tentativa de spawnar um inimigo, mas o prefab é nulo. Verifique a configuração da fase no arquivo LevelData.");
+            return;
         }
-    }
-
-    private void SpawnSingleEnemy()
-    {
-        GameObject enemyToSpawn = availableEnemies[Random.Range(0, availableEnemies.Count)];
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-        Instantiate(enemyToSpawn, spawnPoint.position, spawnPoint.rotation);
+        Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
     }
 }
-// NÃO HÁ NADA AQUI EMBAIXO! A definição duplicada foi removida.
