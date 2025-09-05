@@ -6189,28 +6189,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyProgression:
-  - description: Ghoul
-    enemyPrefab: {fileID: 1795373651103439305, guid: fc7790ac66239f24594d1898cc50cf54, type: 3}
-    timeToStartSpawning: 2
-  - description: Kurama
-    enemyPrefab: {fileID: 3464743845103004746, guid: c8541432c50118d4a93c1dd4d748a5bf, type: 3}
-    timeToStartSpawning: 4
-  - description: 'Oni '
-    enemyPrefab: {fileID: 4536836196174038044, guid: 8c5542a994ccfe94d867f3031ee01dc9, type: 3}
-    timeToStartSpawning: 10
+  enemyPrefabsLibrary:
+  - {fileID: 1795373651103439305, guid: fc7790ac66239f24594d1898cc50cf54, type: 3}
+  - {fileID: 3464743845103004746, guid: c8541432c50118d4a93c1dd4d748a5bf, type: 3}
+  - {fileID: 4536836196174038044, guid: 8c5542a994ccfe94d867f3031ee01dc9, type: 3}
   spawnPoints:
   - {fileID: 1860809006}
   - {fileID: 1205794919}
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
-  initialSpawnInterval: 2.5
-  minSpawnInterval: 0.4
-  timeToIncreaseDifficulty: 15
-  intervalReduction: 0.1
-  timeToIncreaseBurstCount: 45
-  maxEnemiesInBurst: 4
+  debugLevel: {fileID: 1453573258}
 --- !u!1 &975758702
 GameObject:
   m_ObjectHideFlags: 0
@@ -6628,7 +6617,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.40800002, y: 0.096}
   m_AnchorMax: {x: 0.5906562, y: 0.19600001}
-  m_AnchoredPosition: {x: 0.6401367, y: 3.0000916}
+  m_AnchoredPosition: {x: 0.6401367, y: 3.000061}
   m_SizeDelta: {x: 1.199997, y: -5.1100006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1120820507
@@ -7241,6 +7230,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1302972384}
   m_CullTransparentMesh: 1
+--- !u!1 &1453573257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1453573259}
+  - component: {fileID: 1453573258}
+  m_Layer: 0
+  m_Name: LevelData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1453573258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453573257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c808c2f9bc29054785a42008877889a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelName: Nova Fase
+  levelIndex: 0
+  sceneToLoad: 
+  waves:
+  - waveName: Wave1
+    enemyGroups:
+    - enemyType: EnemyNormal
+      count: 5
+      spawnInterval: 0
+    delayBeforeWave: 0
+  manaInicial: 150
+--- !u!4 &1453573259
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453573257}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.7354646, y: 0.5657173, z: 2.1616402}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1472109162
 GameObject:
   m_ObjectHideFlags: 0
@@ -8100,28 +8144,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyProgression:
-  - description: Normal
-    enemyPrefab: {fileID: 1795373651103439305, guid: fc7790ac66239f24594d1898cc50cf54, type: 3}
-    timeToStartSpawning: 0
-  - description: Ranged
-    enemyPrefab: {fileID: 3464743845103004746, guid: c8541432c50118d4a93c1dd4d748a5bf, type: 3}
-    timeToStartSpawning: 10
-  - description: Explosive
-    enemyPrefab: {fileID: 4536836196174038044, guid: 8c5542a994ccfe94d867f3031ee01dc9, type: 3}
-    timeToStartSpawning: 25
+  enemyPrefabsLibrary: []
   spawnPoints:
   - {fileID: 1860809006}
   - {fileID: 1205794919}
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
-  initialSpawnInterval: 2.5
-  minSpawnInterval: 0.4
-  timeToIncreaseDifficulty: 10
-  intervalReduction: 0.1
-  timeToIncreaseBurstCount: 30
-  maxEnemiesInBurst: 3
+  debugLevel: {fileID: 0}
 --- !u!1 &1944722295
 GameObject:
   m_ObjectHideFlags: 0
@@ -11426,6 +11456,7 @@ SceneRoots:
   - {fileID: 1924019312}
   - {fileID: 1719024387}
   - {fileID: 1062785764}
+  - {fileID: 1453573259}
   - {fileID: 853323025}
   - {fileID: 762234639}
   - {fileID: 1991000057}
