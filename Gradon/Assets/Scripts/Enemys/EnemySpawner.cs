@@ -1,62 +1,74 @@
-//EnemySpawner.cs 
+// WaveSpawner.cs
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
-public class ArcadeEnemySpawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviour
 {
-
     [Header("Referências da Cena")]
     [Tooltip("Arraste todos os objetos que servirão como pontos de spawn para esta lista.")]
-    [SerializeField] private List<Transform> spawnPoints;
+    public Transform[] spawnPoints;
 
+    [Header("Debug / Teste Rápido")]
+    [Tooltip("Se o jogo for iniciado diretamente nesta cena, esta fase será carregada para teste. Deixe em branco para o funcionamento normal.")]
+    public LevelData debugLevel; // Campo para arrastar uma fase padrão para testes
 
-    void Awake()
-    {
-        if (spawnPoints == null || spawnPoints.Count == 0)
-        {
-            spawnPoints = new List<Transform>();
-            foreach (Transform child in transform)
-            {
-                spawnPoints.Add(child);
-            }
-        }
-    }
-
+    /// <summary>
+    /// Chamado pela Unity quando a cena de jogo começa.
+    /// </summary>
     void Start()
     {
-        if (spawnPoints.Count == 0)
+        // Checagem de segurança inicial
+        if (spawnPoints.Length == 0)
         {
-            Debug.LogError("ERRO: Nenhum ponto de spawn foi configurado para o '" + gameObject.name + "'. Desativando o spawner.", this.gameObject);
+            Debug.LogError("ERRO: Nenhum ponto de spawn foi configurado no WaveSpawner! Desativando o spawner.", this.gameObject);
             this.enabled = false;
             return;
         }
 
+        Wave[] wavesToSpawn = null;
+
+        // Tenta pegar os dados do LevelManager (o método principal)
         if (LevelManager.instance != null && LevelManager.instance.currentLevelData != null)
         {
-            Wave[] wavesForThisLevel = LevelManager.instance.currentLevelData.waves;
+            wavesToSpawn = LevelManager.instance.currentLevelData.waves;
+        }
+        // Se o LevelManager não tiver dados, usa a fase de debug como um "plano B"
+        else if (debugLevel != null)
+        {
+            Debug.LogWarning("LevelManager não encontrado ou sem dados de fase. Carregando fase de DEBUG: " + debugLevel.name, this.gameObject);
+            wavesToSpawn = debugLevel.waves;
+        }
 
-            StartCoroutine(SpawnAllWaves(wavesForThisLevel));
+        // Verifica se temos alguma onda para spawnar (seja do LevelManager ou do modo de debug)
+        if (wavesToSpawn != null && wavesToSpawn.Length > 0)
+        {
+            // Se sim, inicia a rotina de spawn
+            StartCoroutine(SpawnAllWaves(wavesToSpawn));
         }
         else
         {
-            Debug.LogError("Spawner não conseguiu encontrar os dados da fase no LevelManager! Certifique-se de iniciar o jogo a partir do Menu Principal.", this.gameObject);
+            // Se não, exibe um erro claro e desativa o spawner
+            Debug.LogError("Nenhuma onda para spawnar! Verifique se o LevelManager está funcionando ou se a fase de Debug foi configurada.", this.gameObject);
             this.enabled = false;
         }
     }
-
 
     private IEnumerator SpawnAllWaves(Wave[] waves)
     {
         for (int i = 0; i < waves.Length; i++)
         {
             Wave currentWave = waves[i];
+
             yield return new WaitForSeconds(currentWave.delayBeforeWave);
+
             Debug.Log($"<color=orange>Iniciando Onda {i + 1}: {currentWave.waveName}</color>");
+
             yield return StartCoroutine(SpawnCurrentWave(currentWave));
         }
+
         Debug.Log("<color=green>FASE CONCLUÍDA! Todas as ondas foram derrotadas!</color>");
+        // Adicione aqui a lógica de vitória
     }
 
     private IEnumerator SpawnCurrentWave(Wave wave)
@@ -65,20 +77,21 @@ public class ArcadeEnemySpawner : MonoBehaviour
         {
             for (int i = 0; i < group.count; i++)
             {
-                SpawnSingleEnemy(group.enemyPrefab);
+                SpawnEnemy(group.enemyPrefab);
                 yield return new WaitForSeconds(group.spawnInterval);
             }
         }
     }
 
-    private void SpawnSingleEnemy(GameObject enemyPrefab)
+    private void SpawnEnemy(GameObject enemyPrefab)
     {
         if (enemyPrefab == null)
         {
             Debug.LogWarning("Tentativa de spawnar um inimigo, mas o prefab é nulo. Verifique a configuração da fase no arquivo LevelData.");
             return;
         }
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-        Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+
+        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        Instantiate(enemyPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
     }
 }
