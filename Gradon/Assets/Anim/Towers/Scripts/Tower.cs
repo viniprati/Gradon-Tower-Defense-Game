@@ -1,6 +1,6 @@
 // TowerBase.cs
+using Mono.Cecil.Cil;
 using UnityEngine;
-
 public abstract class TowerBase : MonoBehaviour
 {
     [Header("Atributos Gerais da Torre")]
@@ -8,12 +8,12 @@ public abstract class TowerBase : MonoBehaviour
     [SerializeField] protected float attackRate = 1f;
     [SerializeField] public int cost = 50;
     [SerializeField] public Sprite towerIcon;
-
+    
     // --- MUDANÇA #1: ADICIONADO CAMPO PARA A TAG DO INIMIGO ---
     // Adicionamos esta variável para que CADA torre possa saber qual tag procurar.
     // Isso centraliza a lógica e nos permite corrigir o erro diretamente no Inspector.
     [Header("Configuração de Alvo")]
-    [Tooltip("A tag que esta torre irá procurar para atacar.")]
+[Tooltip("A tag que esta torre irá procurar para atacar.")]
     [SerializeField] protected string enemyTag = "Enemy";
 
     [Header("Referências (Setup no Prefab)")]

@@ -119,7 +119,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1352232675757444498}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b11b4dc2d16cf6c4fac5c37819ff924f, type: 3}
   m_Name: 
@@ -128,12 +128,16 @@ MonoBehaviour:
   attackRate: 1
   cost: 100
   towerIcon: {fileID: 4773117178677697770, guid: 979382697f6833a45876c9894916744f, type: 3}
+  enemyTag: Enemy
   partToRotate: {fileID: 8799327115495275305}
   rangeIndicator: {fileID: 6491964127469758129}
   rangeIndicatorOpacity: 0.1
+  upgradeLevels: []
+  initialAttackRange: 4
+  attackRateMultiplier: 1.5
   damageMultiplier: 2
-  rateMultiplier: 1.2
   buffDuration: 1000
+  checkInterval: 1
 --- !u!1 &5185611511292911656
 GameObject:
   m_ObjectHideFlags: 0
