@@ -3,7 +3,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Level", menuName = "Tower Defense/Level")]
-public class LevelData : ScriptableObject
+public class LevelData : MonoBehaviour
 {
     [Header("Informações da Fase")]
     public string levelName = "Nova Fase";

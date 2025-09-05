@@ -2,20 +2,34 @@
 
 using UnityEngine;
 
-// [System.Serializable] é o que permite que estas classes apareçam no Inspector da Unity.
-
+/// <summary>
+/// Define a estrutura de um grupo de inimigos dentro de uma onda.
+/// </summary>
 [System.Serializable]
 public class EnemyGroup
 {
-    public GameObject enemyPrefab; // Qual inimigo spawnar
-    public int count;              // Quantos inimigos deste tipo
-    public float spawnInterval;    // Intervalo de tempo entre cada inimigo deste grupo
+    [Tooltip("Digite o NOME EXATO do prefab do inimigo (ex: 'NormalEnemy', 'RangedEnemy'). O nome deve corresponder ao que está na 'Enemy Prefabs Library' do WaveSpawner.")]
+    public string enemyType; // O nome do prefab a ser spawnado
+
+    [Tooltip("Quantos inimigos deste tipo serão criados neste grupo.")]
+    public int count;
+
+    [Tooltip("O intervalo em segundos entre a criação de cada inimigo deste grupo.")]
+    public float spawnInterval;
 }
 
+/// <summary>
+/// Define a estrutura de uma única onda de inimigos.
+/// </summary>
 [System.Serializable]
 public class Wave
 {
-    public string waveName;           // Nome da onda (para sua organização)
-    public EnemyGroup[] enemyGroups;  // Uma lista dos grupos de inimigos que formam esta onda
-    public float delayBeforeWave;     // Tempo de espera em segundos ANTES desta onda começar
+    [Tooltip("Apenas um nome para você se organizar no Inspector.")]
+    public string waveName;
+
+    [Tooltip("A lista de grupos de inimigos que compõem esta onda.")]
+    public EnemyGroup[] enemyGroups;
+
+    [Tooltip("O tempo de espera em segundos ANTES desta onda começar.")]
+    public float delayBeforeWave;
 }
