@@ -7,69 +7,60 @@ public class TowerInfoPanel : MonoBehaviour
 {
     public static TowerInfoPanel instance;
 
-    [Header("Referências da UI")]
-    public TextMeshProUGui towerNameText;
-    public TextMeshProUGui towerStatsText;
+    public TextMeshProUGUI towerNameText;
+    public TextMeshProUGUI towerStatsText;
     public Button upgradeButton;
     public TextMeshProUGUI upgradeButtonText;
 
-    private TowerBase currentSelectedTower;
+    private TowerWithBuffs selectedTower; // Agora a referência é para a torre com upgrades
 
     void Awake()
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
-
-        // Garante que o painel começa escondido
         gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Mostra e preenche o painel com as informações de uma torre.
-    /// </summary>
-    public void ShowPanel(TowerBase tower)
+    public void ShowPanel(TowerWithBuffs tower)
     {
-        currentSelectedTower = tower;
+        // Desseleciona a torre antiga
+        if (selectedTower != null) selectedTower.ShowRangeIndicator(false);
+
+        selectedTower = tower;
+        selectedTower.ShowRangeIndicator(true); // Mostra o alcance da nova torre
+
         gameObject.SetActive(true);
         UpdatePanel();
 
-        // Configura o botão de upgrade para chamar o método da torre selecionada
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(() => {
-            currentSelectedTower.TryUpgrade();
-            UpdatePanel(); // Atualiza o painel após a tentativa de upgrade
+            selectedTower.TryUpgrade();
+            UpdatePanel();
         });
     }
 
-    /// <summary>
-    /// Esconde o painel.
-    /// </summary>
     public void HidePanel()
     {
-        currentSelectedTower = null;
+        if (selectedTower != null) selectedTower.ShowRangeIndicator(false);
+        selectedTower = null;
         gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Atualiza as informações exibidas no painel.
-    /// </summary>
     public void UpdatePanel()
     {
-        if (currentSelectedTower == null) return;
+        if (selectedTower == null) return;
 
-        // Supondo que TowerBase tenha essas propriedades
-        towerNameText.text = currentSelectedTower.towerName;
-        towerStatsText.text = $"Dano: {currentSelectedTower.baseDamage}\nAlcance: {currentSelectedTower.attackRange}\nCadência: {currentSelectedTower.attackRate}/s";
+        towerNameText.text = selectedTower.towerName;
+        towerStatsText.text = $"Dano: {selectedTower.baseDamage}\nAlcance: {selectedTower.attackRange}\nCadência: {selectedTower.attackRate}/s";
 
-        if (currentSelectedTower.IsAtMaxLevel())
+        if (selectedTower.IsAtMaxLevel())
         {
             upgradeButton.interactable = false;
             upgradeButtonText.text = "NÍVEL MÁXIMO";
         }
         else
         {
-            int cost = currentSelectedTower.GetNextUpgradeCost();
-            // Verifica se o jogador pode pagar pelo upgrade
+            int cost = selectedTower.GetNextUpgradeCost();
             upgradeButton.interactable = Totem.instance.currentMana >= cost;
             upgradeButtonText.text = $"UPGRADE ({cost} Mana)";
         }
