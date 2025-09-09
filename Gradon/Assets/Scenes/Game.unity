@@ -5578,7 +5578,7 @@ GameObject:
   - component: {fileID: 446783849}
   - component: {fileID: 446783848}
   m_Layer: 5
-  m_Name: ScoreText
+  m_Name: WaveText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6196,7 +6196,7 @@ MonoBehaviour:
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
-  waveInfoText: {fileID: 0}
+  waveInfoText: {fileID: 446783848}
   debugLevel: {fileID: 0}
 --- !u!1 &975758702
 GameObject:
@@ -8125,7 +8125,7 @@ MonoBehaviour:
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
-  waveInfoText: {fileID: 0}
+  waveInfoText: {fileID: 446783848}
   debugLevel: {fileID: 0}
 --- !u!1 &1944722295
 GameObject:
