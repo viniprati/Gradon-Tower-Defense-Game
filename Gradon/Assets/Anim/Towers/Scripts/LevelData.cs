@@ -1,19 +1,33 @@
 // LevelData.cs
-
 using UnityEngine;
 
+[System.Serializable]
+public class EnemyGroup
+{
+    public GameObject enemyPrefab;
+    public int count;
+    public float spawnInterval;
+}
+
+[System.Serializable]
+public class Wave
+{
+    public string waveName;
+    public EnemyGroup[] enemyGroups;
+    public float delayBeforeWave;
+}
+
 [CreateAssetMenu(fileName = "New Level", menuName = "Tower Defense/Level")]
-public class LevelData : MonoBehaviour
+public class LevelData : ScriptableObject
 {
     [Header("Informações da Fase")]
     public string levelName = "Nova Fase";
-    public int levelIndex; 
-    public string sceneToLoad; 
+    public int levelIndex;
+    public string sceneToLoad;
 
     [Header("Configuração das Ondas")]
-    [Tooltip("Todas as ondas de inimigos para esta fase.")]
-    public Wave[] waves; 
+    public Wave[] waves;
 
-    [Header("Recompensas")]
-    public int manaInicial = 150;
+    [Header("Recursos Iniciais")]
+    public int initialMana = 150;
 }
