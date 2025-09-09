@@ -11,10 +11,6 @@ public class Totem : MonoBehaviour, IDamageable
     [Header("Atributos da Base")]
     [SerializeField] private float maxHealth = 1000f;
 
-    // --- CORREÇÃO AQUI ---
-    // Adicionamos a variável pública para o raio da zona proibida.
-    // 'public' é a palavra-chave que permite que outros scripts (como o ArrastavelUI)
-    // leiam o valor desta variável.
     [Header("Configuração da Zona de Construção")]
     [Tooltip("O raio ao redor do Totem onde NÃO é permitido construir.")]
     public float zonaProibidaRaio = 3f;
@@ -83,21 +79,29 @@ public class Totem : MonoBehaviour, IDamageable
 
     #endregion
 
+    // --- SEÇÃO MODIFICADA ---
     #region Lógica de Mana
 
-    public void AddMana(float amount)
+    public void AddMana(int amount) 
     {
-        currentMana = Mathf.Min(currentMana + amount, maxMana);
+        currentMana = Mathf.Min(currentMana + (float)amount, maxMana);
         UpdateManaBar();
     }
 
-    public void SpendMana(float amount)
+    public bool SpendMana(int amount) 
     {
-        currentMana = Mathf.Max(currentMana - amount, 0);
-        UpdateManaBar();
+        if (currentMana >= amount)
+        {
+            currentMana -= amount;
+            UpdateManaBar();
+            return true; // Sucesso!
+        }
+
+        return false; // Falha, mana insuficiente.
     }
 
     #endregion
+    // --- FIM DA SEÇÃO MODIFICADA ---
 
     #region Lógica de UI
 
@@ -123,9 +127,6 @@ public class Totem : MonoBehaviour, IDamageable
 
     #region Editor Visuals
 
-    /// <summary>
-    /// Desenha o círculo da zona proibida no editor da Unity.
-    /// </summary>
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(1, 0.2f, 0, 0.25f);
