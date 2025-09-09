@@ -18,7 +18,7 @@ public abstract class TowerWithBuffs : TowerBase
 
     // --- MUDANÇA PRINCIPAL: TORNADO 'public' PARA A UI LER ---
     public int baseDamage { get; protected set; } // A UI pode ler, mas só a torre pode mudar
-
+    public float baseAttackRange;
     protected float baseAttackRate;
     private int currentUpgradeLevel = 0;
 
@@ -64,7 +64,7 @@ public abstract class TowerWithBuffs : TowerBase
         return IsAtMaxLevel() ? 0 : upgrades[currentUpgradeLevel].upgradeCost;
     }
 
-    public abstract void HandleDamageBuff(float multiplier, bool isApplying);
+    protected abstract void HandleDamageBuff(float multiplier, bool isApplying);
 
     public void ApplyBuff(float damageMultiplier, float rateMultiplier, float duration)
     {

@@ -5551,15 +5551,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79fa946a69a1acb4f9144e6a706956e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  towerName: "Torre Padr\xE3o"
   attackRange: 7
   attackRate: 0.8
   cost: 50
   towerIcon: {fileID: 0}
-  enemyTag: Enemy
   partToRotate: {fileID: 0}
   rangeIndicator: {fileID: 0}
-  rangeIndicatorOpacity: 0.15
-  upgradeLevels: []
+  enemyTag: Enemy
+  upgrades: []
+  baseAttackRange: 0
   initialDamage: 15
   initialAttackRate: 0.8
   initialAttackRange: 7
@@ -6189,17 +6190,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefabsLibrary:
-  - {fileID: 1795373651103439305, guid: fc7790ac66239f24594d1898cc50cf54, type: 3}
-  - {fileID: 3464743845103004746, guid: c8541432c50118d4a93c1dd4d748a5bf, type: 3}
-  - {fileID: 4536836196174038044, guid: 8c5542a994ccfe94d867f3031ee01dc9, type: 3}
   spawnPoints:
   - {fileID: 1860809006}
   - {fileID: 1205794919}
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
-  debugLevel: {fileID: 1453573258}
+  waveInfoText: {fileID: 0}
+  debugLevel: {fileID: 0}
 --- !u!1 &975758702
 GameObject:
   m_ObjectHideFlags: 0
@@ -7239,7 +7237,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1453573259}
-  - component: {fileID: 1453573258}
   m_Layer: 0
   m_Name: LevelData
   m_TagString: Untagged
@@ -7247,29 +7244,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1453573258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453573257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c808c2f9bc29054785a42008877889a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelName: Nova Fase
-  levelIndex: 0
-  sceneToLoad: 
-  waves:
-  - waveName: Wave1
-    enemyGroups:
-    - enemyType: EnemyNormal
-      count: 5
-      spawnInterval: 0
-    delayBeforeWave: 0
-  manaInicial: 150
 --- !u!4 &1453573259
 Transform:
   m_ObjectHideFlags: 0
@@ -8111,6 +8085,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a03272fbabda4442819a54934676edb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allLevels: []
   scoreText: {fileID: 446783848}
   manaText: {fileID: 1785181368}
   gameOverPanel: {fileID: 1641787694}
@@ -8144,13 +8119,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e1f9214f2a6414e89b4bb70bd4ed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefabsLibrary: []
   spawnPoints:
   - {fileID: 1860809006}
   - {fileID: 1205794919}
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
+  waveInfoText: {fileID: 0}
   debugLevel: {fileID: 0}
 --- !u!1 &1944722295
 GameObject:

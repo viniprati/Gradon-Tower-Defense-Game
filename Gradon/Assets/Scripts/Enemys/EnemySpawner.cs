@@ -5,23 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
-// --- DEFINIÇÕES DAS ONDAS (VIVEM AQUI) ---
-[System.Serializable]
-public class EnemyGroup
-{
-    public GameObject enemyPrefab;
-    public int count;
-    public float spawnInterval;
-}
-
-[System.Serializable]
-public class Wave
-{
-    public string waveName;
-    public EnemyGroup[] enemyGroups;
-    public float delayBeforeWave;
-}
-
 
 // --- LÓGICA PRINCIPAL DO SPAWNER ---
 // O nome da classe foi mudado para corresponder ao seu arquivo 'EnemySpawner.cs'

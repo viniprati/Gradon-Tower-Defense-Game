@@ -16,7 +16,7 @@ public class Totem : MonoBehaviour, IDamageable
     public float zonaProibidaRaio = 3f;
 
     [Header("Recursos do Jogador")]
-    [SerializeField] private float maxMana = 100f;
+    [SerializeField] public float maxMana = 100f;
     public float currentMana { get; private set; }
 
     [Header("Referências de Construção")]

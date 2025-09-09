@@ -153,6 +153,7 @@ public class GameManager : MonoBehaviour
                 nameInputField.ActivateInputField();
             }
         }
+        yield return null;
     }
 
     public void SubmitScore()
@@ -187,5 +188,10 @@ public class GameManager : MonoBehaviour
         {
             scoreText.text = "Score: " + score.ToString();
         }
+    }
+
+    public void HandleGameOver()
+    {
+
     }
 }
