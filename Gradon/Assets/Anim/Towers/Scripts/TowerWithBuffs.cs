@@ -1,6 +1,4 @@
-// TowerWithBuffs.cs (Atualizado para se conectar com a UI)
-
-using System.Collections;
+// TowerWithBuffs.cs (CORRIGIDO)
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,22 +16,18 @@ public abstract class TowerWithBuffs : TowerBase
     [Header("Configurações de Upgrade")]
     [SerializeField] protected List<UpgradeLevel> upgrades;
 
-    private int currentUpgradeLevel = 0;
+    // --- MUDANÇA PRINCIPAL: TORNADO 'public' PARA A UI LER ---
+    public int baseDamage { get; protected set; } // A UI pode ler, mas só a torre pode mudar
 
-    protected int baseDamage;
     protected float baseAttackRate;
+    private int currentUpgradeLevel = 0;
 
     protected override void Start()
     {
         base.Start();
         baseAttackRate = attackRate;
-        // Garante que o indicador de alcance comece escondido
-        ShowRangeIndicator(false);
     }
 
-    /// <summary>
-    /// Chamado quando a torre é clicada. Agora, ele abre o painel da UI.
-    /// </summary>
     private void OnMouseDown()
     {
         if (TowerInfoPanel.instance != null)
@@ -42,38 +36,23 @@ public abstract class TowerWithBuffs : TowerBase
         }
     }
 
-    /// <summary>
-    /// A lógica de upgrade permanece a mesma, mas agora é chamada pelo BOTÃO da UI.
-    /// </summary>
     public void TryUpgrade()
     {
-        if (IsAtMaxLevel())
-        {
-            Debug.Log(gameObject.name + " já está no nível máximo!");
-            return;
-        }
+        if (IsAtMaxLevel()) return;
 
         UpgradeLevel nextUpgrade = upgrades[currentUpgradeLevel];
 
-        // Vamos assumir que Totem.SpendMana retorna 'true' se a compra foi bem sucedida
+        // Supondo que seu Totem.SpendMana retorna um bool
         if (Totem.instance != null && Totem.instance.SpendMana(nextUpgrade.upgradeCost))
         {
             baseDamage = nextUpgrade.newDamage;
             baseAttackRate = nextUpgrade.newAttackRate;
             attackRate = nextUpgrade.newAttackRate;
             attackRange = nextUpgrade.newAttackRange;
-
             currentUpgradeLevel++;
-
-            Debug.Log($"<color=cyan>{gameObject.name} atualizado para o Nível {currentUpgradeLevel + 1}!</color>");
-        }
-        else
-        {
-            Debug.Log("Mana insuficiente para o upgrade!");
+            Debug.Log($"{towerName} atualizada para o Nível {currentUpgradeLevel + 1}!");
         }
     }
-
-    // --- NOVOS MÉTODOS PÚBLICOS PARA A UI ACESSAR ---
 
     public bool IsAtMaxLevel()
     {
@@ -82,14 +61,8 @@ public abstract class TowerWithBuffs : TowerBase
 
     public int GetNextUpgradeCost()
     {
-        if (!IsAtMaxLevel())
-        {
-            return upgrades[currentUpgradeLevel].upgradeCost;
-        }
-        return 0; // Retorna 0 se já estiver no nível máximo
+        return IsAtMaxLevel() ? 0 : upgrades[currentUpgradeLevel].upgradeCost;
     }
-
-    // --- FIM DOS NOVOS MÉTODOS ---
 
     public abstract void HandleDamageBuff(float multiplier, bool isApplying);
 
@@ -97,21 +70,5 @@ public abstract class TowerWithBuffs : TowerBase
     {
         attackRate = baseAttackRate * rateMultiplier;
         HandleDamageBuff(damageMultiplier, true);
-        // ... (lógica de coroutine para remover o buff)
     }
-
-    // AVISO: Certifique-se de que seu Totem.cs tem o método SpendMana retornando um bool!
-    // Exemplo:
-    /*
-        public bool SpendMana(int amount)
-        {
-            if (currentMana >= amount)
-            {
-                currentMana -= amount;
-                UpdateManaBar();
-                return true; // Compra bem sucedida
-            }
-            return false; // Falha na compra
-        }
-    */
 }

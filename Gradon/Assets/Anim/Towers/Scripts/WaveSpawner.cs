@@ -1,56 +1,91 @@
-// WaveSpawner.cs
+// WaveSpawner.cs (Versão Autônoma e Corrigida)
+
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
+// --- DEFINIÇÕES DAS ONDAS (VIVEM AQUI) ---
+[System.Serializable]
+public class EnemyGroup
+{
+    public GameObject enemyPrefab;
+    public int count;
+    public float spawnInterval;
+}
+
+[System.Serializable]
+public class Wave
+{
+    public string waveName;
+    public EnemyGroup[] enemyGroups;
+    public float delayBeforeWave;
+}
+
+
+// --- LÓGICA PRINCIPAL DO SPAWNER ---
 public class WaveSpawner : MonoBehaviour
 {
-    public static event System.Action OnAllWavesCompleted; // Evento para anunciar a vitória
+    public static event System.Action OnAllWavesCompleted;
+
+    [Header("Configuração das Ondas")]
+    [Tooltip("Configure aqui todas as ondas para esta fase.")]
+    public Wave[] waves;
 
     [Header("Referências da Cena")]
     public Transform[] spawnPoints;
 
-    private Wave[] waves;
+    [Header("Referências da UI")]
+    public TextMeshProUGUI waveInfoText;
+
     private int enemiesAlive = 0;
-    private int totalWaves;
-    private int wavesCompleted = 0;
 
     void Start()
     {
-        if (GameManager.instance != null && GameManager.instance.currentLevelData != null)
+        if (spawnPoints.Length == 0)
         {
-            this.waves = GameManager.instance.currentLevelData.waves;
-            this.totalWaves = waves.Length;
-            StartCoroutine(SpawnAllWaves());
-        }
-        else
-        {
-            Debug.LogError("WaveSpawner não encontrou dados da fase! Inicie pelo menu.");
+            Debug.LogError("Nenhum ponto de spawn configurado no WaveSpawner!", this.gameObject);
             this.enabled = false;
+            return;
         }
+
+        if (waves.Length == 0)
+        {
+            Debug.LogError("Nenhuma onda configurada no WaveSpawner! Preencha a lista 'Waves' no Inspector.", this.gameObject);
+            this.enabled = false;
+            return;
+        }
+
+        StartCoroutine(SpawnAllWaves());
     }
 
     private IEnumerator SpawnAllWaves()
     {
-        foreach (Wave wave in waves)
+        for (int i = 0; i < waves.Length; i++)
         {
-            yield return new WaitForSeconds(wave.delayBeforeWave);
-            yield return StartCoroutine(SpawnWave(wave));
+            Wave currentWave = waves[i];
 
-            // Espera todos os inimigos da onda serem derrotados antes de prosseguir
+            if (waveInfoText != null)
+                waveInfoText.text = $"Próxima Onda em {currentWave.delayBeforeWave:F1}s...";
+
+            yield return new WaitForSeconds(currentWave.delayBeforeWave);
+
+            if (waveInfoText != null)
+                waveInfoText.text = $"Onda {i + 1} / {waves.Length}";
+
+            yield return StartCoroutine(SpawnWave(currentWave));
+
             while (enemiesAlive > 0)
             {
                 yield return null;
             }
-
-            wavesCompleted++;
         }
 
-        // Se todas as ondas foram concluídas e todos inimigos morreram
-        if (wavesCompleted == totalWaves && enemiesAlive == 0)
+        OnAllWavesCompleted?.Invoke();
+
+        if (GameManager.instance != null)
         {
-            OnAllWavesCompleted?.Invoke(); // Dispara o evento de vitória
-            GameManager.instance.WinLevel();
+            GameManager.instance.HandleGameOver(true);
         }
     }
 
@@ -68,22 +103,29 @@ public class WaveSpawner : MonoBehaviour
 
     private void SpawnEnemy(GameObject enemyPrefab)
     {
+        if (enemyPrefab == null)
+        {
+            Debug.LogWarning("Tentando spawnar um inimigo, mas o prefab está nulo. Verifique a configuração da onda no Inspector.", this.gameObject);
+            return;
+        }
+
         Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject enemyGO = Instantiate(enemyPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
 
         Enemy enemyScript = enemyGO.GetComponent<Enemy>();
         if (enemyScript != null)
         {
-            enemyScript.OnDeath += OnEnemyKilled; // Registra o evento de morte
+            enemyScript.OnDeath += OnEnemyKilled;
         }
-
         enemiesAlive++;
     }
 
-    // Chamado quando um inimigo morre
     private void OnEnemyKilled(Enemy enemy)
     {
         enemiesAlive--;
-        enemy.OnDeath -= OnEnemyKilled; // Desregistra o evento para evitar memory leaks
+        if (enemy != null)
+        {
+            enemy.OnDeath -= OnEnemyKilled;
+        }
     }
 }
