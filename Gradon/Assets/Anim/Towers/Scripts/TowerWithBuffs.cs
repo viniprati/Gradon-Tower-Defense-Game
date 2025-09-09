@@ -1,127 +1,111 @@
-// TowerWithBuffs.cs (Com Sistema de Upgrades Integrado)
+// TowerWithBuffs.cs (Atualizado com Sistema de Upgrades)
+
 using System.Collections;
-using System.Collections.Generic; // Para usar List<>
+using System.Collections.Generic;
 using UnityEngine;
 
-// Definição da classe de dados para os níveis de upgrade (coloque no mesmo arquivo)
+// --- NOVA ESTRUTURA DE DADOS PARA UPGRADES ---
+// Esta classe pequena serve como um "molde" para cada nível de upgrade.
+// [System.Serializable] faz com que ela apareça de forma organizada no Inspector.
 [System.Serializable]
-public class TowerLevelData
+public class UpgradeLevel
 {
     public int upgradeCost;
     public int newDamage;
     public float newAttackRate;
     public float newAttackRange;
-    // Opcional: public Sprite newSprite;
+    // Você pode adicionar mais coisas aqui no futuro, como um novo sprite para a torre!
+    // public Sprite newSprite;
 }
 
-public abstract class TowerWithBuffs : TowerBase // Supondo que TowerBase é sua classe raiz
+public abstract class TowerWithBuffs : TowerBase
 {
+    // --- NOVAS VARIÁVEIS PARA O SISTEMA DE UPGRADE ---
     [Header("Configurações de Upgrade")]
-    [SerializeField] protected List<TowerLevelData> upgradeLevels;
+    [Tooltip("Configure aqui os diferentes níveis de upgrade para esta torre.")]
+    [SerializeField] protected List<UpgradeLevel> upgrades;
 
     // Nível atual da torre (0 = nível 1, 1 = nível 2, etc.)
-    protected int currentLevel = 0;
+    private int currentUpgradeLevel = 0;
 
-    // --- Variáveis de Status ---
-    // 'base' se refere ao status do nível atual, sem buffs.
-    protected float baseAttackRate;
+
+    // Nossas variáveis de status base que já existiam
     protected int baseDamage;
-    protected float baseAttackRange; // Se o alcance também for atualizável
+    protected float baseAttackRate;
 
-    // 'original' se refere ao status inicial (Nível 1) antes de qualquer upgrade ou buff.
-    // Usaremos 'base' como referência para buffs agora.
-
-    private Coroutine currentBuffCoroutine;
+    // O resto do seu script...
 
     protected override void Start()
     {
+        // Chama o Start da classe mãe (TowerBase)
         base.Start();
 
-        // Aplica os status iniciais (Nível 1)
-        ApplyLevelStats();
+        // O 'attackRate' e 'attackRange' da TowerBase são inicializados aqui.
+        // O 'baseDamage' é definido nas classes filhas (SamuraiTower, DragonT).
+        baseAttackRate = attackRate;
     }
 
-    // --- NOVO: Lógica de Upgrade ---
-
-    // Aplica os status do nível atual.
-    private void ApplyLevelStats()
+    /// <summary>
+    /// Chamado pela Unity quando o jogador clica no colisor deste objeto.
+    /// </summary>
+    private void OnMouseDown()
     {
-        if (upgradeLevels != null && currentLevel < upgradeLevels.Count)
-        {
-            // Se for um upgrade (nível > 0)
-            TowerLevelData data = upgradeLevels[currentLevel];
-            baseDamage = data.newDamage;
-            baseAttackRate = data.newAttackRate;
-            baseAttackRange = data.newAttackRange;
-        }
-        else if (currentLevel == 0)
-        {
-            // Se for o nível inicial, pega os valores definidos na torre específica (Samurai, etc.)
-            // Isso será feito no Start() da classe filha.
-        }
-
-        // Após aplicar o upgrade, restaura os status atuais para os novos valores base.
-        // Isso garante que buffs não sejam perdidos durante um upgrade.
-        attackRate = baseAttackRate;
-        attackRange = baseAttackRange;
-        HandleDamageBuff(1, false); // Restaura o dano para o novo 'baseDamage'
+        // Quando a torre é clicada, tenta fazer o upgrade.
+        TryUpgrade();
     }
 
+    /// <summary>
+    /// A lógica principal para fazer o upgrade da torre.
+    /// </summary>
     public void TryUpgrade()
     {
-        // Verifica se já está no nível máximo
-        if (currentLevel >= upgradeLevels.Count)
+        // 1. Verifica se já não estamos no nível máximo.
+        if (currentUpgradeLevel >= upgrades.Count)
         {
-            Debug.Log("Torre já está no nível máximo!");
+            Debug.Log(gameObject.name + " já está no nível máximo!");
             return;
         }
 
-        int cost = upgradeLevels[currentLevel].upgradeCost;
+        // 2. Pega as informações do próximo nível de upgrade.
+        UpgradeLevel nextUpgrade = upgrades[currentUpgradeLevel];
 
-        // Supondo que você tem um Totem.instance ou GameManager.instance para gerenciar a mana
-        if (Totem.instance != null && Totem.instance.currentMana >= cost)
+        // 3. Verifica se o jogador tem mana suficiente.
+        if (Totem.instance != null && Totem.instance.currentMana >= nextUpgrade.upgradeCost)
         {
-            Totem.instance.SpendMana(cost);
-            currentLevel++;
-            ApplyLevelStats();
-            Debug.Log($"{gameObject.name} atualizada para o Nível {currentLevel + 1}!");
+            // 4. Gasta a mana.
+            Totem.instance.SpendMana(nextUpgrade.upgradeCost);
+
+            // 5. Aplica os novos status à torre.
+            // Atualizamos as variáveis 'base' para que os buffs sejam calculados corretamente.
+            baseDamage = nextUpgrade.newDamage;
+            baseAttackRate = nextUpgrade.newAttackRate;
+
+            // Atualiza as variáveis da classe TowerBase diretamente.
+            attackRate = nextUpgrade.newAttackRate;
+            attackRange = nextUpgrade.newAttackRange;
+
+            // 6. Avança para o próximo nível.
+            currentUpgradeLevel++;
+
+            Debug.Log($"<color=cyan>{gameObject.name} atualizado para o Nível {currentUpgradeLevel + 1}!</color>");
+            // Adicione um efeito visual de upgrade aqui, se quiser!
         }
         else
         {
             Debug.Log("Mana insuficiente para o upgrade!");
+            // Adicione um som de "erro" aqui!
         }
     }
 
-    // --- Lógica de Buffs (Modificada) ---
+    // Métodos de buff que você já tinha
+    public abstract void HandleDamageBuff(float multiplier, bool isApplying);
 
+    // Adicione esta versão de ApplyBuff que seu KirinTower precisa
     public void ApplyBuff(float damageMultiplier, float rateMultiplier, float duration)
     {
-        if (currentBuffCoroutine != null)
-        {
-            StopCoroutine(currentBuffCoroutine);
-            RemoveBuff();
-        }
-        currentBuffCoroutine = StartCoroutine(BuffSequence(damageMultiplier, rateMultiplier, duration));
-    }
-
-    private IEnumerator BuffSequence(float damageMultiplier, float rateMultiplier, float duration)
-    {
-        // Aplica o buff sobre os status BASE do nível atual
         attackRate = baseAttackRate * rateMultiplier;
-        HandleDamageBuff(damageMultiplier, true); // O dano é aplicado sobre o 'baseDamage'
+        HandleDamageBuff(damageMultiplier, true);
 
-        yield return new WaitForSeconds(duration);
-
-        RemoveBuff();
-        currentBuffCoroutine = null;
+        // Você pode adicionar uma coroutine aqui para remover o buff após a duração
     }
-
-    public virtual void RemoveBuff()
-    {
-        // Restaura para os status BASE do nível atual
-        attackRate = baseAttackRate;
-        HandleDamageBuff(1, false); // O dano é restaurado para o 'baseDamage'
-    }
-
-    protected abstract void HandleDamageBuff(float multiplier, bool isApplying);
 }
