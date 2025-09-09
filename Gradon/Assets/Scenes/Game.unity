@@ -8038,7 +8038,7 @@ MonoBehaviour:
   - {fileID: 202541264}
   - {fileID: 622795112}
   - {fileID: 256882322}
-  waveInfoText: {fileID: 0}
+  waveInfoText: {fileID: 446783848}
   debugLevel: {fileID: 0}
 --- !u!4 &1914288971
 Transform:
