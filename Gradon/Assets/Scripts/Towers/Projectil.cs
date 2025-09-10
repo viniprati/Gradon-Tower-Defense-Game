@@ -1,4 +1,4 @@
-// Projectile.cs (Modificado para Tiro Reto / Não-Teleguiado)
+// Projectile.cs (Com linha de Debug para Diagnóstico)
 
 using UnityEngine;
 
@@ -16,12 +16,10 @@ public class Projectile : MonoBehaviour
     [Tooltip("Prefab do efeito a ser criado no momento do impacto (opcional).")]
     [SerializeField] private GameObject hitEffectPrefab;
 
-    // --- MUDANÇA #1: Variável de tag para colisão ---
-    // Adicionamos uma tag para tornar a colisão mais flexível.
     [Header("Identificação do Alvo")]
     [SerializeField] private string enemyTag = "Enemy";
 
-    // --- Variáveis Internas ---
+    // Variáveis Internas
     private Rigidbody2D rb;
     private int currentDamage;
 
@@ -42,41 +40,36 @@ public class Projectile : MonoBehaviour
     /// </summary>
     public void Seek(Transform _target, int damageFromAttacker)
     {
-        // --- MUDANÇA #2: LÓGICA DE DISPARO MOVIDA PARA CÁ ---
-
-        // 1. Armazena o dano que o projétil causará.
         this.currentDamage = damageFromAttacker;
 
-        // 2. Calcula a direção para o alvo UMA ÚNICA VEZ.
+        if (_target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Vector2 direction = (_target.position - transform.position).normalized;
-
-        // 3. Define a velocidade do Rigidbody nessa direção fixa.
-        // A partir daqui, o motor de física da Unity cuidará do movimento.
-        rb.linearVelocity = direction * speed;
-
-        // 4. (Opcional) Rotaciona o projétil para "olhar" na direção do disparo.
+        rb.velocity = direction * speed;
         transform.up = direction;
     }
-
-    // --- MUDANÇA #3: REMOÇÃO DA LÓGICA DE PERSEGUIÇÃO ---
-    // O método FixedUpdate() foi completamente removido, pois não precisamos mais
-    // recalcular a direção do projétil a cada frame.
 
     /// <summary>
     /// Chamado quando o colisor do projétil entra em contato com outro.
     /// </summary>
     void OnTriggerEnter2D(Collider2D other)
     {
-        // --- MUDANÇA #4: DETECÇÃO DE COLISÃO MELHORADA ---
-        // Em vez de checar por um alvo específico, agora checamos se o objeto
-        // atingido tem a tag de inimigo. Isso permite que o tiro acerte
-        // qualquer inimigo que entrar no seu caminho.
+        // --- ADIÇÃO DE DEBUG AQUI ---
+        // Esta linha é nosso "espião". Ela vai nos dizer o nome de TUDO que o projétil tocar.
+        Debug.Log($"Projétil tocou em: '{other.gameObject.name}' com a Tag: '{other.tag}'");
+
+        // A lógica original continua. Verificamos se o objeto atingido tem a tag de inimigo.
         if (other.CompareTag(enemyTag))
         {
             // Tenta pegar o script do inimigo para aplicar dano.
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
             {
+                Debug.Log($"<color=green>Acerto VÁLIDO!</color> Dando {currentDamage} de dano em {other.name}.");
                 enemy.TakeDamage(currentDamage);
             }
 
