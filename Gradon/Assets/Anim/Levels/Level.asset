@@ -12,8 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c808c2f9bc29054785a42008877889a, type: 3}
   m_Name: Level
   m_EditorClassIdentifier: 
-  levelName: Nova Fase
-  levelIndex: 0
+  levelName: Desfiladeiro dos Arqueiros
+  levelIndex: 2
   sceneToLoad: 
-  waves: []
-  initialMana: 150
+  waves:
+  - waveName: Wave 1
+    enemyGroups:
+    - enemyPrefab: {fileID: 1795373651103439305, guid: fc7790ac66239f24594d1898cc50cf54, type: 3}
+      count: 15
+      spawnInterval: 1.4
+    delayBeforeWave: 5
+  - waveName: Suporte de Fogo
+    enemyGroups:
+    - enemyPrefab: {fileID: 3464743845103004746, guid: c8541432c50118d4a93c1dd4d748a5bf, type: 3}
+      count: 3
+      spawnInterval: 3
+    delayBeforeWave: 20
+  initialMana: 200
