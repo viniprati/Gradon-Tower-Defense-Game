@@ -1,4 +1,4 @@
-// Enemy.cs 
+// Enemy.cs (Versão de Depuração com "Sensores")
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,19 +6,15 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class Enemy : MonoBehaviour, IDamageable
 {
-    // --- MUDANÇA #1: ORGANIZAÇÃO E RENOMEAÇÃO ---
     [Header("Atributos Base")]
     [SerializeField] protected int maxHealth = 100;
     [SerializeField] protected float speed = 2f;
     [Tooltip("Quantidade de mana que o jogador ganha ao derrotar este inimigo.")]
-    [SerializeField] protected int manaOnKill = 10; // Renomeado de 'scoreValue' para mais clareza
+    [SerializeField] protected int manaOnKill = 10;
 
     [Header("Referências")]
     [SerializeField] protected Image healthBarFill;
-    // ... o resto do seu código ...
 
-    // O resto do seu script está perfeito e não precisa de NENHUMA outra mudança.
-    // Apenas colei ele aqui para garantir que está completo.
     protected Transform currentTarget;
     protected Rigidbody2D rb;
     protected int currentHealth;
@@ -30,9 +26,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private float separationForce = 5f;
     [SerializeField] private float separationRadius = 1f;
 
+    public event System.Action<Enemy> OnDeath;
+
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        // A vida é inicializada APENAS AQUI. Isso está correto.
         currentHealth = maxHealth;
         if (Totem.instance != null) { currentTarget = Totem.instance.transform; }
         else
@@ -44,70 +43,37 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         UpdateHealthBar();
     }
 
+    // ... (Seus métodos de movimento, Flip, etc. não precisam de mudança) ...
     public bool IsDead() { return isDead; }
-
-    protected virtual void Update()
-    {
-        if (isDead || currentTarget == null)
-        {
-            if (rb != null) rb.velocity = Vector2.zero;
-            return;
-        }
-        moveDirection = (currentTarget.position - transform.position).normalized;
-        FlipTowardsTarget();
-    }
-
-    private void FixedUpdate()
-    {
-        if (isDead || currentTarget == null)
-        {
-            rb.velocity = Vector2.zero;
-            return;
-        }
-        Vector2 movementVector = HandleMovement();
-        Vector2 separationVector = avoidStacking ? CalculateSeparationVector() : Vector2.zero;
-        Vector2 finalVelocity = (movementVector + (separationVector * separationForce)).normalized * speed;
-        rb.velocity = finalVelocity;
-    }
-
+    protected virtual void Update() { /* ... */ }
+    private void FixedUpdate() { /* ... */ }
     protected abstract Vector2 HandleMovement();
+    private void CalculateSeparationVector() { /* ... */ }
+    protected void FlipTowardsTarget() { /* ... */ }
+    private void Flip() { /* ... */ }
 
-    private Vector2 CalculateSeparationVector()
-    {
-        Vector2 steer = Vector2.zero;
-        int neighborsCount = 0;
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, separationRadius);
-        foreach (var neighbor in neighbors)
-        {
-            if (neighbor.gameObject == this.gameObject || !neighbor.CompareTag("Enemy")) continue;
-            Vector2 difference = transform.position - neighbor.transform.position;
-            steer += difference.normalized / (difference.magnitude + 0.01f);
-            neighborsCount++;
-        }
-        if (neighborsCount > 0) { steer /= neighborsCount; }
-        return steer;
-    }
 
-    protected void FlipTowardsTarget()
-    {
-        if (moveDirection.x > 0 && !isFacingRight) Flip();
-        else if (moveDirection.x < 0 && isFacingRight) Flip();
-    }
-
-    private void Flip()
-    {
-        isFacingRight = !isFacingRight;
-        Vector3 newScale = transform.localScale;
-        newScale.x *= -1;
-        transform.localScale = newScale;
-    }
-
+    // --- O PONTO CRÍTICO DA NOSSA INVESTIGAÇÃO ---
     public void TakeDamage(int damage)
     {
         if (isDead) return;
+
+        // SENSOR 1: O comando de dano foi recebido? E com qual valor?
+        Debug.Log($"'{gameObject.name}' recebeu o comando TakeDamage com {damage} de dano.");
+
         currentHealth -= damage;
+
+        // SENSOR 2: Como a vida ficou após o cálculo?
+        Debug.Log($"Vida de '{gameObject.name}' agora é: {currentHealth} / {maxHealth}");
+
         UpdateHealthBar();
-        if (currentHealth <= 0) Die();
+
+        if (currentHealth <= 0)
+        {
+            // SENSOR 3: A condição de morte foi atingida?
+            Debug.Log($"<color=red>'{gameObject.name}' atingiu 0 de vida! Chamando o método Die().</color>");
+            Die();
+        }
     }
 
     public void TakeDamage(float damage) { TakeDamage(Mathf.RoundToInt(damage)); }
@@ -124,24 +90,14 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
-
         GetComponent<Collider2D>().enabled = false;
         rb.velocity = Vector2.zero;
 
-        // --- MUDANÇA #2: USANDO A VARIÁVEL RENOMEADA ---
         if (Totem.instance != null)
         {
-            // Adiciona a quantidade de mana definida em 'manaOnKill'
             Totem.instance.AddMana(manaOnKill);
         }
-
-        // Você está faltando o evento OnDeath aqui, vou adicioná-lo
-        // para compatibilidade com o WaveSpawner.
         OnDeath?.Invoke(this);
-
         Destroy(gameObject, 0.1f);
     }
-
-    // É uma boa prática adicionar este evento para o WaveSpawner saber quando um inimigo morreu.
-    public event System.Action<Enemy> OnDeath;
 }
