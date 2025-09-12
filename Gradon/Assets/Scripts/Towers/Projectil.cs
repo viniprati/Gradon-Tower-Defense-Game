@@ -1,5 +1,4 @@
-// Projectile.cs (Com linha de Debug para Diagnóstico)
-
+// Projectile.cs (Versão Universal - Adaptada)
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -7,21 +6,16 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [Header("Configurações do Projétil")]
-    [Tooltip("A velocidade com que o projétil se move.")]
     [SerializeField] private float speed = 20f;
-    [Tooltip("Tempo em segundos antes que o projétil se destrua, caso não acerte nada.")]
     [SerializeField] private float lifetime = 3f;
 
     [Header("Efeitos")]
-    [Tooltip("Prefab do efeito a ser criado no momento do impacto (opcional).")]
     [SerializeField] private GameObject hitEffectPrefab;
-
-    [Header("Identificação do Alvo")]
-    [SerializeField] private string enemyTag = "Enemy";
 
     // Variáveis Internas
     private Rigidbody2D rb;
-    private int currentDamage;
+    private float currentDamage; // ALTERAÇÃO 1: Dano agora é float para compatibilidade
+    private bool hasHit = false; // Garante que o dano seja aplicado apenas uma vez
 
     void Awake()
     {
@@ -31,14 +25,14 @@ public class Projectile : MonoBehaviour
 
     void Start()
     {
-        // Agenda a destruição do projétil após 'lifetime' segundos
         Destroy(gameObject, lifetime);
     }
 
     /// <summary>
-    /// Método público que a torre chama para configurar e DISPARAR o projétil.
+    /// Configura e DISPARA o projétil em direção a um alvo.
+    /// Usado tanto por Torres quanto por Inimigos.
     /// </summary>
-    public void Seek(Transform _target, int damageFromAttacker)
+    public void Seek(Transform _target, float damageFromAttacker) // ALTERAÇÃO 2: Recebe float
     {
         this.currentDamage = damageFromAttacker;
 
@@ -50,37 +44,52 @@ public class Projectile : MonoBehaviour
 
         Vector2 direction = (_target.position - transform.position).normalized;
         rb.velocity = direction * speed;
-        transform.up = direction;
+        transform.up = direction; // Rotaciona o projétil para apontar na direção
     }
 
     /// <summary>
-    /// Chamado quando o colisor do projétil entra em contato com outro.
+    /// Chamado pela física da Unity quando o projétil toca em algo.
     /// </summary>
     void OnTriggerEnter2D(Collider2D other)
     {
-        // --- ADIÇÃO DE DEBUG AQUI ---
-        // Esta linha é nosso "espião". Ela vai nos dizer o nome de TUDO que o projétil tocar.
-        Debug.Log($"Projétil tocou em: '{other.gameObject.name}' com a Tag: '{other.tag}'");
+        // Se o projétil já acertou algo, ignora colisões futuras
+        if (hasHit) return;
 
-        // A lógica original continua. Verificamos se o objeto atingido tem a tag de inimigo.
-        if (other.CompareTag(enemyTag))
+        // --- ALTERAÇÃO 3: LÓGICA DE ALVO UNIVERSAL ---
+
+        // VERIFICA SE ATINGIU UM INIMIGO
+        Enemy enemy = other.GetComponent<Enemy>();
+        if (enemy != null && !enemy.IsDead)
         {
-            // Tenta pegar o script do inimigo para aplicar dano.
-            Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                Debug.Log($"<color=green>Acerto VÁLIDO!</color> Dando {currentDamage} de dano em {other.name}.");
-                enemy.TakeDamage(currentDamage);
-            }
-
-            // Cria um efeito de impacto visual, se um prefab foi configurado.
-            if (hitEffectPrefab != null)
-            {
-                Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
-            }
-
-            // Destrói o projétil após o impacto.
-            Destroy(gameObject);
+            hasHit = true; // Marca que acertou
+            enemy.TakeDamage(currentDamage);
+            HandleImpact();
+            return; // Sai da função após o acerto
         }
+
+        // SE NÃO FOR UM INIMIGO, VERIFICA SE ATINGIU O TOTEM
+        Totem totem = other.GetComponent<Totem>();
+        if (totem != null && !totem.IsDestroyed)
+        {
+            hasHit = true; // Marca que acertou
+            totem.TakeDamage(currentDamage);
+            HandleImpact();
+        }
+    }
+
+    /// <summary>
+    /// Centraliza a lógica de pós-impacto (efeitos visuais e destruição).
+    /// </summary>
+    private void HandleImpact()
+    {
+        Debug.Log($"<color=green>Acerto VÁLIDO!</color> Projétil causou {currentDamage} de dano.");
+
+        if (hitEffectPrefab != null)
+        {
+            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+        }
+
+        // Destrói o projétil
+        Destroy(gameObject);
     }
 }

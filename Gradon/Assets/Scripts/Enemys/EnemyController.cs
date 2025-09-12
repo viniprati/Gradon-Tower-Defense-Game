@@ -64,10 +64,8 @@ public abstract class Enemy : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (IsDead) return;
-
         health -= damage;
         Debug.Log($"{gameObject.name} tomou {damage} de dano. Vida restante: {health}");
-
         if (health <= 0)
         {
             Die();
@@ -83,4 +81,13 @@ public abstract class Enemy : MonoBehaviour
     }
 
     public abstract void Attack();
+
+    // Adicionado de volta para corrigir o erro
+    protected virtual void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, decelerationStartDistance);
+    }
 }
