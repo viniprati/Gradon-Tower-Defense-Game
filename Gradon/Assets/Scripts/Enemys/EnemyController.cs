@@ -1,36 +1,39 @@
 using UnityEngine;
-using UnityEngine.AI;
+using System;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public abstract class Enemy : MonoBehaviour
 {
-    public float health = 100f;
-    public float damage = 10f;
-    public float speed = 3.5f;
+    [Header("Atributos Base")]
+    [SerializeField] protected int health;
+    [SerializeField] protected float speed;
+    protected Rigidbody2D rb;
 
-    protected NavMeshAgent agent;
-    protected Transform target;
+    public bool IsDead { get; protected set; }
+
+    public event Action<Enemy> OnDeath;
 
     protected virtual void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        rb = GetComponent<Rigidbody2D>();
+        IsDead = false;
     }
 
-    protected virtual void Update()
+    public void TakeDamage(int damage)
     {
-        if (target != null)
-            agent.SetDestination(target.position);
-    }
-
-    public virtual void TakeDamage(float amount)
-    {
-        health -= amount;
-        if (health <= 0)
+        health -= damage;
+        if (health <= 0 && !IsDead)
+        {
             Die();
+        }
     }
 
     protected virtual void Die()
     {
+        IsDead = true;
+        OnDeath?.Invoke(this);
         Destroy(gameObject);
     }
+
+    public abstract void Attack();
 }

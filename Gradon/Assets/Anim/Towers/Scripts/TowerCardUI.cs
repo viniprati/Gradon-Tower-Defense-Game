@@ -1,4 +1,3 @@
-// TowerCardUI.cs (Corrigido para usar TowerBase)
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,6 +16,12 @@ public class TowerCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (towerPrefab == null)
+        {
+            Debug.LogWarning("TowerCardUI: towerPrefab não está atribuído!");
+            return;
+        }
+
         if (Totem.instance != null && Totem.instance.currentMana >= towerCost)
         {
             ghostTowerInstance = Instantiate(towerPrefab);
@@ -24,7 +29,6 @@ public class TowerCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             var collider = ghostTowerInstance.GetComponent<Collider2D>();
             if (collider != null) collider.enabled = false;
 
-            // Procura pela sua classe base correta: TowerBase
             var towerScript = ghostTowerInstance.GetComponent<TowerBase>();
             if (towerScript != null) towerScript.enabled = false;
 
@@ -58,7 +62,6 @@ public class TowerCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             var collider = ghostTowerInstance.GetComponent<Collider2D>();
             if (collider != null) collider.enabled = true;
 
-            // Procura pela sua classe base correta: TowerBase
             var towerScript = ghostTowerInstance.GetComponent<TowerBase>();
             if (towerScript != null) towerScript.enabled = true;
 
@@ -75,6 +78,11 @@ public class TowerCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     private void UpdateGhostTowerPosition(PointerEventData eventData)
     {
-        // ... (o resto desta função não precisa de alterações)
+        if (ghostTowerInstance == null) return;
+
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(eventData.position);
+        ghostTowerInstance.transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
+
+        // Aqui você pode adicionar lógica de "canPlaceTower" dependendo da zona proibida do Totem
     }
 }

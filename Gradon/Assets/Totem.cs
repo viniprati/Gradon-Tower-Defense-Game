@@ -1,11 +1,9 @@
-// Totem.cs
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class Totem : MonoBehaviour, IDamageable
 {
-    // --- Singleton para acesso global ---
     public static Totem instance;
 
     [Header("Atributos da Base")]
@@ -30,6 +28,9 @@ public class Totem : MonoBehaviour, IDamageable
     // --- Variáveis Internas ---
     public float currentHealth { get; private set; }
     private bool isDestroyed = false;
+
+    // **Nova propriedade pública para Player.cs**
+    public bool IsDestroyed => isDestroyed;
 
     #region Ciclo de Vida Unity
 
@@ -60,8 +61,10 @@ public class Totem : MonoBehaviour, IDamageable
     public void TakeDamage(float damage)
     {
         if (isDestroyed) return;
+
         currentHealth -= damage;
         UpdateHealthBar();
+
         if (currentHealth <= 0)
         {
             currentHealth = 0;
@@ -72,6 +75,7 @@ public class Totem : MonoBehaviour, IDamageable
     private void Die()
     {
         if (isDestroyed) return;
+
         isDestroyed = true;
         Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
         gameObject.SetActive(false);
@@ -79,29 +83,27 @@ public class Totem : MonoBehaviour, IDamageable
 
     #endregion
 
-    // --- SEÇÃO MODIFICADA ---
     #region Lógica de Mana
 
-    public void AddMana(int amount) 
+    public void AddMana(int amount)
     {
         currentMana = Mathf.Min(currentMana + (float)amount, maxMana);
         UpdateManaBar();
     }
 
-    public bool SpendMana(int amount) 
+    public bool SpendMana(int amount)
     {
         if (currentMana >= amount)
         {
             currentMana -= amount;
             UpdateManaBar();
-            return true; // Sucesso!
+            return true;
         }
 
-        return false; // Falha, mana insuficiente.
+        return false;
     }
 
     #endregion
-    // --- FIM DA SEÇÃO MODIFICADA ---
 
     #region Lógica de UI
 
