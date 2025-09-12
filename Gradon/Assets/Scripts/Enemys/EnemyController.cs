@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public abstract class EnemyController : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
     [Header("Atributos Base")]
     [SerializeField] protected int maxHealth = 100;
