@@ -1,4 +1,4 @@
-// RangedEnemy.cs (CORRIGIDO)
+// RangedEnemy.cs (Final Corrigido)
 using UnityEngine;
 
 public class RangedEnemy : Enemy
@@ -7,7 +7,6 @@ public class RangedEnemy : Enemy
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float fireRate = 1.5f;
-    [SerializeField] private float projectileSpeed = 10f;
     [SerializeField] private float projectileDamage = 30f;
 
     private float fireCooldown = 0f;
@@ -22,7 +21,6 @@ public class RangedEnemy : Enemy
     protected override void Update()
     {
         base.Update();
-
         if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
         {
             fireCooldown -= Time.deltaTime;
@@ -40,8 +38,8 @@ public class RangedEnemy : Enemy
 
             if (projectile != null)
             {
-                Vector2 direction = (target.position - firePoint.position).normalized;
-                projectile.Launch(direction, projectileSpeed, projectileDamage);
+                // MUDANÇA 2: Chamando o método 'Seek' para corresponder ao Projectile.cs.
+                projectile.Seek(target, projectileDamage);
                 fireCooldown = fireRate;
             }
         }
