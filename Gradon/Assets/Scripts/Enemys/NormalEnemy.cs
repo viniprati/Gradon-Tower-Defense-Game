@@ -13,12 +13,21 @@ public class NormalEnemy : Enemy
 
         Vector3 direction = (Totem.instance.transform.position - transform.position).normalized;
         rb.velocity = direction * speed;
+
+        // Ataque se estiver próximo do Totem
+        float distance = Vector3.Distance(transform.position, Totem.instance.transform.position);
+        if (distance <= 1f)
+        {
+            Attack();
+        }
     }
 
     public override void Attack()
     {
-        Debug.Log("NormalEnemy atacou corpo a corpo!");
-        // Aqui você pode adicionar lógica de dano ao Totem
-        Totem.instance.TakeDamage(10);
+        if (Totem.instance != null)
+        {
+            Totem.instance.TakeDamage(10); // dano padrão
+            Debug.Log("NormalEnemy atacou corpo a corpo!");
+        }
     }
 }
