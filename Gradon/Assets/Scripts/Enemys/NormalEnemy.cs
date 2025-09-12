@@ -1,34 +1,48 @@
-// NormalEnemy.cs
 using UnityEngine;
 
-public class NormalEnemy : Enemy // Garante que está herdando da classe base correta
+public class NormalEnemy : Enemy
 {
-    // A única coisa que ele precisa fazer é definir como se mover.
-    protected override Vector2 HandleMovement()
+    [Header("Atributos de Ataque do Normal Enemy")]
+    [SerializeField] private float attackRange = 1.2f;
+    [SerializeField] private float attackRate = 1f;
+    [SerializeField] private float attackDamage = 15f;
+
+    private float attackCooldown = 0f;
+
+    protected override void Update()
     {
-        // CORREÇÃO: Usa a variável 'currentTarget' herdada da classe base.
-        if (currentTarget != null)
+        if (isDead || currentTarget == null)
         {
-            // A classe base já calcula a direção em 'moveDirection', então podemos simplesmente retorná-la.
-            return moveDirection;
+            rb.velocity = Vector2.zero;
+            return;
         }
 
-        // Se, por algum motivo, não houver alvo, ele fica parado.
-        return Vector2.zero;
-    }
+        float distanceToTarget = Vector2.Distance(transform.position, currentTarget.position);
 
-    // Você precisará adicionar uma lógica de ataque para o inimigo normal (Ghoul) aqui
-    // Exemplo:
-    /*
-    private void Update()
-    {
-        base.Update(); // Roda o Update da classe base
-        
-        // Se estiver perto o suficiente do alvo, ataca
-        if (currentTarget != null && Vector2.Distance(transform.position, currentTarget.position) <= attackRange)
+        if (distanceToTarget > attackRange)
         {
-            // Lógica de ataque com cooldown aqui...
+            base.Update(); // movimento padrão
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;
+
+            attackCooldown -= Time.deltaTime;
+            if (attackCooldown <= 0f)
+            {
+                Attack();
+                attackCooldown = 1f / attackRate;
+            }
         }
     }
-    */
+
+    private void Attack()
+    {
+        IDamageable targetHealth = currentTarget.GetComponent<IDamageable>();
+        if (targetHealth != null)
+        {
+            targetHealth.TakeDamage(attackDamage);
+            Debug.Log(gameObject.name + " atacou " + currentTarget.name);
+        }
+    }
 }
