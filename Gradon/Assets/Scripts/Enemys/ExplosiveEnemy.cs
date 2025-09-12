@@ -1,18 +1,11 @@
-// GhoulController.cs (Corrigido e integrado)
-
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class GhoulController : Enemy // Herda da classe base 'Enemy'
+public class ExplosiveEnemy : Enemy
 {
-    [Header("Atributos de Ataque do Ghoul")]
-    [SerializeField] private float attackRange = 1.5f;
-    [SerializeField] private float attackRate = 1f;
-    [SerializeField] private float attackDamage = 20f;
+    [Header("Atributos de Explosão")]
+    [SerializeField] private float explosionRange = 2f;
+    [SerializeField] private float explosionDamage = 40f;
 
-    private float attackCooldown = 0f;
-
-    // Sobrescrevemos o Update da classe base para adicionar a lógica de ataque
     protected override void Update()
     {
         if (isDead || currentTarget == null)
@@ -21,35 +14,31 @@ public class GhoulController : Enemy // Herda da classe base 'Enemy'
             return;
         }
 
-        // Verifica a distância até o alvo
         float distanceToTarget = Vector2.Distance(transform.position, currentTarget.position);
 
-        // Se estiver longe, continua se movendo (chama a lógica da classe base)
-        if (distanceToTarget > attackRange)
+        if (distanceToTarget > explosionRange)
         {
-            base.Update(); // Executa o movimento do Enemy.cs
+            base.Update(); // movimento padrão
         }
-        // Se estiver perto o suficiente, para de se mover e ataca
         else
         {
-            rb.velocity = Vector2.zero; // Para o movimento
-
-            attackCooldown -= Time.deltaTime;
-            if (attackCooldown <= 0)
-            {
-                Attack();
-                attackCooldown = 1f / attackRate;
-            }
+            Explode();
         }
     }
 
-    private void Attack()
+    private void Explode()
     {
-        IDamageable targetHealth = currentTarget.GetComponent<IDamageable>();
-        if (targetHealth != null)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRange);
+        foreach (var hit in hits)
         {
-            targetHealth.TakeDamage(attackDamage);
-            Debug.Log(gameObject.name + " atacou " + currentTarget.name);
+            IDamageable targetHealth = hit.GetComponent<IDamageable>();
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(explosionDamage);
+            }
         }
+
+        Debug.Log(gameObject.name + " explodiu causando dano em área!");
+        Die(); // já morre após explodir
     }
 }
