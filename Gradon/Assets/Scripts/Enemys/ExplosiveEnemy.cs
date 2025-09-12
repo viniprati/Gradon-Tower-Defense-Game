@@ -3,7 +3,7 @@
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class GhoulController : EnemyController // Herda da classe base 'Enemy'
+public class GhoulController : Enemy // Herda da classe base 'Enemy'
 {
     [Header("Atributos de Ataque do Ghoul")]
     [SerializeField] private float attackRange = 1.5f;
