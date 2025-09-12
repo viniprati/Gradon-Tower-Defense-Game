@@ -8,6 +8,7 @@ public class Totem : MonoBehaviour, IDamageable
 
     [Header("Atributos da Base")]
     [SerializeField] private float maxHealth = 1000f;
+    public float currentHealth { get; private set; }
 
     [Header("Configuração da Zona de Construção")]
     [Tooltip("O raio ao redor do Totem onde NÃO é permitido construir.")]
@@ -25,11 +26,7 @@ public class Totem : MonoBehaviour, IDamageable
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider manaBar;
 
-    // --- Variáveis Internas ---
-    public float currentHealth { get; private set; }
     private bool isDestroyed = false;
-
-    // **Nova propriedade pública para Player.cs**
     public bool IsDestroyed => isDestroyed;
 
     #region Ciclo de Vida Unity
@@ -99,7 +96,6 @@ public class Totem : MonoBehaviour, IDamageable
             UpdateManaBar();
             return true;
         }
-
         return false;
     }
 
