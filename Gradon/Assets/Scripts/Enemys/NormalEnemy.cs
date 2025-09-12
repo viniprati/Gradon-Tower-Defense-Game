@@ -12,8 +12,24 @@ public class NormalEnemy : Enemy
     protected override void Start()
     {
         base.Start();
-        health *= 2; // torre precisa de dois tiros
+        health = 50; // vida fixa
         individualSpeed = speed * speedMultiplier;
+
+        // Ignora colisão com o Totem e torres
+        if (Totem.instance != null)
+        {
+            Collider2D totemCol = Totem.instance.GetComponent<Collider2D>();
+            if (totemCol != null)
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), totemCol);
+        }
+
+        GameObject[] towers = GameObject.FindGameObjectsWithTag("Tower");
+        foreach (var tower in towers)
+        {
+            Collider2D col = tower.GetComponent<Collider2D>();
+            if (col != null)
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), col);
+        }
     }
 
     void Update()

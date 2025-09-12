@@ -9,7 +9,7 @@ using UnityEngine;
 public class DragonT : TowerWithBuffs
 {
     [Header("Atributos do Dragão (Nível 1)")]
-    [SerializeField] private int initialDamage = 15;
+    [SerializeField] private int initialDamage = 25; // dano alterado para 25
     [SerializeField] private float initialAttackRate = 0.8f;
     [SerializeField] private float initialAttackRange = 7.0f;
 
