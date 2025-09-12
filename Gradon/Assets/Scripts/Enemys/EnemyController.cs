@@ -1,4 +1,4 @@
-// Enemy.cs 
+// Enemy.cs
 using UnityEngine;
 using System;
 
@@ -15,6 +15,10 @@ public abstract class Enemy : MonoBehaviour
     protected Rigidbody2D rb;
     protected Transform target;
     public bool IsDead { get; protected set; }
+
+    // --- LINHA 1 ADICIONADA AQUI ---
+    // Evento para notificar outros scripts (como o Spawner) sobre a morte do inimigo.
+    public event Action<Enemy> OnDeath;
 
     protected virtual void Start()
     {
@@ -77,12 +81,16 @@ public abstract class Enemy : MonoBehaviour
         if (IsDead) return;
         IsDead = true;
         Debug.Log($"<color=red>{gameObject.name} morreu!</color>");
+
+        // --- LINHA 2 ADICIONADA AQUI ---
+        // Dispara o evento de morte, notificando o Spawner.
+        OnDeath?.Invoke(this);
+
         Destroy(gameObject);
     }
 
     public abstract void Attack();
 
-    // Adicionado de volta para corrigir o erro
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
