@@ -1,3 +1,4 @@
+// ExplosiveEnemy.cs (Mantendo o movimento linear para este, mas pode ser adaptado)
 using UnityEngine;
 
 public class ExplosiveEnemy : Enemy
@@ -7,6 +8,8 @@ public class ExplosiveEnemy : Enemy
 
     void Update()
     {
+        // Se quiser que ele desacelere perto do alvo, chame MoveTowardsTarget() aqui
+        // Mas para manter a ideia original de movimento linear, podemos deixar assim:
         rb.velocity = Vector2.left * speed;
     }
 

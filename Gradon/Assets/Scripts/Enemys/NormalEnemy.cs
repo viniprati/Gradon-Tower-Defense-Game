@@ -1,19 +1,16 @@
+// NormalEnemy.cs
 using UnityEngine;
 
 public class NormalEnemy : Enemy
 {
-    [Header("Configuração Extra")]
-    [SerializeField] private float speedMultiplier = 1.5f;
+    [Header("Configuração Extra Normal Enemy")]
     [SerializeField] private int attackDamage = 10;
-    [SerializeField] private float attackRange = 1f;
-
-    private float individualSpeed;
+    // O attackRange agora vem da classe base, mas você pode sobrescrevê-lo no Inspector se quiser um valor diferente para este inimigo
 
     protected override void Start()
     {
         base.Start();
         health = 50; // vida fixa
-        individualSpeed = speed * speedMultiplier;
 
         // Ignora colisão com o Totem e torres
         if (Totem.instance != null)
@@ -34,20 +31,8 @@ public class NormalEnemy : Enemy
 
     void Update()
     {
-        if (Totem.instance == null || IsDead) return;
-
-        float distance = Vector3.Distance(transform.position, Totem.instance.transform.position);
-
-        if (distance > attackRange)
-        {
-            Vector3 direction = (Totem.instance.transform.position - transform.position).normalized;
-            rb.linearVelocity = direction * individualSpeed;
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
-            Attack();
-        }
+        // Agora, a lógica de movimento e desaceleração é cuidada pelo método da classe base
+        MoveTowardsTarget();
     }
 
     public override void Attack()

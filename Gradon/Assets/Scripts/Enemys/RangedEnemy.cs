@@ -1,12 +1,13 @@
+// RangedEnemy.cs
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class RangedEnemy : Enemy
 {
-    [Header("Configuração Extra")]
-    [SerializeField] private float speedMultiplier = 1.2f;
+    [Header("Configuração Extra Ranged Enemy")]
     [SerializeField] private GameObject projectile;
     [SerializeField] private float fireRate = 1f;
-    [SerializeField] private float attackRange = 5f;
+    // O attackRange agora vem da classe base, mas você pode sobrescrevê-lo no Inspector se quiser um valor diferente para este inimigo
 
     private float fireCooldown = 0f;
 
@@ -18,18 +19,12 @@ public class RangedEnemy : Enemy
 
     void Update()
     {
-        if (Totem.instance == null || IsDead) return;
+        // Agora, a lógica de movimento e desaceleração é cuidada pelo método da classe base
+        MoveTowardsTarget();
 
-        float distance = Vector3.Distance(transform.position, Totem.instance.transform.position);
-
-        if (distance > attackRange)
+        // A lógica de ataque baseada em cooldown permanece aqui, dentro do alcance de ataque
+        if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
         {
-            Vector3 direction = (Totem.instance.transform.position - transform.position).normalized;
-            rb.linearVelocity = direction * speed * speedMultiplier;
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
             fireCooldown -= Time.deltaTime;
             if (fireCooldown <= 0f)
             {
