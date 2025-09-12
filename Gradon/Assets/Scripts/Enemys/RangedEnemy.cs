@@ -1,45 +1,63 @@
 // RangedEnemy.cs
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class RangedEnemy : Enemy
 {
-    [Header("Configuração Extra Ranged Enemy")]
-    [SerializeField] private GameObject projectile;
-    [SerializeField] private float fireRate = 1f;
-    // O attackRange agora vem da classe base, mas você pode sobrescrevê-lo no Inspector se quiser um valor diferente para este inimigo
+    [Header("Configurações do Ranged Enemy")]
+    [SerializeField] private GameObject projectilePrefab; // Prefab do projétil
+    [SerializeField] private Transform firePoint; // Ponto de onde o projétil é instanciado
+    [SerializeField] private float fireRate = 1.5f; // Tempo entre os disparos
+    [SerializeField] private int projectileDamage = 30; // Dano que o projétil causa
 
-    private float fireCooldown = 0f;
+    private float fireCooldown = 0f; // Contador para o cooldown de disparo
 
     protected override void Start()
     {
-        base.Start();
-        health *= 2; // vida extra: torre precisa de dois disparos
+        base.Start(); // Chama o Start da classe base
+        // Sobrescreve atributos da base se desejar
+        // health = 60; // Inimigo à distância pode ter menos vida
+        // speed = 2.5f;
+        attackRange = 6.0f; // Define um alcance de ataque maior para o inimigo à distância
+        // decelerationStartDistance = 8f;
     }
 
-    void Update()
+    protected override void Update()
     {
-        // Agora, a lógica de movimento e desaceleração é cuidada pelo método da classe base
-        MoveTowardsTarget();
+        base.Update(); // Chama o Update da classe base para lidar com o movimento
 
-        // A lógica de ataque baseada em cooldown permanece aqui, dentro do alcance de ataque
+        // Gerencia o cooldown de ataque
         if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
         {
             fireCooldown -= Time.deltaTime;
             if (fireCooldown <= 0f)
             {
-                Attack();
-                fireCooldown = fireRate;
+                Attack(); // Chama o ataque quando o cooldown termina
+                fireCooldown = fireRate; // Reseta o cooldown
             }
         }
     }
 
     public override void Attack()
     {
-        if (projectile != null)
+        if (projectilePrefab == null || firePoint == null || target == null)
         {
-            Instantiate(projectile, transform.position, Quaternion.identity);
-            Debug.Log("RangedEnemy atirou um projétil!");
+            Debug.LogWarning("RangedEnemy não pode atacar: Prefab do projétil, FirePoint ou Target ausente.", this);
+            return;
+        }
+
+        // Instancia o projétil no FirePoint
+        GameObject newProjectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        Projectile projectileScript = newProjectile.GetComponent<Projectile>();
+
+        if (projectileScript != null)
+        {
+            // Configura o projétil com o alvo e o dano
+            projectileScript.Seek(target, projectileDamage);
+            Debug.Log($"RangedEnemy atirou um projétil no Totem, com {projectileDamage} de dano!");
+        }
+        else
+        {
+            Debug.LogError("O prefab do projétil não possui um componente Projectile.", newProjectile);
         }
     }
 }

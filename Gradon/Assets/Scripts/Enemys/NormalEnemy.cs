@@ -3,43 +3,30 @@ using UnityEngine;
 
 public class NormalEnemy : Enemy
 {
-    [Header("Configuração Extra Normal Enemy")]
-    [SerializeField] private int attackDamage = 10;
-    // O attackRange agora vem da classe base, mas você pode sobrescrevê-lo no Inspector se quiser um valor diferente para este inimigo
+    [Header("Configurações do Normal Enemy")]
+    [SerializeField] private int attackDamage = 20; // Dano específico do Normal Enemy por ataque
 
     protected override void Start()
     {
-        base.Start();
-        health = 50; // vida fixa
-
-        // Ignora colisão com o Totem e torres
-        if (Totem.instance != null)
-        {
-            Collider2D totemCol = Totem.instance.GetComponent<Collider2D>();
-            if (totemCol != null)
-                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), totemCol);
-        }
-
-        GameObject[] towers = GameObject.FindGameObjectsWithTag("Tower");
-        foreach (var tower in towers)
-        {
-            Collider2D col = tower.GetComponent<Collider2D>();
-            if (col != null)
-                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), col);
-        }
+        base.Start(); // Chama o Start da classe base para inicializar Rigidbody, Target, etc.
+        // Sobrescreve atributos da base se desejar (ou defina no Inspector)
+        // health = 80; 
+        // speed = 4f; 
+        // attackRange = 1.0f;
+        // decelerationStartDistance = 4f;
     }
 
-    void Update()
-    {
-        // Agora, a lógica de movimento e desaceleração é cuidada pelo método da classe base
-        MoveTowardsTarget();
-    }
+    // O Update() da classe base já chama MoveTowardsTarget(), então não precisamos de um Update() aqui
+    // a menos que haja lógica específica para este inimigo a cada frame que não seja de movimento.
 
     public override void Attack()
     {
-        if (Totem.instance != null)
+        if (target != null && Totem.instance != null)
         {
+            // Aplica dano direto ao Totem
             Totem.instance.TakeDamage(attackDamage);
+            Debug.Log($"NormalEnemy atacou o Totem, causando {attackDamage} de dano!");
+            // Pode adicionar um cooldown para o ataque se necessário, ou uma animação.
         }
     }
 }
