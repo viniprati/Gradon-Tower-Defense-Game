@@ -153,15 +153,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3e0c8fb4f4b1fe45aae5fb3f45381f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 30
-  speed: 2.5
-  scoreValue: 100
-  playerTransform: {fileID: 0}
-  coinPrefab: {fileID: 6967947146392876268, guid: e38ec4f6fa347214682b29c5a90ab25b, type: 3}
-  healthBarFill: {fileID: 53609372266293889}
-  avoidStacking: 1
-  separationForce: 5
-  separationRadius: 1
+  health: 30
+  speed: 30
+  speedMultiplier: 1
+  maxHealthExtra: 0
+  attackDamage: 10
 --- !u!58 &4526183084712262034
 CircleCollider2D:
   m_ObjectHideFlags: 0
