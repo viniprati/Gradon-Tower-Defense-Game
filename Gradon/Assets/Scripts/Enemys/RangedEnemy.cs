@@ -1,5 +1,5 @@
-// RangedEnemy.cs (Final Corrigido)
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class RangedEnemy : Enemy
 {
@@ -15,7 +15,6 @@ public class RangedEnemy : Enemy
     {
         base.Start();
         attackRange = 7.0f;
-        decelerationStartDistance = 9.0f;
     }
 
     protected override void Update()
@@ -30,15 +29,12 @@ public class RangedEnemy : Enemy
     public override void Attack()
     {
         if (fireCooldown > 0f) return;
-
         if (projectilePrefab != null && firePoint != null && target != null)
         {
             GameObject projGO = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
             Projectile projectile = projGO.GetComponent<Projectile>();
-
             if (projectile != null)
             {
-                // MUDANÇA 2: Chamando o método 'Seek' para corresponder ao Projectile.cs.
                 projectile.Seek(target, projectileDamage);
                 fireCooldown = fireRate;
             }

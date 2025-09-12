@@ -1,4 +1,3 @@
-// Enemy.cs
 using UnityEngine;
 using System;
 
@@ -10,14 +9,10 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected float health = 100f;
     [SerializeField] protected float speed = 3f;
     [SerializeField] protected float attackRange = 1.5f;
-    [SerializeField] protected float decelerationStartDistance = 5f;
 
     protected Rigidbody2D rb;
     protected Transform target;
     public bool IsDead { get; protected set; }
-
-    // --- LINHA 1 ADICIONADA AQUI ---
-    // Evento para notificar outros scripts (como o Spawner) sobre a morte do inimigo.
     public event Action<Enemy> OnDeath;
 
     protected virtual void Start()
@@ -49,14 +44,7 @@ public abstract class Enemy : MonoBehaviour
         if (distanceToTarget > attackRange)
         {
             Vector3 direction = (target.position - transform.position).normalized;
-            float currentSpeed = speed;
-
-            if (distanceToTarget < decelerationStartDistance)
-            {
-                float factor = Mathf.InverseLerp(attackRange, decelerationStartDistance, distanceToTarget);
-                currentSpeed = speed * factor;
-            }
-            rb.linearVelocity = direction * currentSpeed;
+            rb.linearVelocity = direction * speed;
         }
         else
         {
@@ -69,7 +57,6 @@ public abstract class Enemy : MonoBehaviour
     {
         if (IsDead) return;
         health -= damage;
-        Debug.Log($"{gameObject.name} tomou {damage} de dano. Vida restante: {health}");
         if (health <= 0)
         {
             Die();
@@ -80,12 +67,7 @@ public abstract class Enemy : MonoBehaviour
     {
         if (IsDead) return;
         IsDead = true;
-        Debug.Log($"<color=red>{gameObject.name} morreu!</color>");
-
-        // --- LINHA 2 ADICIONADA AQUI ---
-        // Dispara o evento de morte, notificando o Spawner.
         OnDeath?.Invoke(this);
-
         Destroy(gameObject);
     }
 
@@ -95,7 +77,5 @@ public abstract class Enemy : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, decelerationStartDistance);
     }
 }
