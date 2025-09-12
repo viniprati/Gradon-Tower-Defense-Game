@@ -76,4 +76,4 @@ O projeto tem uma base sólida. As próximas etapas para o desenvolvimento inclu
 - [ ] **Polimento Visual:** Adicionar efeitos de partículas para ataques, mortes e upgrades.
 
 ---
-**Desenvolvido por: [DeadWhispers Studio]**
+**Desenvolvido por: DeadWhispers Studio**
