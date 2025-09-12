@@ -197,7 +197,7 @@ MonoBehaviour:
   attackRange: 7
   attackRate: 0.8
   cost: 50
-  towerIcon: {fileID: 0}
+  towerIcon: {fileID: 95988692, guid: 107d5a5d4b69b8f4a8589ab931c9ca25, type: 3}
   enemyTag: Enemy
   partToRotate: {fileID: 0}
   rangeIndicator: {fileID: 0}

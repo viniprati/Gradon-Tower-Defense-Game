@@ -1,4 +1,3 @@
-// Projectile.cs 
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -28,9 +27,6 @@ public class Projectile : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    /// <summary>
-    /// Configura e DISPARA o projétil em direção a um alvo.
-    /// </summary>
     public void Seek(Transform _target, float damageFromAttacker)
     {
         this.currentDamage = damageFromAttacker;
@@ -42,13 +38,16 @@ public class Projectile : MonoBehaviour
         }
 
         Vector2 direction = (_target.position - transform.position).normalized;
-        // MUDANÇA 1: Usando linearVelocity para remover o aviso de obsoleto.
         rb.linearVelocity = direction * speed;
         transform.up = direction;
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // --- LINHA DE DEBUG ADICIONADA AQUI ---
+        // Esta linha vai nos dizer TUDO o que o projétil toca.
+        Debug.Log($"PROJÉTIL TOCOU EM: {other.gameObject.name} | LAYER: {LayerMask.LayerToName(other.gameObject.layer)} | TAG: {other.tag}");
+
         if (hasHit) return;
 
         // VERIFICA SE ATINGIU UM INIMIGO
