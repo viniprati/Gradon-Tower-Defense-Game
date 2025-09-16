@@ -79,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 100
   m_Sprite: {fileID: 1265334331, guid: b8f8227df4e1bd442b3be159bd10f7de, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -125,14 +125,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c25ca007e2784cb4bb6267157c7859a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  towerName: "Torre Padr\xE3o"
   attackRange: 1.5
   attackRate: 1
   cost: 100
   towerIcon: {fileID: 1265334331, guid: b8f8227df4e1bd442b3be159bd10f7de, type: 3}
+  enemyTag: Enemy
   partToRotate: {fileID: 1959061076642683475}
   rangeIndicator: {fileID: 7808959562207374799}
-  rangeIndicatorOpacity: 0.02
-  damage: 30
+  upgrades: []
+  baseAttackRange: 0
+  initialDamage: 15
+  initialAttackRate: 1
+  initialAttackRange: 2
   attackEffectPrefab: {fileID: 1274245671474632354, guid: ce5170d365049854ba821ba17e2278b2, type: 3}
 --- !u!58 &7083947278126468440
 CircleCollider2D:

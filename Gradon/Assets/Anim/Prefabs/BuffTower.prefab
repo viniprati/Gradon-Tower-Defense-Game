@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 100
   m_Sprite: {fileID: 4773117178677697770, guid: 979382697f6833a45876c9894916744f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -124,6 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b11b4dc2d16cf6c4fac5c37819ff924f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  towerName: "Torre Padr\xE3o"
   attackRange: 2
   attackRate: 1
   cost: 100
@@ -131,8 +132,8 @@ MonoBehaviour:
   enemyTag: Enemy
   partToRotate: {fileID: 8799327115495275305}
   rangeIndicator: {fileID: 6491964127469758129}
-  rangeIndicatorOpacity: 0.1
-  upgradeLevels: []
+  upgrades: []
+  baseAttackRange: 0
   initialAttackRange: 4
   attackRateMultiplier: 1.5
   damageMultiplier: 2
