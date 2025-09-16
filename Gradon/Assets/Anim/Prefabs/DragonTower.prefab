@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2909323965156911943}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 3952080365079412988}
   - component: {fileID: 4906639104749834356}
   - component: {fileID: 2051406424041450909}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DragonTower
   m_TagString: DragonTower
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9115187926022172371}
   - component: {fileID: 5835657509532804546}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DamageRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
