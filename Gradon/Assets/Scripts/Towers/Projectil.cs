@@ -52,7 +52,7 @@ public class Projectile : MonoBehaviour
 
         // VERIFICA SE ATINGIU UM INIMIGO
         Enemy enemy = other.GetComponent<Enemy>();
-        if (enemy != null && !enemy.IsDead)
+        if (enemy != null && !enemy.IsDead())
         {
             hasHit = true;
             enemy.TakeDamage(currentDamage);

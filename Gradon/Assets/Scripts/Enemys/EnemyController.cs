@@ -1,5 +1,6 @@
-// Enemy.cs
+// Enemy.cs (Completo e Corrigido)
 using UnityEngine;
+
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -10,10 +11,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     [SerializeField] protected float speed = 2f;
     [SerializeField] protected int manaOnKill = 10;
 
-    // Tornamos 'protected' para que RangedEnemy possa acessá-los
     protected Transform target;
     protected Rigidbody2D rb;
-    protected int currentHealth;
+    protected float currentHealth;
     protected bool isDead = false;
 
     public event System.Action<Enemy> OnDeath;
@@ -36,12 +36,18 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         rb.velocity = direction * speed;
     }
 
-    // Cumprindo o "contrato" da interface IDamageable
     public void TakeDamage(float damage)
     {
         if (isDead) return;
-        currentHealth -= Mathf.RoundToInt(damage);
+        currentHealth -= damage;
         if (currentHealth <= 0) Die();
+    }
+
+    // --- CORREÇÃO AQUI ---
+    // Método público para que outros scripts possam verificar se o inimigo está morto.
+    public bool IsDead()
+    {
+        return isDead;
     }
 
     protected virtual void Die()
