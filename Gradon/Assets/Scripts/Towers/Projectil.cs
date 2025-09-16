@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour
         if (_target == null) { Destroy(gameObject); return; }
 
         Vector2 direction = (_target.position - transform.position).normalized;
-        rb.velocity = direction * speed;
+        rb.linearVelocity = direction * speed;
         transform.up = direction;
     }
 
