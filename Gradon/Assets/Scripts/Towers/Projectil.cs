@@ -31,6 +31,7 @@ public class Projectile : MonoBehaviour
 
     public void Seek(Transform _target, int damageFromAttacker)
     {
+ 
         this.currentDamage = damageFromAttacker;
         if (_target == null) { Destroy(gameObject); return; }
 

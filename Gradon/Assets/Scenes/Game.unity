@@ -2903,6 +2903,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1719024387}
     m_Modifications:
+    - target: {fileID: -2628615904987776795, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
+      propertyPath: maxMana
+      value: 100000
+      objectReference: {fileID: 0}
     - target: {fileID: 3428834365344629173, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
       propertyPath: m_Name
       value: Totem

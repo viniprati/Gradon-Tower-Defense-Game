@@ -1,4 +1,5 @@
-// TowerWithBuffs.cs (CORRIGIDO)
+// TowerWithBuffs.cs (Corrigido com atualização do dano no upgrade)
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,9 +17,8 @@ public abstract class TowerWithBuffs : TowerBase
     [Header("Configurações de Upgrade")]
     [SerializeField] protected List<UpgradeLevel> upgrades;
 
-    // --- MUDANÇA PRINCIPAL: TORNADO 'public' PARA A UI LER ---
-    public int baseDamage { get; protected set; } // A UI pode ler, mas só a torre pode mudar
-    public float baseAttackRange;
+    public int baseDamage { get; protected set; }
+    public float baseAttackRange; // Esta variável parece não ser usada, considere remover
     protected float baseAttackRate;
     private int currentUpgradeLevel = 0;
 
@@ -42,13 +42,20 @@ public abstract class TowerWithBuffs : TowerBase
 
         UpgradeLevel nextUpgrade = upgrades[currentUpgradeLevel];
 
-        // Supondo que seu Totem.SpendMana retorna um bool
         if (Totem.instance != null && Totem.instance.SpendMana(nextUpgrade.upgradeCost))
         {
+            // Aplica os novos status base
             baseDamage = nextUpgrade.newDamage;
             baseAttackRate = nextUpgrade.newAttackRate;
             attackRate = nextUpgrade.newAttackRate;
             attackRange = nextUpgrade.newAttackRange;
+
+            // --- CORREÇÃO ADICIONADA AQUI ---
+            // Após o upgrade, chamamos HandleDamageBuff para garantir que o 'damage'
+            // da torre filha (como DragonT) seja atualizado para o novo 'baseDamage'.
+            // O multiplicador '1' e 'isApplying = false' apenas resetam o dano para o valor base.
+            HandleDamageBuff(1, false);
+
             currentUpgradeLevel++;
             Debug.Log($"{towerName} atualizada para o Nível {currentUpgradeLevel + 1}!");
         }

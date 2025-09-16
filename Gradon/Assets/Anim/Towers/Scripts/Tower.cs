@@ -63,7 +63,7 @@ public abstract class TowerBase : MonoBehaviour
     /// </summary>
     private void FindTarget()
     {
-        Enemy[] enemies = FindObjectsOfType<Enemy>(); // Encontra todos os inimigos na cena
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude,FindObjectsSortMode.InstanceID); // Encontra todos os inimigos na cena
         float shortestDistance = Mathf.Infinity;
         Enemy nearestEnemy = null;
 
