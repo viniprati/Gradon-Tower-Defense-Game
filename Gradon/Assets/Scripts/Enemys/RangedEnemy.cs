@@ -1,43 +1,63 @@
+// RangedEnemy.cs
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class RangedEnemy : Enemy
 {
-    [Header("Configurações do Ranged Enemy")]
+    [Header("Atributos de Ataque à Distância")]
+    [SerializeField] private float attackRange = 8f;
+    [SerializeField] private float attackRate = 1f;
+    [SerializeField] private int damage = 10;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireRate = 1.5f;
-    [SerializeField] private float projectileDamage = 30f;
 
-    private float fireCooldown = 0f;
+    private float attackCooldown = 0f;
 
-    protected override void Start()
+    /// <summary>
+    /// Sobrescrevemos o FixedUpdate para mudar o comportamento de movimento.
+    /// </summary>
+    protected override void FixedUpdate()
     {
-        base.Start();
-        attackRange = 7.0f;
-    }
+        if (isDead || target == null) return;
 
-    protected override void Update()
-    {
-        base.Update();
-        if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+
+        // Se estiver fora do alcance, continua se movendo (chama a lógica da classe base)
+        if (distanceToTarget > attackRange)
         {
-            fireCooldown -= Time.deltaTime;
+            base.FixedUpdate();
+        }
+        // Se estiver dentro do alcance, PARA e se prepara para atirar
+        else
+        {
+            rb.velocity = Vector2.zero; // Para de se mover!
         }
     }
 
-    public override void Attack()
+    // Usamos o Update normal para controlar o timer de ataque
+    private void Update()
     {
-        if (fireCooldown > 0f) return;
-        if (projectilePrefab != null && firePoint != null && target != null)
+        if (isDead || target == null) return;
+
+        attackCooldown -= Time.deltaTime;
+
+        if (Vector2.Distance(transform.position, target.position) <= attackRange)
         {
-            GameObject projGO = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-            Projectile projectile = projGO.GetComponent<Projectile>();
-            if (projectile != null)
+            if (attackCooldown <= 0f)
             {
-                projectile.Seek(target, projectileDamage);
-                fireCooldown = fireRate;
+                Attack();
+                attackCooldown = 1f / attackRate;
             }
+        }
+    }
+
+    private void Attack()
+    {
+        // Lógica para criar e atirar um projétil
+        GameObject projGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        Projectile proj = projGO.GetComponent<Projectile>();
+        if (proj != null)
+        {
+            proj.Seek(target, damage); // Supondo que seu projétil tenha este método
         }
     }
 }
