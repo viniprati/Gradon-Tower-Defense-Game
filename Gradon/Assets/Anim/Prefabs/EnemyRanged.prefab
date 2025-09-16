@@ -156,7 +156,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 8
+  m_SortingOrder: 100
   m_Sprite: {fileID: -2780920148874240570, guid: 5358686ecb45c364697c6961e660edbd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
@@ -267,15 +267,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 20
   speed: 1.5
-  scoreValue: 150
-  playerTransform: {fileID: 0}
-  coinPrefab: {fileID: 6967947146392876268, guid: e38ec4f6fa347214682b29c5a90ab25b, type: 3}
-  healthBarFill: {fileID: 6268167578230129885}
-  avoidStacking: 1
-  separationForce: 5
-  separationRadius: 1
+  manaOnKill: 10
   attackRange: 3.5
-  fireRate: 1
+  attackRate: 1
+  damage: 10
   projectilePrefab: {fileID: 6889713125657541051, guid: f6209ed7db19b2145aca7defb04ca174, type: 3}
   firePoint: {fileID: 5172068621762573515}
 --- !u!1 &3827511034301633742
