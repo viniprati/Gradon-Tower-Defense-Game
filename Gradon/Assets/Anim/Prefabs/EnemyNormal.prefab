@@ -154,8 +154,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  speed: 30
+  speed: 1
   manaOnKill: 10
+  attackRate: 1
+  attackRange: 1.5
 --- !u!58 &4526183084712262034
 CircleCollider2D:
   m_ObjectHideFlags: 0

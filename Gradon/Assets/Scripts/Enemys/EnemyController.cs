@@ -1,11 +1,6 @@
-// Enemy.cs (Refeito com MoveTowards)
+// Enemy.cs
 
 using UnityEngine;
-
-public interface IDamageable
-{
-    void TakeDamage(float damage);
-}
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -15,8 +10,8 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     [SerializeField] protected int maxHealth = 100;
     [SerializeField] protected float speed = 2f;
     [SerializeField] protected int manaOnKill = 10;
+    [SerializeField] protected float attackRate = 1f;
 
-    // --- NOVA VARIÁVEL ---
     [Header("Comportamento de Ataque")]
     [Tooltip("A distância que o inimigo vai parar do totem para atacar.")]
     [SerializeField] protected float attackRange = 1.5f;
@@ -29,70 +24,71 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
     public event System.Action<Enemy> OnDeath;
 
+
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // Garante que a física não interfira no nosso movimento com MoveTowards
         rb.isKinematic = true;
 
+        // A vida é inicializada uma única vez aqui. Está correto.
         currentHealth = maxHealth;
+
         if (Totem.instance != null) { target = Totem.instance.transform; }
     }
 
-    /// <summary>
-    /// Update agora controla tanto a lógica de movimento quanto a de ataque.
-    /// </summary>
     protected virtual void Update()
     {
         if (isDead || target == null) return;
 
-        // Calcula a distância atual até o totem
         float distanceToTarget = Vector2.Distance(transform.position, target.position);
 
-        // Se estivermos FORA do alcance de ataque, nos movemos.
         if (distanceToTarget > attackRange)
         {
             MoveTowardsTarget();
         }
-        // Se estivermos DENTRO do alcance, paramos e tentamos atacar.
         else
         {
-            // A lógica de ataque específica (corpo a corpo, à distância)
-            // será implementada nas classes filhas (NormalEnemy, RangedEnemy, etc.).
             PerformAttack();
         }
     }
 
-    /// <summary>
-    /// Método que move o inimigo em direção ao alvo usando MoveTowards.
-    /// </summary>
     protected void MoveTowardsTarget()
     {
-        // Calcula a posição do próximo passo
         Vector2 newPosition = Vector2.MoveTowards(
-            transform.position,      // Posição atual
-            target.position,         // Posição do alvo
-            speed * Time.deltaTime   // Distância a ser movida neste frame
+            transform.position,
+            target.position,
+            speed * Time.deltaTime
         );
-
-        // Aplica a nova posição ao transform do inimigo
         transform.position = newPosition;
     }
 
-    /// <summary>
-    /// As classes filhas vão sobrescrever este método para definir seu tipo de ataque.
-    /// </summary>
     protected virtual void PerformAttack()
     {
-        // O inimigo básico (NormalEnemy) pode ter seu ataque de contato aqui.
-        // O RangedEnemy terá sua própria lógica.
+        // Lógica a ser implementada pelas classes filhas
     }
 
+    // --- NOVA FUNÇÃO DE DEBUG ADICIONADA AQUI ---
     public void TakeDamage(float damage)
     {
         if (isDead) return;
+
+        // SENSOR 1: Confirma que o método foi chamado e com qual valor.
+        Debug.Log($"'{gameObject.name}' recebeu o comando TakeDamage com {damage} de dano.");
+
         currentHealth -= damage;
-        if (currentHealth <= 0) Die();
+
+        // SENSOR 2: Mostra o estado da vida após a subtração.
+        Debug.Log($"Vida de '{gameObject.name}' agora é: {currentHealth} / {maxHealth}");
+
+        // Adicione aqui a lógica da sua barra de vida, se tiver
+        // UpdateHealthBar();
+
+        if (currentHealth <= 0)
+        {
+            // SENSOR 3: Confirma que a condição de morte foi atingida.
+            Debug.Log($"<color=red>'{gameObject.name}' atingiu 0 ou menos de vida! Chamando Die().</color>");
+            Die();
+        }
     }
 
     public bool IsDead()

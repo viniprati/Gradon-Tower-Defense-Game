@@ -203,7 +203,7 @@ MonoBehaviour:
   rangeIndicator: {fileID: 0}
   upgrades: []
   baseAttackRange: 0
-  initialDamage: 100
+  initialDamage: 50
   initialAttackRate: 0.8
   initialAttackRange: 7
   projectilePrefab: {fileID: 6436078186388238282, guid: ccc9c874dcfb53648997fe353ec3c975, type: 3}

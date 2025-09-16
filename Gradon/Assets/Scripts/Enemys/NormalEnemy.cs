@@ -1,6 +1,6 @@
-// NormalEnemy.cs
-using UnityEngine;
-
-// Este inimigo não tem comportamento especial, então ele herda tudo da classe base.
-// O script pode ficar completamente vazio!
-public class NormalEnemy : Enemy { }
+public class NormalEnemy : Enemy
+{
+    // O ataque do inimigo normal é colidir com o totem,
+    // o que já é cuidado pelo OnCollisionEnter2D que podemos adicionar na classe base.
+    // Então, este script pode continuar vazio.
+}

@@ -1,56 +1,47 @@
-// RangedEnemy.cs
+
 using UnityEngine;
 
-public class RangedEnemy : Enemy // Herda da classe base correta
+public class RangedEnemy : Enemy
 {
-    [Header("Ataque à Distância")]
-    [SerializeField] private float attackRange = 8f;
-    [SerializeField] private float attackRate = 1f;
+    // A variável 'attackRate' foi MOVIDA para a classe base 'Enemy.cs'
+    // e pode ser configurada no Inspector do prefab.
+
+    [Header("Atributos de Ataque à Distância")]
     [SerializeField] private int damage = 10;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
 
     private float attackCooldown = 0f;
 
-    // Sobrescrevemos o FixedUpdate para parar de se mover quando está no alcance
-    protected override void FixedUpdate()
+    // Sobrescrevemos o método Update para controlar o cooldown, já que
+    // a classe base já decide quando chamar PerformAttack.
+    protected override void Update()
     {
-        if (isDead || target == null) return;
+        base.Update(); // Executa a lógica de movimento e decisão da classe base
 
-        if (Vector2.Distance(transform.position, target.position) > attackRange)
+        // Controla o tempo de recarga do ataque
+        if (attackCooldown > 0)
         {
-            base.FixedUpdate(); // Chama o movimento da classe base
-        }
-        else
-        {
-            rb.velocity = Vector2.zero; // Para de se mover
+            attackCooldown -= Time.deltaTime;
         }
     }
 
-    // Usamos Update para o timer de ataque, que não envolve física
-    private void Update()
+    // Sobrescreve o método de ataque da classe base com a lógica de atirar
+    protected override void PerformAttack()
     {
-        if (isDead || target == null) return;
-
-        attackCooldown -= Time.deltaTime;
-
-        if (Vector2.Distance(transform.position, target.position) <= attackRange)
+        // Só ataca se o cooldown tiver acabado
+        if (attackCooldown <= 0f)
         {
-            if (attackCooldown <= 0f)
+            // Lógica para criar e atirar um projétil
+            GameObject projGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+            Projectile proj = projGO.GetComponent<Projectile>();
+            if (proj != null)
             {
-                Attack();
-                attackCooldown = 1f / attackRate;
+                proj.Seek(target, damage);
             }
-        }
-    }
 
-    private void Attack()
-    {
-        GameObject projGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-        Projectile proj = projGO.GetComponent<Projectile>();
-        if (proj != null)
-        {
-            proj.Seek(target, damage);
+            // Reseta o cooldown
+            attackCooldown = 1f / attackRate;
         }
     }
 }
