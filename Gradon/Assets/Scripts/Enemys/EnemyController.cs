@@ -28,7 +28,6 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.isKinematic = true;
 
         // A vida é inicializada uma única vez aqui. Está correto.
         currentHealth = maxHealth;
