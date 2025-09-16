@@ -38,7 +38,7 @@ public class Coin : MonoBehaviour
             // Tenta encontrar o jogador apenas uma vez para otimização
             if (playerTransform == null)
             {
-                PlayerController player = FindFirstObjectByType<PlayerController>();
+                Totem player = FindFirstObjectByType<Totem>();
                 if (player != null)
                 {
                     playerTransform = player.transform;
@@ -68,7 +68,7 @@ public class Coin : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             // Tenta pegar o script PlayerController do objeto
-            PlayerController player = other.GetComponent<PlayerController>();
+            Totem player = other.GetComponent<Totem>();
 
             // Se o script foi encontrado, a coleta é bem-sucedida
             if (player != null)
@@ -78,7 +78,7 @@ public class Coin : MonoBehaviour
         }
     }
 
-    private void Collect(PlayerController player)
+    private void Collect(Totem player)
     {
         // 1. Adiciona mana ao jogador
         player.AddMana(manaValue);
