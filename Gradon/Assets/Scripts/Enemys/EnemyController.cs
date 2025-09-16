@@ -1,63 +1,71 @@
+// Enemy.cs
+
 using UnityEngine;
-using System;
+
+// A interface para garantir que qualquer coisa possa receber dano.
+public interface IDamageable
+{
+    void TakeDamage(int damage);
+}
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public abstract class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour, IDamageable
 {
-    [Header("Atributos Base")]
-    [SerializeField] protected float health = 100f;
-    [SerializeField] protected float speed = 3f;
-    [SerializeField] protected float attackRange = 1.5f;
+    public event System.Action<Enemy> OnDeath;
 
-    protected Rigidbody2D rb;
+    [Header("Atributos Base")]
+    [SerializeField] protected int maxHealth = 100;
+    [SerializeField] protected float speed = 2f;
+    [SerializeField] protected int manaOnKill = 10;
+    [SerializeField] protected int damageToTotem = 50;
+
+    // Variáveis protegidas para que as classes filhas possam acessá-las
+    protected float currentHealth;
     protected Transform target;
-    public bool IsDead { get; protected set; }
-    public event Action<Enemy> OnDeath;
+    protected Rigidbody2D rb;
+    protected bool isDead = false;
+
+    protected virtual void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     protected virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        IsDead = false;
+        currentHealth = maxHealth;
+        // Encontra o Totem como alvo. Se não encontrar, para de funcionar.
         if (Totem.instance != null)
         {
             target = Totem.instance.transform;
         }
-    }
-
-    protected virtual void Update()
-    {
-        if (IsDead) return;
-        MoveTowardsTarget();
-    }
-
-    protected void MoveTowardsTarget()
-    {
-        if (target == null)
-        {
-            rb.linearVelocity = Vector2.zero;
-            return;
-        }
-
-        float distanceToTarget = Vector3.Distance(transform.position, target.position);
-
-        if (distanceToTarget > attackRange)
-        {
-            Vector3 direction = (target.position - transform.position).normalized;
-            rb.linearVelocity = direction * speed;
-        }
         else
         {
-            rb.linearVelocity = Vector2.zero;
-            Attack();
+            Debug.LogError("Nenhum Totem encontrado na cena! Inimigos não têm um alvo.", this);
+            this.enabled = false;
         }
     }
 
-    public void TakeDamage(float damage)
+    /// <summary>
+    /// A lógica de movimento agora está em FixedUpdate para consistência com a física.
+    /// </summary>
+    protected virtual void FixedUpdate()
     {
-        if (IsDead) return;
-        health -= damage;
-        if (health <= 0)
+        if (isDead || target == null) return;
+
+        // Movimento direto e simples, sem forças complexas.
+        Vector2 direction = (target.position - transform.position).normalized;
+        rb.velocity = direction * speed;
+    }
+
+    public virtual void TakeDamage(int damage)
+    {
+        if (isDead) return;
+
+        currentHealth -= damage;
+        // Adicione aqui a lógica da barra de vida (UpdateHealthBar) se tiver
+
+        if (currentHealth <= 0)
         {
             Die();
         }
@@ -65,17 +73,29 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Die()
     {
-        if (IsDead) return;
-        IsDead = true;
-        OnDeath?.Invoke(this);
+        if (isDead) return;
+        isDead = true;
+
+        OnDeath?.Invoke(this); // Avisa ao spawner que morreu
+
+        if (Totem.instance != null)
+        {
+            Totem.instance.AddMana(manaOnKill);
+        }
+
         Destroy(gameObject);
     }
 
-    public abstract void Attack();
-
-    protected virtual void OnDrawGizmosSelected()
+    /// <summary>
+    /// Lógica para quando o inimigo atinge fisicamente o totem.
+    /// </summary>
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        // Usamos OnCollisionEnter para ter certeza de que é um impacto físico.
+        if (collision.gameObject.CompareTag("Totem"))
+        {
+            Totem.instance.TakeDamage(damageToTotem);
+            Die(); // O inimigo se sacrifica ao atacar o totem
+        }
     }
 }
