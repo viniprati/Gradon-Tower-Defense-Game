@@ -9,7 +9,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     [Header("Atributos Base")]
     [SerializeField] protected int maxHealth = 100;
     [SerializeField] protected float speed = 2f;
-    [SerializeField] protected int manaOnKill = 10;
+    [SerializeField] protected int manaOnKill = 15;
     [SerializeField] protected float attackRate = 1f;
 
     [Header("Comportamento de Ataque")]

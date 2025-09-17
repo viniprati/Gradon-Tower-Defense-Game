@@ -1,8 +1,10 @@
+// Totem.cs (Com sistema de vida e barra de vida funcional)
+
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; // Essencial para usar o componente Slider
 using System.Collections.Generic;
 
-public class Totem : MonoBehaviour, IDamageable
+public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa receber dano
 {
     public static Totem instance;
 
@@ -18,16 +20,12 @@ public class Totem : MonoBehaviour, IDamageable
     [SerializeField] public float maxMana = 100f;
     public float currentMana { get; private set; }
 
-    [Header("Referências de Construção")]
-    [Tooltip("Arraste os PREFABS de todas as torres que o jogador pode construir.")]
-    public List<GameObject> availableTowers;
-
     [Header("Referências da UI")]
-    [SerializeField] private Slider healthBar;
-    [SerializeField] private Slider manaBar;
+    [Tooltip("Arraste aqui o Slider da barra de vida do Totem.")]
+    [SerializeField] private Slider healthBar; // A referência para a barra de vida
 
+    // Variáveis internas
     private bool isDestroyed = false;
-    public bool IsDestroyed => isDestroyed;
 
     #region Ciclo de Vida Unity
 
@@ -46,20 +44,37 @@ public class Totem : MonoBehaviour, IDamageable
     void Start()
     {
         currentHealth = maxHealth;
-        currentMana = maxMana;
+
+        // Pega a mana inicial a partir dos dados da fase
+        currentMana = (GameManager.instance != null && GameManager.instance.currentLevelData != null)
+            ? GameManager.instance.currentLevelData.initialMana
+            : maxMana;
+
+        // Inicializa a barra de vida no começo do jogo
         UpdateHealthBar();
-        UpdateManaBar();
+
+        // Notifica a UI sobre o estado inicial da mana
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateManaUI(currentMana, maxMana);
+        }
     }
 
     #endregion
 
+    // --- LÓGICA DE VIDA E MORTE RESTAURADA ---
     #region Lógica de Vida e Morte
 
+    /// <summary>
+    /// Método público para que inimigos e outras fontes possam causar dano ao Totem.
+    /// </summary>
     public void TakeDamage(float damage)
     {
         if (isDestroyed) return;
 
         currentHealth -= damage;
+
+        // Atualiza a barra de vida visualmente
         UpdateHealthBar();
 
         if (currentHealth <= 0)
@@ -69,12 +84,23 @@ public class Totem : MonoBehaviour, IDamageable
         }
     }
 
+    // Sobrecarga para aceitar dano do tipo int
+    public void TakeDamage(int damage)
+    {
+        TakeDamage((float)damage);
+    }
+
     private void Die()
     {
         if (isDestroyed) return;
-
         isDestroyed = true;
+
         Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
+
+        // Avisa ao GameManager que o jogador perdeu
+        if (GameManager.instance != null) GameManager.instance.HandleGameOver(false);
+
+        // Desativa o objeto para que ele não possa mais ser alvo
         gameObject.SetActive(false);
     }
 
@@ -84,8 +110,8 @@ public class Totem : MonoBehaviour, IDamageable
 
     public void AddMana(int amount)
     {
-        currentMana = Mathf.Min(currentMana + (float)amount, maxMana);
-        UpdateManaBar();
+        currentMana = Mathf.Min(currentMana + amount, maxMana);
+        if (UIManager.instance != null) UIManager.instance.UpdateManaUI(currentMana, maxMana);
     }
 
     public bool SpendMana(int amount)
@@ -93,7 +119,7 @@ public class Totem : MonoBehaviour, IDamageable
         if (currentMana >= amount)
         {
             currentMana -= amount;
-            UpdateManaBar();
+            if (UIManager.instance != null) UIManager.instance.UpdateManaUI(currentMana, maxMana);
             return true;
         }
         return false;
@@ -101,23 +127,18 @@ public class Totem : MonoBehaviour, IDamageable
 
     #endregion
 
+    // --- LÓGICA DA BARRA DE VIDA RESTAURADA ---
     #region Lógica de UI
 
+    /// <summary>
+    /// Atualiza o Slider da barra de vida com base na vida atual e máxima.
+    /// </summary>
     private void UpdateHealthBar()
     {
         if (healthBar != null)
         {
             healthBar.maxValue = maxHealth;
             healthBar.value = currentHealth;
-        }
-    }
-
-    private void UpdateManaBar()
-    {
-        if (manaBar != null)
-        {
-            manaBar.maxValue = maxMana;
-            manaBar.value = currentMana;
         }
     }
 
