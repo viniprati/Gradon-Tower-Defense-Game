@@ -1,10 +1,11 @@
-// Totem.cs (Com sistema de vida e barra de vida funcional)
+// Totem.cs
 
 using UnityEngine;
-using UnityEngine.UI; // Essencial para usar o componente Slider
+using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa receber dano
+// O Totem "assina o contrato" de que pode receber dano.
+public class Totem : MonoBehaviour, IDamageable
 {
     public static Totem instance;
 
@@ -21,8 +22,8 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
     public float currentMana { get; private set; }
 
     [Header("Referências da UI")]
-    [Tooltip("Arraste aqui o Slider da barra de vida do Totem.")]
-    [SerializeField] private Slider healthBar; // A referência para a barra de vida
+    [Tooltip("Arraste aqui o Slider da barra de vida do Totem (opcional).")]
+    [SerializeField] private Slider healthBar;
 
     // Variáveis internas
     private bool isDestroyed = false;
@@ -44,16 +45,12 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
     void Start()
     {
         currentHealth = maxHealth;
-
-        // Pega a mana inicial a partir dos dados da fase
         currentMana = (GameManager.instance != null && GameManager.instance.currentLevelData != null)
             ? GameManager.instance.currentLevelData.initialMana
             : maxMana;
 
-        // Inicializa a barra de vida no começo do jogo
         UpdateHealthBar();
 
-        // Notifica a UI sobre o estado inicial da mana
         if (UIManager.instance != null)
         {
             UIManager.instance.UpdateManaUI(currentMana, maxMana);
@@ -62,11 +59,11 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
 
     #endregion
 
-    // --- LÓGICA DE VIDA E MORTE RESTAURADA ---
     #region Lógica de Vida e Morte
 
     /// <summary>
-    /// Método público para que inimigos e outras fontes possam causar dano ao Totem.
+    /// Método principal para receber dano, cumprindo o contrato da interface IDamageable.
+    /// É chamado por inimigos e outras fontes de dano.
     /// </summary>
     public void TakeDamage(float damage)
     {
@@ -74,7 +71,7 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
 
         currentHealth -= damage;
 
-        // Atualiza a barra de vida visualmente
+        // Atualiza a barra de vida visualmente.
         UpdateHealthBar();
 
         if (currentHealth <= 0)
@@ -84,12 +81,6 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
         }
     }
 
-    // Sobrecarga para aceitar dano do tipo int
-    public void TakeDamage(int damage)
-    {
-        TakeDamage((float)damage);
-    }
-
     private void Die()
     {
         if (isDestroyed) return;
@@ -97,10 +88,8 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
 
         Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
 
-        // Avisa ao GameManager que o jogador perdeu
         if (GameManager.instance != null) GameManager.instance.HandleGameOver(false);
 
-        // Desativa o objeto para que ele não possa mais ser alvo
         gameObject.SetActive(false);
     }
 
@@ -127,14 +116,16 @@ public class Totem : MonoBehaviour, IDamageable // Garante que o Totem possa rec
 
     #endregion
 
-    // --- LÓGICA DA BARRA DE VIDA RESTAURADA ---
     #region Lógica de UI
 
     /// <summary>
-    /// Atualiza o Slider da barra de vida com base na vida atual e máxima.
+    /// Atualiza o Slider da barra de vida. Contém uma checagem de segurança.
     /// </summary>
     private void UpdateHealthBar()
     {
+        // Esta checagem de segurança (if healthBar não é nulo) é a razão
+        // pela qual o jogo não quebra se você esquecer de conectar o Slider.
+        // A lógica de dano continua funcionando, apenas a parte visual é pulada.
         if (healthBar != null)
         {
             healthBar.maxValue = maxHealth;
