@@ -49,7 +49,7 @@ MonoBehaviour:
       count: 11
       spawnInterval: 1.3
     - enemyPrefab: {fileID: 4536836196174038044, guid: 8c5542a994ccfe94d867f3031ee01dc9, type: 3}
-      count: 3
-      spawnInterval: 5
+      count: 4
+      spawnInterval: 3
     delayBeforeWave: 10
   initialMana: 200
