@@ -3911,7 +3911,7 @@ PrefabInstance:
       objectReference: {fileID: 519281854}
     - target: {fileID: -2628615904987776795, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
       propertyPath: maxHealth
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: -2628615904987776795, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
       propertyPath: zonaProibidaRaio
