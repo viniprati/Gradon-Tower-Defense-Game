@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 // O Totem "assina o contrato" de que pode receber dano.
-public class Totem : MonoBehaviour, IDamageable
+public class Totem : MonoBehaviour
 {
     public static Totem instance;
 
