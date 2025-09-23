@@ -1,47 +1,28 @@
-
+// RangedEnemy.cs
 using UnityEngine;
 
 public class RangedEnemy : Enemy
 {
-    // A variável 'attackRate' foi MOVIDA para a classe base 'Enemy.cs'
-    // e pode ser configurada no Inspector do prefab.
-
-    [Header("Atributos de Ataque à Distância")]
-    [SerializeField] private int damage = 10;
+    [Header("Referências do Projétil")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
 
-    private float attackCooldown = 0f;
-
-    // Sobrescrevemos o método Update para controlar o cooldown, já que
-    // a classe base já decide quando chamar PerformAttack.
-    protected override void Update()
-    {
-        base.Update(); // Executa a lógica de movimento e decisão da classe base
-
-        // Controla o tempo de recarga do ataque
-        if (attackCooldown > 0)
-        {
-            attackCooldown -= Time.deltaTime;
-        }
-    }
-
-    // Sobrescreve o método de ataque da classe base com a lógica de atirar
+    // O RangedEnemy tem um comportamento de ataque diferente, então ele sobrescreve este método.
     protected override void PerformAttack()
     {
-        // Só ataca se o cooldown tiver acabado
-        if (attackCooldown <= 0f)
+        // O cooldown já é controlado pelo Update() da classe base,
+        // que chama este método na cadência correta.
+
+        // A única coisa que precisamos fazer aqui é atirar.
+        if (projectilePrefab != null && firePoint != null && target != null)
         {
-            // Lógica para criar e atirar um projétil
             GameObject projGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
             Projectile proj = projGO.GetComponent<Projectile>();
             if (proj != null)
             {
-                proj.Seek(target, damage);
+                // Usa a variável 'attackDamage' herdada da classe base
+                proj.Seek(target, this.attackDamage);
             }
-
-            // Reseta o cooldown
-            attackCooldown = 1f / attackRate;
         }
     }
 }
