@@ -370,8 +370,11 @@ MonoBehaviour:
   maxHealth: 100
   speed: 1.5
   manaOnKill: 10
+  damageToTotem: 7
+  attackRange: 1.5
+  attackRate: 1
   explosionRadius: 2
-  explosionDamage: 100
+  explosionDamage: 3
   explosionEffectPrefab: {fileID: 1274245671474632354, guid: ce5170d365049854ba821ba17e2278b2, type: 3}
   towerLayer:
     serializedVersion: 2
