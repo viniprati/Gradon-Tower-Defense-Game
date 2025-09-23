@@ -1,3 +1,4 @@
+// LevelSelectControler
 using UnityEngine;
 
 public class LevelSelectController : MonoBehaviour
@@ -12,29 +13,24 @@ public class LevelSelectController : MonoBehaviour
 
     private void PopulateLevelButtons()
     {
-        // Limpa botões antigos, caso existam
         foreach (Transform child in buttonContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // Verifica se o GameManager e o catálogo existem
-        if (GameManager.Instance == null || GameManager.Instance.levelCatalog == null)
+        // CORREÇÃO AQUI: de Instance para instance
+        if (GameManager.instance == null || GameManager.instance.allLevels == null)
         {
-            Debug.LogError("GameManager ou LevelCatalog não encontrado!");
+            Debug.LogError("GameManager ou a lista 'allLevels' não foi encontrada!");
             return;
         }
 
-        // Cria um botão para cada LevelData no catálogo
-        foreach (LevelData levelData in GameManager.Instance.levelCatalog)
+        // CORREÇÃO AQUI: de Instance para instance (e de levelCatalog para allLevels)
+        foreach (LevelData levelData in GameManager.instance.allLevels)
         {
-            // 1. Instancia o prefab do botão como filho do container
             GameObject buttonGO = Instantiate(levelButtonPrefab, buttonContainer);
-
-            // 2. Pega o script LevelButton do objeto recém-criado
             LevelButton levelButton = buttonGO.GetComponent<LevelButton>();
 
-            // 3. Chama o método Setup para passar os dados da fase para o botão
             if (levelButton != null)
             {
                 levelButton.Setup(levelData);
