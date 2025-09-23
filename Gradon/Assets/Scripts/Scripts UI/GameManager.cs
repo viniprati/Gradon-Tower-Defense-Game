@@ -1,21 +1,22 @@
-// GameManager.cs (Simplificado - Sem Score)
+// GameManager.cs (Versão Completa com Carregamento Automático)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Adicionado para garantir que funcione se você usar no futuro
+using TMPro;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using System.Linq; // Necessário para ordenar a lista (OrderBy)
 
 public class GameManager : MonoBehaviour
 {
     // AVISO: Seu código usa 'instance' com 'i' minúsculo. 
-    // Vou manter essa convenção em todos os outros scripts para evitar erros.
+    // Mantenho essa convenção para compatibilidade.
     public static GameManager instance;
 
     [Header("Catálogo de Fases")]
-    [Tooltip("Arraste todos os seus arquivos de fase (LevelData) para esta lista.")]
-    public List<LevelData> allLevels; // Mantive seu nome 'allLevels'
+    // Esta lista agora é preenchida automaticamente pelo código.
+    public List<LevelData> allLevels;
     public LevelData currentLevelData { get; private set; }
 
     [Header("Estado do Jogo")]
@@ -33,6 +34,9 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // Chama o método para carregar todas as fases da pasta "Resources"
+            LoadAllLevelsFromResources();
         }
         else
         {
@@ -40,14 +44,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Encontra e carrega todos os ScriptableObjects do tipo LevelData
+    /// que estiverem dentro de qualquer pasta chamada "Resources" no projeto.
+    /// </summary>
+    private void LoadAllLevelsFromResources()
+    {
+        // 1. Carrega todos os assets do tipo LevelData. O "" significa "procure em toda a pasta Resources".
+        LevelData[] loadedLevels = Resources.LoadAll<LevelData>("");
+
+        // 2. Converte o array para uma lista.
+        allLevels = new List<LevelData>(loadedLevels);
+
+        // 3. (Opcional, mas recomendado) Ordena a lista pelo nome do arquivo, para que apareçam em ordem no menu.
+        allLevels = allLevels.OrderBy(level => level.name).ToList();
+
+        Debug.Log($"[GameManager] Carregados {allLevels.Count} níveis da pasta Resources automaticamente.");
+    }
+
     void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
     }
 
-    // =========================================================================
-    // NOVA ETAPA ADICIONADA AQUI
-    // =========================================================================
     /// <summary>
     /// Método chamado pelo botão no menu para definir qual fase será jogada.
     /// Ele APENAS armazena a informação, não carrega a cena.
@@ -57,8 +76,6 @@ public class GameManager : MonoBehaviour
         currentLevelData = levelData;
         Debug.Log($"Fase '{levelData.name}' selecionada. Pronto para carregar a cena.");
     }
-    // =========================================================================
-
 
     /// <summary>
     /// Carrega uma fase usando seu índice (ex: 1).
