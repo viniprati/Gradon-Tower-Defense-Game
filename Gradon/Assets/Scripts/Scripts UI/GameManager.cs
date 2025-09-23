@@ -2,18 +2,20 @@
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
+using TMPro; // Adicionado para garantir que funcione se você usar no futuro
 using System.Collections.Generic;
 using System;
 using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+    // AVISO: Seu código usa 'instance' com 'i' minúsculo. 
+    // Vou manter essa convenção em todos os outros scripts para evitar erros.
     public static GameManager instance;
 
     [Header("Catálogo de Fases")]
     [Tooltip("Arraste todos os seus arquivos de fase (LevelData) para esta lista.")]
-    public List<LevelData> allLevels;
+    public List<LevelData> allLevels; // Mantive seu nome 'allLevels'
     public LevelData currentLevelData { get; private set; }
 
     [Header("Estado do Jogo")]
@@ -21,9 +23,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Referências de UI")]
     public TextMeshProUGUI manaText;
-    public GameObject gameOverPanel; // Painel para a mensagem de "Game Over"
+    public GameObject gameOverPanel;
 
-    // Evento para notificar a UI sobre mudanças na mana.
     public static event Action<float> OnManaChanged;
 
     void Awake()
@@ -41,12 +42,27 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Garante que o painel de Game Over comece desativado
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
     }
 
+    // =========================================================================
+    // NOVA ETAPA ADICIONADA AQUI
+    // =========================================================================
+    /// <summary>
+    /// Método chamado pelo botão no menu para definir qual fase será jogada.
+    /// Ele APENAS armazena a informação, não carrega a cena.
+    /// </summary>
+    public void SetSelectedLevel(LevelData levelData)
+    {
+        currentLevelData = levelData;
+        Debug.Log($"Fase '{levelData.name}' selecionada. Pronto para carregar a cena.");
+    }
+    // =========================================================================
+
+
     /// <summary>
     /// Carrega uma fase usando seu índice (ex: 1).
+    /// Este método ainda pode ser útil para outras coisas, então vamos mantê-lo.
     /// </summary>
     public void LoadLevel(int levelIndex)
     {
@@ -68,7 +84,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void UpdateManaUI(float newManaValue)
     {
-        // A variável 'currentMana' foi removida pois o Totem já a gerencia.
         if (manaText != null)
         {
             manaText.text = "Mana: " + Mathf.FloorToInt(newManaValue).ToString();
@@ -96,38 +111,24 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DefeatSequence()
     {
-        // Mostra a tela de "Game Over"
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
-
-        // Pausa o jogo
         Time.timeScale = 0f;
-
-        // Espera 3 segundos em tempo real
         yield return new WaitForSecondsRealtime(3f);
-
-        // Volta ao normal e carrega o menu
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MenuScene"); // Mude para o nome da sua cena de menu
+        SceneManager.LoadScene("MenuScene");
     }
 
     private IEnumerator VictorySequence()
     {
-        // Mostra uma mensagem de vitória (pode ser no mesmo painel de Game Over)
         if (gameOverPanel != null)
         {
-            // Você pode adicionar um texto dentro do painel para customizar a mensagem
             Debug.Log("<color=green>FASE CONCLUÍDA!</color>");
             gameOverPanel.SetActive(true);
         }
-
-        // Pausa o jogo
         Time.timeScale = 0f;
-
-        // Espera 3 segundos e carrega o menu
         yield return new WaitForSecondsRealtime(3f);
-
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MenuScene"); // Mude para o nome da sua cena de menu
+        SceneManager.LoadScene("MenuScene");
     }
 
     public void RestartGame()
@@ -139,7 +140,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Se não houver fase carregada, volta para o menu
             SceneManager.LoadScene("MenuScene");
         }
     }
