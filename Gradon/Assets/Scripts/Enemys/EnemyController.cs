@@ -2,6 +2,11 @@
 
 using UnityEngine;
 
+public interface IDamageable
+{
+    void TakeDamage(float damage);
+}
+
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public abstract class Enemy : MonoBehaviour, IDamageable
@@ -9,10 +14,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     [Header("Atributos Base")]
     [SerializeField] protected int maxHealth = 100;
     [SerializeField] protected float speed = 2f;
-    [SerializeField] protected int manaOnKill = 15;
-
-    [Tooltip("Dano que o inimigo causa ao colidir com o Totem.")]
+    [SerializeField] protected int manaOnKill = 10;
     [SerializeField] protected int damageToTotem = 50;
+
+    [Header("Comportamento de Ataque")]
+    [SerializeField] protected float attackRange = 1.5f;
+    [SerializeField] protected float attackRate = 1f;
 
     // Variáveis protegidas para que as classes filhas possam acessá-las
     protected Transform target;
@@ -20,79 +27,73 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     protected float currentHealth;
     protected bool isDead = false;
 
-    // Evento para o WaveSpawner saber que o inimigo morreu
     public event System.Action<Enemy> OnDeath;
+
+    protected virtual void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        // Usa a forma moderna e correta de definir um Rigidbody Kinematic
+        rb.bodyType = RigidbodyType2D.Kinematic;
+    }
 
     protected virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        // É importante que seja Dynamic para a colisão física funcionar
-        rb.bodyType = RigidbodyType2D.Dynamic;
-        rb.gravityScale = 0; // Para não cair
-
         currentHealth = maxHealth;
         if (Totem.instance != null) { target = Totem.instance.transform; }
     }
 
     /// <summary>
-    /// A lógica de movimento agora está em FixedUpdate para consistência com a física.
+    /// Update controla a lógica de decisão do inimigo.
+    /// Foi marcado como 'virtual' para permitir que classes filhas (como RangedEnemy) o modifiquem.
     /// </summary>
-    protected virtual void FixedUpdate()
+    protected virtual void Update()
     {
         if (isDead || target == null) return;
 
-        // Move o Rigidbody em direção ao alvo
-        Vector2 direction = (target.position - transform.position).normalized;
-        rb.velocity = direction * speed;
-    }
-
-    /// <summary>
-    /// Chamado automaticamente pela Unity quando o colisor deste inimigo
-    /// bate fisicamente em outro colisor "sólido".
-    /// </summary>
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Verifica se o objeto em que batemos tem a tag "Totem".
-        if (collision.gameObject.CompareTag("Totem"))
+        if (Vector2.Distance(transform.position, target.position) > attackRange)
         {
-            // Tenta pegar o componente 'Totem' do objeto atingido.
-            Totem totem = collision.gameObject.GetComponent<Totem>();
-            if (totem != null)
-            {
-                // Causa dano ao Totem.
-                totem.TakeDamage(damageToTotem);
-            }
-
-            // O inimigo se sacrifica no ataque, chamando seu próprio método Die().
-            Die();
+            Move();
+        }
+        else
+        {
+            PerformAttack();
         }
     }
 
     /// <summary>
-    /// Método público para receber dano de fontes externas (como projéteis).
+    /// Move o inimigo em direção ao alvo.
+    /// </summary>
+    protected void Move()
+    {
+        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// O método de ataque padrão (contato).
+    /// Foi marcado como 'virtual' para permitir que RangedEnemy o substitua por um ataque à distância.
+    /// </summary>
+    protected virtual void PerformAttack()
+    {
+        // Esta é a lógica para inimigos de contato.
+        if (Totem.instance != null)
+        {
+            Totem.instance.TakeDamage(damageToTotem);
+        }
+        Die(); // O inimigo se sacrifica no ataque
+    }
+
+    /// <summary>
+    /// Implementa o método da interface IDamageable.
     /// </summary>
     public void TakeDamage(float damage)
     {
         if (isDead) return;
-
         currentHealth -= damage;
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) Die();
     }
 
     /// <summary>
-    /// Método público para que outros scripts possam verificar se o inimigo está morto.
-    /// </summary>
-    public bool IsDead()
-    {
-        return isDead;
-    }
-
-    /// <summary>
-    /// Lógica executada quando a vida do inimigo chega a zero ou ele ataca o totem.
+    /// Lógica de morte do inimigo.
     /// </summary>
     protected virtual void Die()
     {
