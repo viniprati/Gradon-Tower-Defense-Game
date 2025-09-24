@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  speed: 9
+  speed: 1.5
   manaOnKill: 10
   attackRange: 1.5
   attackRate: 1
