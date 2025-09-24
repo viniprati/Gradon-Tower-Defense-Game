@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48a01d5ae81a00844a6a999f0336b2c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
+  speed: 20
   lifetime: 3
+  enemyTag: Enemy
   hitEffectPrefab: {fileID: 0}
