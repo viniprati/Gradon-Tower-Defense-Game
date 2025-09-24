@@ -1,9 +1,8 @@
-// LevelData.cs
+// LevelData.cs (Versão Corrigida para usar List<>)
 
 using UnityEngine;
-
-// [System.Serializable] é o que permite que estas classes customizadas (EnemyGroup e Wave)
-// apareçam de forma organizada dentro do Inspector da Unity.
+// Adicionamos esta linha para poder usar List<>
+using System.Collections.Generic;
 
 [System.Serializable]
 public class EnemyGroup
@@ -25,17 +24,13 @@ public class Wave
     public string waveName;
 
     [Tooltip("A lista de grupos de inimigos que compõem esta onda.")]
-    public EnemyGroup[] enemyGroups;
+    // CORREÇÃO AQUI: Mudamos de Array (EnemyGroup[]) para Lista (List<EnemyGroup>)
+    public List<EnemyGroup> enemyGroups;
 
     [Tooltip("O tempo de espera em segundos ANTES desta onda começar.")]
     public float delayBeforeWave;
 }
 
-
-// [CreateAssetMenu] é a instrução que adiciona a opção para criar este tipo de asset
-// no menu da Unity (Assets > Create > Tower Defense > Level).
-// A classe herda de 'ScriptableObject', transformando este script em um "molde" para
-// criar arquivos de dados, em vez de um componente de cena (MonoBehaviour).
 [CreateAssetMenu(fileName = "New Level", menuName = "Tower Defense/Level")]
 public class LevelData : ScriptableObject
 {
@@ -51,7 +46,8 @@ public class LevelData : ScriptableObject
 
     [Header("Configuração das Ondas")]
     [Tooltip("Configure aqui todas as ondas de inimigos para esta fase.")]
-    public Wave[] waves;
+    // CORREÇÃO AQUI: Mudamos de Array (Wave[]) para Lista (List<Wave>)
+    public List<Wave> waves;
 
     [Header("Recursos Iniciais")]
     [Tooltip("A quantidade de mana com que o jogador começa a fase.")]
