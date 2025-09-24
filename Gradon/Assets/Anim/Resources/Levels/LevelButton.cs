@@ -53,6 +53,6 @@ public class LevelButton : MonoBehaviour
         // 2. Carrega a cena principal do jogo.
         //    IMPORTANTE: Certifique-se de que o nome da sua cena de gameplay é exatamente "GameScene".
         //    Verifique em File -> Build Settings se a cena está adicionada.
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("Game");
     }
 }
