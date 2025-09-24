@@ -27,6 +27,7 @@ public abstract class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.gravityScale = 0;
     }
 
     protected virtual void Start()
@@ -56,7 +57,8 @@ public abstract class Enemy : MonoBehaviour
 
     protected void Move()
     {
-        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        Vector2 newPosition = Vector2.MoveTowards(rb.position, target.position, speed * Time.deltaTime);
+        rb.MovePosition(newPosition);
     }
 
     protected virtual void PerformAttack()
