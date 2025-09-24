@@ -18,26 +18,17 @@ public class LevelButton : MonoBehaviour
 
     // --- Variáveis Privadas ---
 
-    // Guarda a referência para os dados da fase que este botão representa.
     private LevelData _levelData;
 
     /// <summary>
     /// Método público chamado pelo LevelSelectController para inicializar este botão.
     /// </summary>
-    /// <param name="levelDataToSetup">Os dados da fase que este botão irá carregar.</param>
     public void Setup(LevelData levelDataToSetup)
     {
-        // 1. Armazena os dados da fase recebidos.
         _levelData = levelDataToSetup;
-
-        // 2. Atualiza o texto do botão para mostrar o nome da fase.
-        //    O ".name" vem diretamente do nome do seu arquivo Scriptable Object (ex: "Level1.asset").
         levelNameText.text = _levelData.name;
 
-        // 3. Configura o evento de clique do botão.
-        //    Primeiro, removemos qualquer listener antigo para evitar cliques duplos.
         buttonComponent.onClick.RemoveAllListeners();
-        //    Depois, adicionamos nosso método OnButtonClick para ser chamado quando o botão for clicado.
         buttonComponent.onClick.AddListener(OnButtonClick);
     }
 
@@ -46,13 +37,15 @@ public class LevelButton : MonoBehaviour
     /// </summary>
     private void OnButtonClick()
     {
-        // 1. Informa ao GameManager (que persiste entre as cenas) qual fase foi selecionada.
-        //    Isso é crucial para que a próxima cena saiba quais dados de fase carregar.
+        // --- MODIFICAÇÃO ADICIONADA AQUI ---
+        // Esta linha é nosso "detetive". Se ela aparecer no Console, sabemos que o clique funcionou.
+        Debug.Log($"<color=cyan>BOTÃO CLICADO!</color> Preparando para carregar a fase '{_levelData.name}' na cena 'Game'.");
+
+        // 1. Informa ao GameManager qual fase foi selecionada.
         GameManager.instance.SetSelectedLevel(_levelData);
 
         // 2. Carrega a cena principal do jogo.
-        //    IMPORTANTE: Certifique-se de que o nome da sua cena de gameplay é exatamente "GameScene".
-        //    Verifique em File -> Build Settings se a cena está adicionada.
+        // O nome "Game" agora corresponde às suas Build Settings.
         SceneManager.LoadScene("Game");
     }
 }
