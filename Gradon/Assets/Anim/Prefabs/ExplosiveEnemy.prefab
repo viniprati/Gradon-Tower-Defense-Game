@@ -367,14 +367,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c695f28ca648e6b479a1c4efbe8d1830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 300
   speed: 1.5
   manaOnKill: 10
-  damageToTotem: 7
   attackRange: 1.5
   attackRate: 1
+  attackDamage: 10
   explosionRadius: 2
-  explosionDamage: 3
   explosionEffectPrefab: {fileID: 1274245671474632354, guid: ce5170d365049854ba821ba17e2278b2, type: 3}
   towerLayer:
     serializedVersion: 2
