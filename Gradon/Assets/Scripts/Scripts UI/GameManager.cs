@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Completa com Carregamento Automático)
+// GameManager.cs (Versão Completa com Carregamento Automático e Lógica de Game Over Corrigida)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // Chama o método para carregar todas as fases da pasta "Resources"
             LoadAllLevelsFromResources();
         }
         else
@@ -50,15 +49,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void LoadAllLevelsFromResources()
     {
-        // 1. Carrega todos os assets do tipo LevelData. O "" significa "procure em toda a pasta Resources".
         LevelData[] loadedLevels = Resources.LoadAll<LevelData>("");
-
-        // 2. Converte o array para uma lista.
         allLevels = new List<LevelData>(loadedLevels);
-
-        // 3. (Opcional, mas recomendado) Ordena a lista pelo nome do arquivo, para que apareçam em ordem no menu.
         allLevels = allLevels.OrderBy(level => level.name).ToList();
-
         Debug.Log($"[GameManager] Carregados {allLevels.Count} níveis da pasta Resources automaticamente.");
     }
 
@@ -69,7 +62,6 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Método chamado pelo botão no menu para definir qual fase será jogada.
-    /// Ele APENAS armazena a informação, não carrega a cena.
     /// </summary>
     public void SetSelectedLevel(LevelData levelData)
     {
@@ -79,7 +71,6 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Carrega uma fase usando seu índice (ex: 1).
-    /// Este método ainda pode ser útil para outras coisas, então vamos mantê-lo.
     /// </summary>
     public void LoadLevel(int levelIndex)
     {
@@ -108,23 +99,38 @@ public class GameManager : MonoBehaviour
         OnManaChanged?.Invoke(newManaValue);
     }
 
+    // =================================================================================
+    // MÉTODO MODIFICADO PARA CORRIGIR A CONDIÇÃO DE CORRIDA
+    // =================================================================================
     /// <summary>
     /// Controla o que acontece quando a fase termina (vitória ou derrota).
+    /// Esta versão prioriza a derrota caso ocorra ao mesmo tempo que a vitória.
     /// </summary>
     public void HandleGameOver(bool playerWon)
     {
-        if (isGameOver) return;
+        // Se o jogo já acabou E a nova chamada não for uma derrota, ignore.
+        // Isso permite que uma derrota (playerWon = false) SOBRESCREVA uma vitória.
+        if (isGameOver && playerWon)
+        {
+            return;
+        }
+
+        // Se o jogo não acabou ou se a nova chamada é uma derrota, continue.
         isGameOver = true;
+        StopAllCoroutines(); // Para a sequência de vitória se uma derrota acontecer.
 
         if (playerWon)
         {
+            Debug.Log("CONDIÇÃO DE VITÓRIA ATINGIDA!");
             StartCoroutine(VictorySequence());
         }
         else
         {
+            Debug.Log("CONDIÇÃO DE DERROTA ATINGIDA!");
             StartCoroutine(DefeatSequence());
         }
     }
+    // =================================================================================
 
     private IEnumerator DefeatSequence()
     {
