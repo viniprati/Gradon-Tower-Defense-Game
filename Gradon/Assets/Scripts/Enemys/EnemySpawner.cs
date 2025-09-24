@@ -2,12 +2,9 @@
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Generic; // <-- CORREÇÃO: Adicionado para usar List<>
 using TMPro;
 
-
-// --- LÓGICA PRINCIPAL DO SPAWNER ---
-// O nome da classe foi mudado para corresponder ao seu arquivo 'EnemySpawner.cs'
 public class EnemySpawner : MonoBehaviour
 {
     public static event System.Action OnAllWavesCompleted;
@@ -22,7 +19,6 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Arraste um arquivo de fase aqui para testar esta cena diretamente.")]
     public LevelData debugLevel;
 
-    // Variáveis internas
     private int enemiesAlive = 0;
 
     void Start()
@@ -34,20 +30,23 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        Wave[] wavesToSpawn = null;
+        // <-- CORREÇÃO: A variável wavesToSpawn agora é do tipo List<Wave>
+        List<Wave> wavesToSpawn = null;
 
-        // Lógica para pegar as ondas do GameManager ou do modo de Debug
         if (GameManager.instance != null && GameManager.instance.currentLevelData != null)
         {
+            // Nenhuma mudança aqui, pois a atribuição de List para List funciona
             wavesToSpawn = GameManager.instance.currentLevelData.waves;
         }
         else if (debugLevel != null)
         {
             Debug.LogWarning("GameManager não encontrado. Carregando fase de DEBUG: " + debugLevel.name, this.gameObject);
+            // Nenhuma mudança aqui também, a lógica continua a mesma
             wavesToSpawn = debugLevel.waves;
         }
 
-        if (wavesToSpawn != null && wavesToSpawn.Length > 0)
+        // <-- CORREÇÃO: A verificação agora usa .Count em vez de .Length
+        if (wavesToSpawn != null && wavesToSpawn.Count > 0)
         {
             StartCoroutine(SpawnAllWaves(wavesToSpawn));
         }
@@ -58,9 +57,11 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    private IEnumerator SpawnAllWaves(Wave[] waves)
+    // <-- CORREÇÃO: O parâmetro do método agora aceita List<Wave>
+    private IEnumerator SpawnAllWaves(List<Wave> waves)
     {
-        for (int i = 0; i < waves.Length; i++)
+        // <-- CORREÇÃO: Usamos waves.Count para o loop
+        for (int i = 0; i < waves.Count; i++)
         {
             Wave currentWave = waves[i];
 
@@ -70,7 +71,8 @@ public class EnemySpawner : MonoBehaviour
             yield return new WaitForSeconds(currentWave.delayBeforeWave);
 
             if (waveInfoText != null)
-                waveInfoText.text = $"Onda {i + 1} / {waves.Length}";
+                // <-- CORREÇÃO: Usamos waves.Count para a UI
+                waveInfoText.text = $"Onda {i + 1} / {waves.Count}";
 
             yield return StartCoroutine(SpawnWave(currentWave));
 
@@ -90,6 +92,7 @@ public class EnemySpawner : MonoBehaviour
 
     private IEnumerator SpawnWave(Wave wave)
     {
+        // Nenhuma mudança necessária aqui, o foreach funciona com List e Array
         foreach (EnemyGroup group in wave.enemyGroups)
         {
             for (int i = 0; i < group.count; i++)
