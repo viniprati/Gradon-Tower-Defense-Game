@@ -521,7 +521,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerPrefab: {fileID: 4109231360522392754, guid: 8990ae57a48f8094d8c7c0711f7f1113, type: 3}
-  towerCost: 50
   cooldownImage: {fileID: 0}
 --- !u!114 &407762496
 MonoBehaviour:
@@ -3465,7 +3464,7 @@ GameObject:
   - component: {fileID: 1785181369}
   - component: {fileID: 1785181368}
   m_Layer: 5
-  m_Name: ManaText
+  m_Name: ChakraText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
