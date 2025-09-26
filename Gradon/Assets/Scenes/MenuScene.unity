@@ -308,8 +308,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 721047660}
+  m_Children: []
   m_Father: {fileID: 40946226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -676,6 +675,7 @@ RectTransform:
   - {fileID: 787359294}
   - {fileID: 789771920}
   - {fileID: 418358355}
+  - {fileID: 721047660}
   m_Father: {fileID: 40946226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.05747917, y: 0.055516727}
@@ -829,16 +829,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 721047659}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 278016893}
+  m_Father: {fileID: 563784718}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -249}
+  m_AnchoredPosition: {x: 562.05005, y: 2856752}
   m_SizeDelta: {x: 1138.47, y: 396.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &721047661
@@ -1265,8 +1265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f51bf026a440a46acb76ae6f6973e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenuPanel: {fileID: 0}
-  levelSelectPanel: {fileID: 0}
+  mainMenuPanel: {fileID: 40946225}
+  levelSelectPanel: {fileID: 278016892}
 --- !u!1 &1129581158
 GameObject:
   m_ObjectHideFlags: 0
@@ -1350,9 +1350,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1840308422}
-        m_TargetAssemblyTypeName: RankingUIController, Assembly-CSharp
-        m_MethodName: GoToGame
+      - m_Target: {fileID: 986502569}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: ShowLevelSelectPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
