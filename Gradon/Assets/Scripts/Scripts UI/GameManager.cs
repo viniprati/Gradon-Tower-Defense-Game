@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Completa com Carregamento Automático e Lógica de Game Over Corrigida)
+// GameManager.cs (Versão Completa com Carregamento Automático, Lógica de Game Over Corrigida e DEPURAÇÃO)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,16 +6,13 @@ using TMPro;
 using System.Collections.Generic;
 using System;
 using System.Collections;
-using System.Linq; // Necessário para ordenar a lista (OrderBy)
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
-    // AVISO: Seu código usa 'instance' com 'i' minúsculo. 
-    // Mantenho essa convenção para compatibilidade.
     public static GameManager instance;
 
     [Header("Catálogo de Fases")]
-    // Esta lista agora é preenchida automaticamente pelo código.
     public List<LevelData> allLevels;
     public LevelData currentLevelData { get; private set; }
 
@@ -28,25 +25,60 @@ public class GameManager : MonoBehaviour
 
     public static event Action<float> OnManaChanged;
 
+    // =================================================================================
+    // CÓDIGO DE DEPURAÇÃO ADICIONADO
+    // =================================================================================
+    void OnEnable()
+    {
+        // Se inscreve no evento que é chamado toda vez que uma cena é carregada
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        // Limpa a inscrição para evitar erros
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"<color=orange>NOVA CENA CARREGADA: '{scene.name}'.</color>");
+        // Checa se o objeto atual ainda é a instância principal do GameManager
+        if (this == instance)
+        {
+            Debug.Log("<color=green>Eu (GameManager) sobrevivi à transição de cena!</color>");
+            // Checa se os dados da fase ainda existem após carregar a cena
+            if (currentLevelData != null)
+            {
+                Debug.Log($"<color=green>DADOS DA FASE PERSISTIRAM! Fase selecionada: '{currentLevelData.name}'.</color>");
+            }
+            else
+            {
+                Debug.LogError("[GameManager] ERRO CRÍTICO: Sobrevivi à transição, mas os dados da fase (currentLevelData) foram perdidos!");
+            }
+        }
+    }
+    // =================================================================================
+
     void Awake()
     {
+        Debug.Log($"[GameManager] AWAKE na cena '{SceneManager.GetActiveScene().name}'. GameObject: '{this.gameObject.name}'");
+
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            Debug.Log("<color=green>[GameManager] Instância definida e marcada como DontDestroyOnLoad.</color>");
 
             LoadAllLevelsFromResources();
         }
-        else
+        else if (instance != this)
         {
+            Debug.LogWarning($"[GameManager] Instância duplicada encontrada. Destruindo este objeto '{this.gameObject.name}'.");
             Destroy(gameObject);
         }
     }
 
-    /// <summary>
-    /// Encontra e carrega todos os ScriptableObjects do tipo LevelData
-    /// que estiverem dentro de qualquer pasta chamada "Resources" no projeto.
-    /// </summary>
     private void LoadAllLevelsFromResources()
     {
         LevelData[] loadedLevels = Resources.LoadAll<LevelData>("");
@@ -60,18 +92,12 @@ public class GameManager : MonoBehaviour
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
     }
 
-    /// <summary>
-    /// Método chamado pelo botão no menu para definir qual fase será jogada.
-    /// </summary>
     public void SetSelectedLevel(LevelData levelData)
     {
         currentLevelData = levelData;
         Debug.Log($"Fase '{levelData.name}' selecionada. Pronto para carregar a cena.");
     }
 
-    /// <summary>
-    /// Carrega uma fase usando seu índice (ex: 1).
-    /// </summary>
     public void LoadLevel(int levelIndex)
     {
         LevelData levelToLoad = allLevels.Find(level => level.levelIndex == levelIndex);
@@ -87,9 +113,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Chamado pelo Totem para atualizar a UI de mana.
-    /// </summary>
     public void UpdateManaUI(float newManaValue)
     {
         if (manaText != null)
@@ -99,25 +122,15 @@ public class GameManager : MonoBehaviour
         OnManaChanged?.Invoke(newManaValue);
     }
 
-    // =================================================================================
-    // MÉTODO MODIFICADO PARA CORRIGIR A CONDIÇÃO DE CORRIDA
-    // =================================================================================
-    /// <summary>
-    /// Controla o que acontece quando a fase termina (vitória ou derrota).
-    /// Esta versão prioriza a derrota caso ocorra ao mesmo tempo que a vitória.
-    /// </summary>
     public void HandleGameOver(bool playerWon)
     {
-        // Se o jogo já acabou E a nova chamada não for uma derrota, ignore.
-        // Isso permite que uma derrota (playerWon = false) SOBRESCREVA uma vitória.
         if (isGameOver && playerWon)
         {
             return;
         }
 
-        // Se o jogo não acabou ou se a nova chamada é uma derrota, continue.
         isGameOver = true;
-        StopAllCoroutines(); // Para a sequência de vitória se uma derrota acontecer.
+        StopAllCoroutines();
 
         if (playerWon)
         {
@@ -130,7 +143,6 @@ public class GameManager : MonoBehaviour
             StartCoroutine(DefeatSequence());
         }
     }
-    // =================================================================================
 
     private IEnumerator DefeatSequence()
     {
