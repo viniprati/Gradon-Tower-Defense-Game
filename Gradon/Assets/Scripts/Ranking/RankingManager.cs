@@ -1,10 +1,15 @@
 // RankingManager.cs
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq; // Necessário para usar OrderByDescending
 
+// As definições de 'ScoreEntry' e 'ScoreList' foram removidas deste arquivo
+// para evitar erros de ambiguidade, assumindo que elas já existem em outro script no seu projeto.
+
 public class RankingManager : MonoBehaviour
 {
+    // A instância ainda é útil para ser acessada por outros scripts DENTRO DA MESMA CENA.
     public static RankingManager instance;
 
     private ScoreList rankingData;
@@ -12,12 +17,12 @@ public class RankingManager : MonoBehaviour
 
     void Awake()
     {
-        // Padrão Singleton com DontDestroyOnLoad
+        // Padrão Singleton que NÃO persiste entre as cenas,
+        // evitando conflitos com o GameManager.
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
-            LoadRanking(); // Carrega os dados salvos ao iniciar
+            LoadRanking(); // Carrega os dados salvos ao iniciar a cena de menu
         }
         else
         {
@@ -27,7 +32,6 @@ public class RankingManager : MonoBehaviour
 
     private void LoadRanking()
     {
-        // Verifica se já existem dados salvos
         if (PlayerPrefs.HasKey(RankingKey))
         {
             string json = PlayerPrefs.GetString(RankingKey);
@@ -35,46 +39,51 @@ public class RankingManager : MonoBehaviour
         }
         else
         {
-            // Se não, cria uma nova lista vazia
             rankingData = new ScoreList();
         }
     }
 
     private void SaveRanking()
     {
-        // Ordena a lista do maior para o menor score
         rankingData.scores = rankingData.scores.OrderByDescending(entry => entry.score).ToList();
 
-        // Limita o ranking aos 10 melhores
         if (rankingData.scores.Count > 10)
         {
             rankingData.scores = rankingData.scores.GetRange(0, 10);
         }
 
-        // Converte a lista para JSON e salva
         string json = JsonUtility.ToJson(rankingData);
         PlayerPrefs.SetString(RankingKey, json);
         PlayerPrefs.Save();
     }
 
-    // Método público para adicionar uma nova pontuação
     public void AddScore(string playerName, int score)
     {
+        // Se rankingData for nulo, inicialize-o para evitar erros.
+        if (rankingData == null) { rankingData = new ScoreList(); }
+        if (rankingData.scores == null) { rankingData.scores = new List<ScoreEntry>(); }
+
         ScoreEntry newEntry = new ScoreEntry { playerName = playerName, score = score };
         rankingData.scores.Add(newEntry);
-        SaveRanking(); // Salva e reordena a lista
+        SaveRanking();
     }
 
-    // Método público para obter a lista de scores
     public List<ScoreEntry> GetRanking()
     {
+        // Garante que não retornará nulo se o ranking ainda não foi carregado.
+        if (rankingData == null || rankingData.scores == null)
+        {
+            return new List<ScoreEntry>();
+        }
         return rankingData.scores;
     }
 
-    // (Opcional) Método para limpar o ranking para testes
     public void ClearRanking()
     {
-        rankingData.scores.Clear();
+        if (rankingData != null && rankingData.scores != null)
+        {
+            rankingData.scores.Clear();
+        }
         PlayerPrefs.DeleteKey(RankingKey);
         Debug.Log("Ranking foi limpo!");
     }
