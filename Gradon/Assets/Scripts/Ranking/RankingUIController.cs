@@ -1,4 +1,4 @@
-// RankingUIController.cs (Versão Final, Segura e Corrigida)
+// RankingUIController.cs (Versão Simplificada - Apenas Top 3)
 
 using UnityEngine;
 using TMPro;
@@ -7,13 +7,14 @@ using System.Collections.Generic;
 public class RankingUIController : MonoBehaviour
 {
     [Header("Referências Top 3")]
+    [Tooltip("Texto para o 1º lugar. Ex: '1. NOME - SCORE'.")]
     [SerializeField] private TextMeshProUGUI top1_Text;
-    [SerializeField] private TextMeshProUGUI top2_Text;
-    [SerializeField] private TextMeshProUGUI top3_Text;
 
-    [Header("Referências Outros (4º ao 10º)")]
-    [SerializeField] private TextMeshProUGUI otherRanks_TemplateText;
-    [SerializeField] private Transform otherRanks_ContainerParent;
+    [Tooltip("Texto para o 2º lugar.")]
+    [SerializeField] private TextMeshProUGUI top2_Text;
+
+    [Tooltip("Texto para o 3º lugar.")]
+    [SerializeField] private TextMeshProUGUI top3_Text;
 
     void Start()
     {
@@ -22,52 +23,30 @@ public class RankingUIController : MonoBehaviour
 
     public void PopulateRanking()
     {
+        // --- Verificação de Segurança #1: RankingManager ---
+        // Garante que o RankingManager existe na cena.
         if (RankingManager.instance == null)
         {
             Debug.LogError("RankingManager não encontrado! A UI de Ranking será desativada.", this.gameObject);
-            gameObject.SetActive(false);
+            gameObject.SetActive(false); // Desativa este objeto para evitar mais erros.
             return;
         }
 
+        // Pega a lista de scores do RankingManager.
         List<ScoreEntry> ranking = RankingManager.instance.GetRanking();
 
-        if (top1_Text != null)
-            top1_Text.text = ranking.Count > 0 ? $"1. {ranking[0].playerName} - {ranking[0].score}" : "1. ...";
-        if (top2_Text != null)
-            top2_Text.text = ranking.Count > 1 ? $"2. {ranking[1].playerName} - {ranking[1].score}" : "2. ...";
-        if (top3_Text != null)
-            top3_Text.text = ranking.Count > 2 ? $"3. {ranking[2].playerName} - {ranking[2].score}" : "3. ...";
-
-        if (otherRanks_ContainerParent == null)
+        // --- Verificação de Segurança #2: Referências de Texto ---
+        // Checa se os campos de texto foram arrastados no Inspector.
+        if (top1_Text == null || top2_Text == null || top3_Text == null)
         {
-            Debug.LogError("'otherRanks_ContainerParent' não está atribuído no Inspector! Verifique o objeto " + this.gameObject.name, this.gameObject);
-            return;
-        }
-        if (otherRanks_TemplateText == null)
-        {
-            Debug.LogError("'otherRanks_TemplateText' não está atribuído no Inspector!", this.gameObject);
-            return;
+            Debug.LogError("Uma ou mais referências de texto do Top 3 não foram atribuídas no Inspector!", this.gameObject);
+            return; // Para a execução para evitar erros.
         }
 
-        foreach (Transform child in otherRanks_ContainerParent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        otherRanks_TemplateText.gameObject.SetActive(true);
-
-        if (ranking.Count > 3)
-        {
-            for (int i = 3; i < ranking.Count; i++)
-            {
-                GameObject rankEntryGO = Instantiate(otherRanks_TemplateText.gameObject, otherRanks_ContainerParent);
-                TextMeshProUGUI rankEntryText = rankEntryGO.GetComponent<TextMeshProUGUI>();
-
-                int rankNumber = i + 1;
-                rankEntryText.text = $"{rankNumber}. {ranking[i].playerName} - {ranking[i].score}";
-            }
-        }
-
-        otherRanks_TemplateText.gameObject.SetActive(false);
+        // --- Preenche o Ranking do Top 3 ---
+        // Usa um operador ternário para preencher o texto ou mostrar "..." se não houver score.
+        top1_Text.text = ranking.Count > 0 ? $"1. {ranking[0].playerName} - {ranking[0].score}" : "1. ...";
+        top2_Text.text = ranking.Count > 1 ? $"2. {ranking[1].playerName} - {ranking[1].score}" : "2. ...";
+        top3_Text.text = ranking.Count > 2 ? $"3. {ranking[2].playerName} - {ranking[2].score}" : "3. ...";
     }
 }
