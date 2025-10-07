@@ -45,8 +45,8 @@ public class Totem : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        currentMana = (GameManager.instance != null && GameManager.instance.currentLevelData != null)
-            ? GameManager.instance.currentLevelData.initialMana
+        currentMana = (GameManager.Instance != null && GameManager.Instance.currentLevelData != null)
+            ? GameManager.Instance.currentLevelData.initialMana
             : maxMana;
 
         UpdateHealthBar();
@@ -88,7 +88,7 @@ public class Totem : MonoBehaviour
 
         Debug.Log("<color=red>GAME OVER! A base foi destruída.</color>");
 
-        if (GameManager.instance != null) GameManager.instance.HandleGameOver(false);
+        if (GameManager.Instance != null) GameManager.Instance.HandleGameOver(false);
 
         gameObject.SetActive(false);
     }
