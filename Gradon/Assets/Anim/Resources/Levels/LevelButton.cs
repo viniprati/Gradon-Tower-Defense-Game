@@ -39,9 +39,9 @@ public class LevelButton : MonoBehaviour
         // Agora, chamamos o método único e correto do GameManager,
         // passando os dados completos da fase que este botão representa.
 
-        if (GameManager.instance != null)
+        if (GameManager.Instance != null)
         {
-            GameManager.instance.LoadLevel(_levelData);
+            GameManager.Instance.LoadLevel(_levelData);
         }
         else
         {
