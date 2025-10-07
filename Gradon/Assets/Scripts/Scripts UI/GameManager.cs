@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("<color=green>Eu (GameManager) sobrevivi à transição de cena!</color>");
             if (currentLevelData != null)
             {
-                Debug.Log($"<color=green>DADOS DA FASE PERSISTIRAM! Fase selecionada: '{currentLevelData.name}'.</color>");
+                Debug.Log($"<color=green>DADOS DA FASE PERSISTIRAM! Fase selecionada: '{currentLevelData.levelName}'.</color>");
             }
             else
             {
@@ -61,7 +61,6 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             Debug.Log("<color=green>[GameManager] Instância definida e marcada como DontDestroyOnLoad.</color>");
-
             LoadAllLevelsFromResources();
         }
         else if (instance != this)
@@ -73,7 +72,7 @@ public class GameManager : MonoBehaviour
 
     private void LoadAllLevelsFromResources()
     {
-        LevelData[] loadedLevels = Resources.LoadAll<LevelData>("");
+        LevelData[] loadedLevels = Resources.LoadAll<LevelData>("Levels"); // Procura na pasta Resources/Levels
         allLevels = new List<LevelData>(loadedLevels);
         allLevels = allLevels.OrderBy(level => level.levelIndex).ToList();
         Debug.Log($"[GameManager] Carregados {allLevels.Count} níveis da pasta Resources automaticamente.");
@@ -85,7 +84,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// O novo método principal para carregar uma fase. Ele recebe o arquivo de dados completo do MenuManager.
+    /// O método principal para carregar uma fase. Recebe os dados completos do MenuManager.
     /// </summary>
     public void LoadLevel(LevelData levelToLoad)
     {

@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
+// using UnityEngine.SceneManagement; // Esta linha não é mais necessária aqui
 
 public class LevelButton : MonoBehaviour
 {
@@ -14,7 +14,7 @@ public class LevelButton : MonoBehaviour
     [Tooltip("Arraste o componente Button deste próprio objeto aqui.")]
     [SerializeField] private Button buttonComponent;
 
-    private LevelData _levelData;
+    private LevelData _levelData; // Guarda os dados da fase que este botão representa
 
     /// <summary>
     /// Método público chamado pelo LevelSelectController para inicializar este botão.
@@ -22,7 +22,9 @@ public class LevelButton : MonoBehaviour
     public void Setup(LevelData levelDataToSetup)
     {
         _levelData = levelDataToSetup;
-        levelNameText.text = _levelData.name;
+
+        // Usa 'levelName' que é a variável correta no seu LevelData
+        levelNameText.text = _levelData.levelName;
 
         buttonComponent.onClick.RemoveAllListeners();
         buttonComponent.onClick.AddListener(OnButtonClick);
@@ -33,10 +35,17 @@ public class LevelButton : MonoBehaviour
     /// </summary>
     private void OnButtonClick()
     {
-        // 1. Informa ao GameManager qual fase foi selecionada.
-        GameManager.instance.SetSelectedLevel(_levelData);
+        // --- CORREÇÃO PRINCIPAL AQUI ---
+        // Agora, chamamos o método único e correto do GameManager,
+        // passando os dados completos da fase que este botão representa.
 
-        // 2. Carrega a cena principal do jogo.
-        SceneManager.LoadScene("Game");
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.LoadLevel(_levelData);
+        }
+        else
+        {
+            Debug.LogError("GameManager não encontrado! Não foi possível carregar a fase.");
+        }
     }
 }
