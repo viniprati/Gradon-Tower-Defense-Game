@@ -33,10 +33,10 @@ public class EnemySpawner : MonoBehaviour
         // <-- CORREÇÃO: A variável wavesToSpawn agora é do tipo List<Wave>
         List<Wave> wavesToSpawn = null;
 
-        if (GameManager.instance != null && GameManager.instance.currentLevelData != null)
+        if (GameManager.Instance != null && GameManager.Instance.currentLevelData != null)
         {
             // Nenhuma mudança aqui, pois a atribuição de List para List funciona
-            wavesToSpawn = GameManager.instance.currentLevelData.waves;
+            wavesToSpawn = GameManager.Instance.currentLevelData.waves;
         }
         else if (debugLevel != null)
         {
@@ -84,9 +84,9 @@ public class EnemySpawner : MonoBehaviour
 
         OnAllWavesCompleted?.Invoke();
 
-        if (GameManager.instance != null)
+        if (GameManager.Instance != null)
         {
-            GameManager.instance.HandleGameOver(true);
+            GameManager.Instance.HandleGameOver(true);              
         }
     }
 
