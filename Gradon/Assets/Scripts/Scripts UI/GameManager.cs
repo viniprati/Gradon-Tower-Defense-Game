@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Completa com Carregamento Automático, Lógica de Game Over Corrigida e DEPURAÇÃO)
+// GameManager.cs
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,29 +25,22 @@ public class GameManager : MonoBehaviour
 
     public static event Action<float> OnManaChanged;
 
-    // =================================================================================
-    // CÓDIGO DE DEPURAÇÃO ADICIONADO
-    // =================================================================================
     void OnEnable()
     {
-        // Se inscreve no evento que é chamado toda vez que uma cena é carregada
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void OnDisable()
     {
-        // Limpa a inscrição para evitar erros
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log($"<color=orange>NOVA CENA CARREGADA: '{scene.name}'.</color>");
-        // Checa se o objeto atual ainda é a instância principal do GameManager
         if (this == instance)
         {
             Debug.Log("<color=green>Eu (GameManager) sobrevivi à transição de cena!</color>");
-            // Checa se os dados da fase ainda existem após carregar a cena
             if (currentLevelData != null)
             {
                 Debug.Log($"<color=green>DADOS DA FASE PERSISTIRAM! Fase selecionada: '{currentLevelData.name}'.</color>");
@@ -58,7 +51,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    // =================================================================================
 
     void Awake()
     {
@@ -83,7 +75,7 @@ public class GameManager : MonoBehaviour
     {
         LevelData[] loadedLevels = Resources.LoadAll<LevelData>("");
         allLevels = new List<LevelData>(loadedLevels);
-        allLevels = allLevels.OrderBy(level => level.name).ToList();
+        allLevels = allLevels.OrderBy(level => level.levelIndex).ToList();
         Debug.Log($"[GameManager] Carregados {allLevels.Count} níveis da pasta Resources automaticamente.");
     }
 
@@ -92,25 +84,23 @@ public class GameManager : MonoBehaviour
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
     }
 
-    public void SetSelectedLevel(LevelData levelData)
+    /// <summary>
+    /// O novo método principal para carregar uma fase. Ele recebe o arquivo de dados completo do MenuManager.
+    /// </summary>
+    public void LoadLevel(LevelData levelToLoad)
     {
-        currentLevelData = levelData;
-        Debug.Log($"Fase '{levelData.name}' selecionada. Pronto para carregar a cena.");
-    }
-
-    public void LoadLevel(int levelIndex)
-    {
-        LevelData levelToLoad = allLevels.Find(level => level.levelIndex == levelIndex);
-
-        if (levelToLoad != null)
+        if (levelToLoad == null)
         {
-            currentLevelData = levelToLoad;
-            SceneManager.LoadScene(currentLevelData.sceneToLoad);
+            Debug.LogError("Tentativa de carregar uma fase, mas os dados da fase (LevelData) são nulos!");
+            return;
         }
-        else
-        {
-            Debug.LogError($"Nenhuma fase encontrada com o índice {levelIndex}!", this.gameObject);
-        }
+
+        this.currentLevelData = levelToLoad;
+        Debug.Log($"<color=cyan>GameManager está pronto para carregar: {currentLevelData.levelName}</color>");
+
+        isGameOver = false; // Reseta o estado de 'game over' para a nova fase
+
+        SceneManager.LoadScene(currentLevelData.sceneToLoad);
     }
 
     public void UpdateManaUI(float newManaValue)
