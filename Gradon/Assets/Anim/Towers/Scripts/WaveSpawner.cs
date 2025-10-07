@@ -31,9 +31,9 @@ public class WaveSpawner : MonoBehaviour
 
     private void LoadLevelData()
     {
-        if (GameManager.instance != null && GameManager.instance.currentLevelData != null)
+        if (GameManager.Instance != null && GameManager.Instance.currentLevelData != null)
         {
-            LevelData currentLevel = GameManager.instance.currentLevelData;
+            LevelData currentLevel = GameManager.Instance.currentLevelData;
             _wavesToSpawn = currentLevel.waves;
             Debug.Log($"Fase '{currentLevel.name}' carregada com {_wavesToSpawn.Count} ondas.");
 
@@ -99,7 +99,7 @@ public class WaveSpawner : MonoBehaviour
         // Se todas as ondas já foram iniciadas e não há mais inimigos... vitória!
         if (!_levelIsActive && _enemiesAlive <= 0)
         {
-            GameManager.instance.HandleGameOver(true);
+            GameManager.Instance.HandleGameOver(true);
         }
         // Se a onda atual acabou (não há mais inimigos vivos) E ainda há mais ondas para vir...
         else if (_levelIsActive && _enemiesAlive <= 0 && _currentWaveIndex >= _wavesToSpawn.Count - 1)
