@@ -183,8 +183,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b0b210d7655c78745b0c021beddbc0a9, type: 2}
   - {fileID: 11400000, guid: 04fe48e59b8fe034f821c6707a4e7ff7, type: 2}
   - {fileID: 11400000, guid: c8e4cce975a03804e8f5d40647f3530c, type: 2}
-  manaText: {fileID: 0}
-  gameOverPanel: {fileID: 0}
 --- !u!4 &38201125
 Transform:
   m_ObjectHideFlags: 0
@@ -723,7 +721,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 69.4
+  m_fontSize: 69.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -859,7 +857,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 52.1
+  m_fontSize: 52.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1149,6 +1147,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1840308424}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: NextLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &986502567
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,7 +1203,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f51bf026a440a46acb76ae6f6973e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextButton: {fileID: 0}
+  previousButton: {fileID: 0}
   levelInfoText: {fileID: 0}
+  startButton: {fileID: 0}
+  quitButton: {fileID: 0}
 --- !u!1 &1129581158
 GameObject:
   m_ObjectHideFlags: 0
@@ -1411,7 +1425,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 80
+  m_fontSize: 80.1
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2174,7 +2188,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f51bf026a440a46acb76ae6f6973e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextButton: {fileID: 0}
+  previousButton: {fileID: 0}
   levelInfoText: {fileID: 1732638706}
+  startButton: {fileID: 0}
+  quitButton: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
