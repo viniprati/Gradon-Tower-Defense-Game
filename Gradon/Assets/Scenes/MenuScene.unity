@@ -1308,7 +1308,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextButton: {fileID: 0}
   previousButton: {fileID: 0}
-  levelInfoText: {fileID: 0}
+  levelNameText: {fileID: 0}
+  levelNumberText: {fileID: 0}
   startButton: {fileID: 0}
   quitButton: {fileID: 0}
 --- !u!1 &1086772532
@@ -2259,7 +2260,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextButton: {fileID: 2006361786}
   previousButton: {fileID: 1086772534}
-  levelInfoText: {fileID: 1732638706}
+  levelNameText: {fileID: 1732638706}
+  levelNumberText: {fileID: 0}
   startButton: {fileID: 1129581160}
   quitButton: {fileID: 0}
 --- !u!1 &2006361784
