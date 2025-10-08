@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelName: Level2
   levelIndex: 2
-  sceneToLoad: 2
+  sceneToLoad: Game
   waves:
   - waveName: Wave 1
     enemyGroups:
