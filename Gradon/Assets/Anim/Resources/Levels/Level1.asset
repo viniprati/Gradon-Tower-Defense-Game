@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelName: Desfiladeiro dos Arqueiros
   levelIndex: 2
-  sceneToLoad: 
+  sceneToLoad: 1
   waves:
   - waveName: Wave 1
     enemyGroups:
