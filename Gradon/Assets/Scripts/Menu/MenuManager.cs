@@ -1,4 +1,4 @@
-// MenuManager.cs (Versão Final com Textos Separados para Número e Nome)
+// MenuManager.cs (Versão com textos separados para Número e Nome)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,10 +16,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button previousButton;
 
     [Tooltip("Arraste aqui o texto que exibirá o NOME da fase.")]
-    [SerializeField] private TextMeshProUGUI levelNameText;
+    [SerializeField] private TextMeshProUGUI levelNameText; // Renomeado
 
     [Tooltip("Arraste aqui o texto que exibirá o NÚMERO da fase.")]
-    [SerializeField] private TextMeshProUGUI levelNumberText;
+    [SerializeField] private TextMeshProUGUI levelNumberText; // Novo
 
     [Tooltip("Arraste aqui o botão de INICIAR.")]
     [SerializeField] private Button startButton;
@@ -32,7 +32,6 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
-        // Configura os métodos que serão chamados quando cada botão for clicado.
         if (nextButton != null) nextButton.onClick.AddListener(NextLevel);
         if (previousButton != null) previousButton.onClick.AddListener(PreviousLevel);
         if (startButton != null) startButton.onClick.AddListener(StartGame);
@@ -41,35 +40,29 @@ public class MenuManager : MonoBehaviour
 
     void Start()
     {
-        // Pega a lista de fases do GameManager.
         if (GameManager.Instance != null)
         {
             allLevels = GameManager.Instance.allLevels;
         }
         else
         {
-            Debug.LogError("GameManager não foi encontrado! A seleção de fases não funcionará.");
+            Debug.LogError("GameManager não foi encontrado!");
             if (levelNameText != null) levelNameText.text = "ERRO";
-            if (levelNumberText != null) levelNumberText.text = "!";
             SetButtonsInteractable(false);
             return;
         }
 
-        // Verifica se existem fases cadastradas no GameManager.
         if (allLevels == null || allLevels.Count == 0)
         {
             Debug.LogWarning("Nenhuma fase foi encontrada na lista do GameManager.");
             if (levelNameText != null) levelNameText.text = "Nenhuma Fase Disponível";
-            if (levelNumberText != null) levelNumberText.text = "0";
             SetButtonsInteractable(false);
             return;
         }
 
-        // Se tudo estiver certo, exibe a primeira fase.
         UpdateLevelDisplay();
     }
 
-    // Navega para a próxima fase na lista (com loop)
     public void NextLevel()
     {
         if (allLevels.Count == 0) return;
@@ -77,7 +70,6 @@ public class MenuManager : MonoBehaviour
         UpdateLevelDisplay();
     }
 
-    // Navega para a fase anterior na lista (com loop)
     public void PreviousLevel()
     {
         if (allLevels.Count == 0) return;
@@ -89,7 +81,7 @@ public class MenuManager : MonoBehaviour
         UpdateLevelDisplay();
     }
 
-    // Atualiza a UI com as informações da fase selecionada
+    // --- FUNÇÃO MODIFICADA ---
     private void UpdateLevelDisplay()
     {
         if (allLevels.Count == 0) return;
@@ -105,14 +97,11 @@ public class MenuManager : MonoBehaviour
         // Atualiza o texto do NÚMERO
         if (levelNumberText != null)
         {
-            // .ToString() converte o número (int) para texto (string)
+            // .ToString() converte o número para texto
             levelNumberText.text = selectedLevelData.levelIndex.ToString();
         }
     }
 
-    /// <summary>
-    /// Chamado pelo botão "Iniciar". Informa ao GameManager qual fase carregar e inicia o jogo.
-    /// </summary>
     public void StartGame()
     {
         if (allLevels.Count > 0 && GameManager.Instance != null)
@@ -122,24 +111,19 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Não foi possível iniciar a fase. Verifique a configuração do GameManager e se há fases na lista.", this.gameObject);
+            Debug.LogError("Não foi possível iniciar a fase.", this.gameObject);
         }
     }
 
-    /// <summary>
-    /// Chamado pelo botão "Sair". Fecha a aplicação.
-    /// </summary>
     public void QuitGame()
     {
         Debug.Log("Saindo do jogo...");
         Application.Quit();
-
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
 
-    // Função auxiliar para ativar/desativar todos os botões de uma vez
     private void SetButtonsInteractable(bool isInteractable)
     {
         if (nextButton != null) nextButton.interactable = isInteractable;
@@ -147,7 +131,6 @@ public class MenuManager : MonoBehaviour
         if (startButton != null) startButton.interactable = isInteractable;
     }
 
-    // Remove os listeners quando o objeto for destruído para evitar memory leaks.
     private void OnDestroy()
     {
         if (nextButton != null) nextButton.onClick.RemoveListener(NextLevel);
