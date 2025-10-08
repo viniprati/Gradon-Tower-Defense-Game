@@ -1000,7 +1000,6 @@ GameObject:
   m_Component:
   - component: {fileID: 951278289}
   - component: {fileID: 951278288}
-  - component: {fileID: 951278290}
   - component: {fileID: 951278291}
   m_Layer: 0
   m_Name: "Bot\xF5es de Troca de Fase_0"
@@ -1079,18 +1078,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &951278290
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 951278287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8c2dd50cbbd83e4a98561db45113d02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &951278291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1821,7 +1808,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1657315003}
   - component: {fileID: 1657315002}
-  - component: {fileID: 1657315004}
   - component: {fileID: 1657315005}
   m_Layer: 0
   m_Name: "Bot\xF5es de Troca de Fase_1"
@@ -1900,18 +1886,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1657315004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1657315001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8c2dd50cbbd83e4a98561db45113d02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1657315005
 MonoBehaviour:
   m_ObjectHideFlags: 0
