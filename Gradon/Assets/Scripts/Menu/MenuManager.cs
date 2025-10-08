@@ -1,4 +1,4 @@
-// MenuManager.cs (Versão Final e Completa)
+// MenuManager.cs (Versão Final com Textos Separados para Número e Nome)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,8 +15,11 @@ public class MenuManager : MonoBehaviour
     [Tooltip("Arraste aqui o botão da seta ESQUERDA.")]
     [SerializeField] private Button previousButton;
 
-    [Tooltip("Arraste aqui o objeto de texto que exibirá o nome e o número da fase.")]
-    [SerializeField] private TextMeshProUGUI levelInfoText;
+    [Tooltip("Arraste aqui o texto que exibirá o NOME da fase.")]
+    [SerializeField] private TextMeshProUGUI levelNameText;
+
+    [Tooltip("Arraste aqui o texto que exibirá o NÚMERO da fase.")]
+    [SerializeField] private TextMeshProUGUI levelNumberText;
 
     [Tooltip("Arraste aqui o botão de INICIAR.")]
     [SerializeField] private Button startButton;
@@ -24,11 +27,9 @@ public class MenuManager : MonoBehaviour
     [Tooltip("Arraste aqui o botão de SAIR.")]
     [SerializeField] private Button quitButton;
 
-
     private int selectedLevelIndex = 0;
     private List<LevelData> allLevels;
 
-    // Usamos Awake para garantir que os listeners sejam configurados antes de qualquer outra coisa.
     private void Awake()
     {
         // Configura os métodos que serão chamados quando cada botão for clicado.
@@ -48,7 +49,8 @@ public class MenuManager : MonoBehaviour
         else
         {
             Debug.LogError("GameManager não foi encontrado! A seleção de fases não funcionará.");
-            if (levelInfoText != null) levelInfoText.text = "ERRO";
+            if (levelNameText != null) levelNameText.text = "ERRO";
+            if (levelNumberText != null) levelNumberText.text = "!";
             SetButtonsInteractable(false);
             return;
         }
@@ -57,7 +59,8 @@ public class MenuManager : MonoBehaviour
         if (allLevels == null || allLevels.Count == 0)
         {
             Debug.LogWarning("Nenhuma fase foi encontrada na lista do GameManager.");
-            if (levelInfoText != null) levelInfoText.text = "Nenhuma Fase Disponível";
+            if (levelNameText != null) levelNameText.text = "Nenhuma Fase Disponível";
+            if (levelNumberText != null) levelNumberText.text = "0";
             SetButtonsInteractable(false);
             return;
         }
@@ -78,7 +81,6 @@ public class MenuManager : MonoBehaviour
     public void PreviousLevel()
     {
         if (allLevels.Count == 0) return;
-
         selectedLevelIndex--;
         if (selectedLevelIndex < 0)
         {
@@ -87,13 +89,24 @@ public class MenuManager : MonoBehaviour
         UpdateLevelDisplay();
     }
 
-    // Atualiza o texto da UI com as informações da fase selecionada
+    // Atualiza a UI com as informações da fase selecionada
     private void UpdateLevelDisplay()
     {
-        if (levelInfoText != null)
+        if (allLevels.Count == 0) return;
+
+        LevelData selectedLevelData = allLevels[selectedLevelIndex];
+
+        // Atualiza o texto do NOME
+        if (levelNameText != null)
         {
-            LevelData selectedLevelData = allLevels[selectedLevelIndex];
-            levelInfoText.text = $"{selectedLevelData.levelIndex}. {selectedLevelData.levelName}";
+            levelNameText.text = selectedLevelData.levelName;
+        }
+
+        // Atualiza o texto do NÚMERO
+        if (levelNumberText != null)
+        {
+            // .ToString() converte o número (int) para texto (string)
+            levelNumberText.text = selectedLevelData.levelIndex.ToString();
         }
     }
 
