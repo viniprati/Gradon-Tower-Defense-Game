@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c808c2f9bc29054785a42008877889a, type: 3}
   m_Name: Level3
   m_EditorClassIdentifier: 
-  levelName: Level2
-  levelIndex: 2
+  levelName: Level3
+  levelIndex: 3
   sceneToLoad: Game
   waves:
   - waveName: Wave 1

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c808c2f9bc29054785a42008877889a, type: 3}
   m_Name: Level1
   m_EditorClassIdentifier: 
-  levelName: Desfiladeiro dos Arqueiros
-  levelIndex: 2
+  levelName: Level1
+  levelIndex: 1
   sceneToLoad: Game
   waves:
   - waveName: Wave 1
