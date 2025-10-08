@@ -721,7 +721,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 69.5
+  m_fontSize: 69.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2188,10 +2188,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f51bf026a440a46acb76ae6f6973e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextButton: {fileID: 0}
-  previousButton: {fileID: 0}
+  nextButton: {fileID: 1657315005}
+  previousButton: {fileID: 951278291}
   levelInfoText: {fileID: 1732638706}
-  startButton: {fileID: 0}
+  startButton: {fileID: 1129581160}
   quitButton: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
