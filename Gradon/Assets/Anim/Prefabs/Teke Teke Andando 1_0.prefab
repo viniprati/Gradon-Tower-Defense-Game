@@ -79,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 101
   m_Sprite: {fileID: -9175951567649058716, guid: fa2ed8de148e2284e9e879211eb96dc2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -125,7 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7aa2eb0fa0a1646aa9cb43bb3cff9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totemAlvo: {fileID: 0}
   velocidade: 2
 --- !u!50 &8231533311620224844
 Rigidbody2D:
