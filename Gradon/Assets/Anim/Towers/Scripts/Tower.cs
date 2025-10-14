@@ -1,69 +1,67 @@
-// TowerBase.cs (Completo e Corrigido)
 using UnityEngine;
 
-public abstract class TowerBase : MonoBehaviour
+// A classe agora é 'abstract' para garantir que ela sirva apenas como um molde.
+// Você não poderá adicionar o componente "Tower" diretamente a um objeto.
+// Em vez disso, você adicionará scripts como "DragonT", que herdam dele.
+public abstract class Tower : MonoBehaviour
 {
     [Header("Informações da Torre")]
     public string towerName = "Torre Padrão";
-
-    [Header("Atributos Gerais da Torre")]
-    public float attackRange = 5f;
-    public float attackRate = 1f;
     public int cost = 50;
     public Sprite towerIcon;
+
+    [Header("Atributos Gerais da Torre")]
+    public float attackRange = 7f;
+    public float attackRate = 1f; // Ataques por segundo
+    public int attackDamage = 50;
 
     [Header("Configuração de Alvo")]
     [SerializeField] protected string enemyTag = "Enemy";
 
     [Header("Referências (Setup no Prefab)")]
-    [SerializeField] protected Transform partToRotate; // A parte que gira
-    [SerializeField] protected SpriteRenderer rangeIndicator; // O círculo visual
+    [SerializeField] protected Transform partToRotate;
+    [SerializeField] protected GameObject projectilePrefab;
+    [SerializeField] protected Transform firePoint;
+    [SerializeField] protected SpriteRenderer rangeIndicator;
 
     // Variáveis internas
     protected Transform currentTarget;
     protected float attackCooldown = 0f;
-    protected float originalAttackRate; // Para buffs
+    protected float originalAttackRate; // Para o sistema de buffs
 
     protected virtual void Start()
     {
         originalAttackRate = attackRate;
-        attackCooldown = 1f / attackRate; // Para atirar quase imediatamente
+        attackCooldown = 1f / attackRate; // Permite atirar quase imediatamente
+        if (rangeIndicator != null) rangeIndicator.transform.localScale = new Vector3(attackRange * 2, attackRange * 2, 1);
         ShowRangeIndicator(false);
     }
 
-    /// <summary>
-    /// O cérebro da torre: procura alvos e controla o cooldown de ataque.
-    /// </summary>
     protected virtual void Update()
     {
-        // Se não temos um alvo ou se o alvo saiu do alcance, procuramos um novo.
         if (currentTarget == null || Vector2.Distance(transform.position, currentTarget.position) > attackRange)
         {
             FindTarget();
         }
 
-        // Diminui o tempo de recarga a cada segundo.
         attackCooldown -= Time.deltaTime;
 
-        // Se temos um alvo válido e o tempo de recarga acabou...
         if (currentTarget != null)
         {
-            HandleRotation(); // Mira no alvo
+            HandleRotation();
 
             if (attackCooldown <= 0f)
             {
-                Attack(); // Ataca!
-                attackCooldown = 1f / attackRate; // Reseta o tempo de recarga.
+                Attack();
+                attackCooldown = 1f / attackRate;
             }
         }
     }
 
-    /// <summary>
-    /// Escaneia a área em busca do inimigo mais próximo.
-    /// </summary>
     private void FindTarget()
     {
-        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude,FindObjectsSortMode.InstanceID); // Encontra todos os inimigos na cena
+        // Este método é mais eficiente que FindGameObjectsWithTag se todos os inimigos tiverem o script "Enemy"
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
         float shortestDistance = Mathf.Infinity;
         Enemy nearestEnemy = null;
 
@@ -77,37 +75,50 @@ public abstract class TowerBase : MonoBehaviour
             }
         }
 
-        // Se encontrou um inimigo e ele está dentro do alcance, define como alvo.
         if (nearestEnemy != null && shortestDistance <= attackRange)
         {
             currentTarget = nearestEnemy.transform;
         }
         else
         {
-            currentTarget = null; // Se não, limpa o alvo.
+            currentTarget = null;
         }
     }
 
-    /// <summary>
-    /// Gira a parte móvel da torre para encarar o alvo.
-    /// </summary>
-    private void HandleRotation()
+    protected virtual void HandleRotation()
     {
         if (partToRotate == null) return;
 
         Vector2 direction = currentTarget.position - partToRotate.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        // Adicione -90f se o seu sprite estiver "deitado"
-        partToRotate.rotation = Quaternion.Euler(0f, 0f, angle);
+        Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
+        // Usando Slerp para uma rotação mais suave
+        partToRotate.rotation = Quaternion.Slerp(partToRotate.rotation, rotation, Time.deltaTime * 10f);
     }
 
     /// <summary>
-    /// O método de ataque que cada torre específica (Dragão, Samurai) deve implementar.
+    /// O método de ataque padrão. Torres específicas podem sobrescrevê-lo para comportamentos únicos.
     /// </summary>
-    protected abstract void Attack();
+    protected virtual void Attack()
+    {
+        if (projectilePrefab == null || firePoint == null)
+        {
+            Debug.LogError(towerName + " não tem um projétil ou ponto de tiro configurado!");
+            return;
+        }
+
+        GameObject projectileGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+
+        Projectile projectile = projectileGO.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            // Passa o alvo e o dano para o projétil
+            projectile.Seek(currentTarget, attackDamage);
+        }
+    }
 
     /// <summary>
-    /// Mostra ou esconde o círculo de alcance visual.
+    /// Mostra ou esconde o círculo de alcance.
     /// </summary>
     public void ShowRangeIndicator(bool isVisible)
     {
