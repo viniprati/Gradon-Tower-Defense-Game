@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AdvancedBoss : MonoBehaviour
+public class AdvancedBoss : Enemy
 {
     // Usamos um enum para definir claramente os estados do Boss
     private enum BossState { MovingToTarget, Attacking, Retreating }
