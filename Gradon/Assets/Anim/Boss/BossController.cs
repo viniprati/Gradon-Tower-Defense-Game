@@ -1,57 +1,22 @@
 using UnityEngine;
 
-public class BossController : MonoBehaviour
+// A parte mais importante é ": Enemy".
+// Isso significa que a classe Boss é um tipo de Enemy e herda todas as suas variáveis e métodos.
+public class Boss : Enemy
 {
-    [Header("Configurações de Movimento")]
-    [Tooltip("A velocidade com que o Boss se move em direção ao Totem.")]
-    [SerializeField] private float velocidade = 2f;
+    // --- ESTÁ PRONTO! ---
 
-    // A referência para o Transform do Totem.
-    // Agora é privada, pois o script vai preenchê-la sozinho.
-    private Transform totemAlvo;
+    // O script pode ficar vazio por enquanto. Toda a lógica de encontrar o totem,
+    // mover-se, verificar o alcance e atacar já está no script "Enemy.cs".
 
-    // A função Start é chamada uma única vez quando o Boss é criado.
-    // É o lugar perfeito para encontrar o alvo.
-    void Start()
+    // Se no futuro você quiser que o Boss tenha um comportamento especial
+    // (por exemplo, um ataque em área), você pode adicionar o código aqui.
+    // Por exemplo, para fazer o Boss gritar ao nascer:
+    /*
+    protected override void Start()
     {
-        // 1. ENCONTRAR O TOTEM AUTOMATICAMENTE:
-        // Procura por qualquer GameObject na cena que tenha a tag "TotemPrincipal".
-        GameObject totemObject = GameObject.FindGameObjectWithTag("TotemPrincipal");
-
-        // 2. VERIFICAR SE O TOTEM FOI ENCONTRADO:
-        if (totemObject != null)
-        {
-            // Se encontrou, armazena o Transform dele na nossa variável 'totemAlvo'.
-            totemAlvo = totemObject.transform;
-        }
-        else
-        {
-            // Se não encontrou, envia um erro claro no Console do Unity.
-            // Isso ajuda MUITO a descobrir problemas.
-            Debug.LogError("ERRO: O Totem Principal com a tag 'TotemPrincipal' não foi encontrado na cena! Verifique se a tag está correta no objeto do Totem.");
-        }
+        base.Start(); // 'base.Start()' executa o código da classe Enemy
+        Debug.Log("O BOSS APARECEU!"); // Este é um comportamento extra, só do Boss
     }
-
-    // Update é chamado a cada frame
-    void Update()
-    {
-        // Se, por algum motivo, não temos um alvo, não fazemos nada.
-        if (totemAlvo == null)
-        {
-            return;
-        }
-
-        // A lógica de movimento continua a mesma, pois é muito eficiente.
-        transform.position = Vector2.MoveTowards(transform.position, totemAlvo.position, velocidade * Time.deltaTime);
-
-        // Lógica opcional para virar o sprite
-        if (transform.position.x > totemAlvo.position.x)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else if (transform.position.x < totemAlvo.position.x)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-    }
+    */
 }
