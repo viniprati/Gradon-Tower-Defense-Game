@@ -8624,6 +8624,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Totem
       objectReference: {fileID: 0}
+    - target: {fileID: 3428834365344629173, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
+      propertyPath: m_TagString
+      value: TotemPrincipal
+      objectReference: {fileID: 0}
     - target: {fileID: 5015497741115453697, guid: 538438df0ff024441b19b3a4da5bbef2, type: 3}
       propertyPath: m_LocalScale.x
       value: 45.024624

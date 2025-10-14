@@ -9,6 +9,7 @@ TagManager:
   - KirinTower
   - DragonTower
   - SamuraiTower
+  - TotemPrincipal
   layers:
   - Default
   - TransparentFX
