@@ -19,7 +19,7 @@ public abstract class Enemy : MonoBehaviour
     protected Rigidbody2D rb;
     protected float currentHealth;
     protected bool isDead = false;
-    private float attackCooldown = 0f;
+    protected float attackCooldown = 0f;
 
     public event System.Action<Enemy> OnDeath;
 

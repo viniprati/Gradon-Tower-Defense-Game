@@ -1,49 +1,49 @@
 using UnityEngine;
 
+// Garante que AdvancedBoss herde de Enemy
 public class AdvancedBoss : Enemy
 {
+    [Header("Comportamento de Recuo do Boss")]
+    [SerializeField] private int attacksBeforeRetreat = 15;
+
     // Usamos um enum para definir claramente os estados do Boss
     private enum BossState { MovingToTarget, Attacking, Retreating }
     private BossState currentState;
 
-    [Header("Atributos do Boss")]
-    [SerializeField] private float speed = 1.5f;
-    [SerializeField] private int attackDamage = 25;
-    [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackRate = 0.5f; // Ataques por segundo
-
-    [Header("Comportamento de Recuo")]
-    [SerializeField] private int attacksBeforeRetreat = 15;
-
-    private Transform currentTarget;
     private Vector3 spawnerPosition;
     private int attackCounter = 0;
-    private float attackCooldown = 0f;
 
-    void Start()
+    // USAREMOS O OVERRIDE PARA MODIFICAR O COMPORTAMENTO HERDADO
+    protected override void Start()
     {
-        // Salva a posição inicial como o ponto de recuo (spawner)
-        spawnerPosition = transform.position;
-        FindNewTarget();
+        // 1. Executa a lógica original do Start() da classe Enemy
+        // (Isso vai pegar o Rigidbody2D, a vida e o alvo principal)
+        base.Start();
+
+        // 2. Adiciona a lógica EXTRA, específica do Boss
+        spawnerPosition = transform.position; // Salva a posição inicial
+        currentState = BossState.MovingToTarget;
+        FindNewTarget(); // Encontra a torre mais próxima, em vez do totem principal
     }
 
-    void Update()
+    // SOBRESCREVEMOS COMPLETAMENTE O UPDATE DO ENEMY, POIS O BOSS TEM UMA LÓGICA TOTALMENTE DIFERENTE
+    protected override void Update()
     {
-        if (currentTarget == null && currentState != BossState.Retreating)
+        // Ignoramos a verificação de isDead da classe base, pois o Boss pode ter uma lógica diferente
+        if (target == null && currentState != BossState.Retreating)
         {
-            // Se o alvo foi destruído, encontre um novo
             FindNewTarget();
-            // Se mesmo assim não achar, não faz nada
-            if (currentTarget == null) return;
+            if (target == null) return; // Se não há mais alvos, para
         }
 
-        // Máquina de estados: executa a lógica baseada no estado atual
+        // Máquina de estados do Boss
         switch (currentState)
         {
             case BossState.MovingToTarget:
                 MoveToTarget();
                 break;
             case BossState.Attacking:
+                // Usaremos o PerformAttack herdado, mas com controle de contagem
                 AttackTarget();
                 break;
             case BossState.Retreating:
@@ -52,20 +52,20 @@ public class AdvancedBoss : Enemy
         }
     }
 
+    // Métodos específicos do Boss
     void FindNewTarget()
     {
+        // A lógica de encontrar a torre mais próxima
         GameObject[] allTargets = GameObject.FindGameObjectsWithTag("Tower");
         if (allTargets.Length == 0)
         {
-            Debug.Log("Boss não encontrou alvos restantes.");
-            currentTarget = null;
+            target = null;
             return;
         }
 
         Transform closestTarget = null;
         float closestDistance = Mathf.Infinity;
 
-        // Encontra a torre mais próxima
         foreach (GameObject targetObject in allTargets)
         {
             float distance = Vector2.Distance(transform.position, targetObject.transform.position);
@@ -76,43 +76,38 @@ public class AdvancedBoss : Enemy
             }
         }
 
-        currentTarget = closestTarget;
+        target = closestTarget; // Define o alvo (target) que a classe Enemy usa
         currentState = BossState.MovingToTarget;
-        Debug.Log("Novo alvo do Boss: " + currentTarget.name);
     }
 
     void MoveToTarget()
     {
-        transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, currentTarget.position) <= attackRange)
+        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        if (Vector2.Distance(transform.position, target.position) <= attackRange)
         {
-            currentState = BossState.Attacking; // Chegou perto o suficiente para atacar
+            currentState = BossState.Attacking;
         }
     }
 
     void AttackTarget()
     {
-        if (attackCooldown > 0)
-        {
-            attackCooldown -= Time.deltaTime;
-            return;
-        }
+        // Reutilizamos a lógica de ataque do Enemy.cs, que já tem cooldown
+        PerformAttack();
+    }
 
-        // Ataca
-        TowerHealth targetHealth = currentTarget.GetComponent<TowerHealth>();
-        if (targetHealth != null)
-        {
-            targetHealth.TakeDamage(attackDamage);
-        }
-        attackCooldown = 1f / attackRate;
-        attackCounter++;
-        Debug.Log("Boss atacou! Contagem: " + attackCounter);
+    // Sobrescrevemos o ataque para adicionar a contagem
+    protected override void PerformAttack()
+    {
+        base.PerformAttack(); // Executa o ataque normal (que já tem cooldown)
 
-        // Verifica se é hora de recuar
-        if (attackCounter >= attacksBeforeRetreat)
+        // Verificamos se o ataque realmente aconteceu (se o cooldown permitiu)
+        if (attackCooldown <= Time.deltaTime) // Um pequeno truque para saber se o ataque foi executado
         {
-            currentState = BossState.Retreating;
-            Debug.Log("Boss vai recuar!");
+            attackCounter++;
+            if (attackCounter >= attacksBeforeRetreat)
+            {
+                currentState = BossState.Retreating;
+            }
         }
     }
 
@@ -121,8 +116,6 @@ public class AdvancedBoss : Enemy
         transform.position = Vector2.MoveTowards(transform.position, spawnerPosition, speed * Time.deltaTime);
         if (Vector2.Distance(transform.position, spawnerPosition) < 0.1f)
         {
-            // Chegou no spawner, reseta e começa de novo
-            Debug.Log("Boss recuou. Começando novo ciclo.");
             attackCounter = 0;
             FindNewTarget();
         }
