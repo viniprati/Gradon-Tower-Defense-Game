@@ -32,6 +32,7 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Start()
     {
         currentHealth = maxHealth;
+        // Inimigos normais ainda mirarão no totem por padrão
         if (Totem.instance != null) { target = Totem.instance.transform; }
     }
 
@@ -59,19 +60,27 @@ public abstract class Enemy : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
     }
 
+    // --- MUDANÇA 1: Adicionada a palavra "virtual" ---
+    // Agora o Boss pode ter seu próprio método de ataque
     protected virtual void PerformAttack()
     {
         if (attackCooldown <= 0f)
         {
-            if (target != null && Totem.instance != null)
+            // Tenta encontrar um componente de vida no alvo para atacar
+            var targetHealth = target.GetComponent<TowerHealth>(); // Supondo que suas torres tenham esse script
+            if (targetHealth != null)
             {
-                Totem.instance.TakeDamage(attackDamage);
+                targetHealth.TakeDamage(attackDamage);
             }
+            // A lógica do Totem.instance foi removida para ser mais genérica
+
             attackCooldown = 1f / attackRate;
         }
     }
 
-    public void TakeDamage(float damage)
+    // --- MUDANÇA 2: Adicionada a palavra "virtual" ---
+    // Agora o Boss pode adicionar sua própria lógica ao tomar dano
+    public virtual void TakeDamage(float damage)
     {
         if (isDead) return;
         currentHealth -= damage;
