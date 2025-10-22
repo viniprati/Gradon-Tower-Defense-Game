@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7269506878207965241}
   - component: {fileID: 2068649145567965346}
   - component: {fileID: 8765356180139883516}
-  - component: {fileID: 4341122156281052732}
   - component: {fileID: 8231533311620224844}
   - component: {fileID: 589905149660723518}
+  - component: {fileID: 568142749677238619}
   m_Layer: 0
   m_Name: Teke Teke Andando 1_0
   m_TagString: Enemy
@@ -113,24 +113,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4341122156281052732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 165569247966139183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a7aa2eb0fa0a1646aa9cb43bb3cff9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 6000
-  speed: 2
-  manaOnKill: 10
-  attackRange: 1.5
-  attackRate: 1
-  attackDamage: 10
 --- !u!50 &8231533311620224844
 Rigidbody2D:
   serializedVersion: 5
@@ -204,3 +186,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 0.34375}
   m_EdgeRadius: 0
+--- !u!114 &568142749677238619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165569247966139183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba18123026fdb0418fc4307eb29a828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  speed: 2
+  manaOnKill: 10
+  attackRange: 1.5
+  attackRate: 1
+  attackDamage: 10
+  hitsToTeleport: 5
+  spawnerPositions: []

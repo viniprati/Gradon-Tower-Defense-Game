@@ -22,4 +22,4 @@ MonoBehaviour:
       count: 1
       spawnInterval: 0
     delayBeforeWave: 5
-  initialMana: 200
+  initialMana: 500
