@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Final e Completa)
+// GameManager.cs (Versão Final com Gerenciamento de Mana)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,78 +9,81 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    // --- MELHORIA 1: SINGLETON PADRÃO C# ---
-    // A propriedade 'Instance' (com 'I' maiúsculo) é a convenção padrão.
-    // O 'private set' garante que nenhum outro script possa mudar a instância.
+    // A propriedade 'Instance' é a forma padrão e segura de implementar um Singleton.
     public static GameManager Instance { get; private set; }
 
     [Header("Catálogo de Fases")]
     [Tooltip("Esta lista é preenchida automaticamente da pasta 'Resources/Levels'.")]
-    public List<LevelData> allLevels; // Mantido público para o MenuManager acessar
+    public List<LevelData> allLevels;
 
     [Header("Estado do Jogo")]
     public LevelData currentLevelData { get; private set; }
     private bool isGameOver = false;
 
-    // --- MELHORIA 2: EVENTOS PARA DESACOPLAR A UI ---
-    // O GameManager agora vai "anunciar" os eventos. A UI vai "ouvir" e reagir.
-    public static event Action<float> OnManaChanged;
-    public static event Action<bool> OnGameOver; // bool -> true para vitória, false para derrota
+    [Header("Recursos do Jogador")]
+    [Tooltip("A quantidade atual de mana do jogador.")]
+    public float currentMana { get; private set; }
+
+    // --- Eventos para Desacoplar a Lógica ---
+    // A UI e outros sistemas vão "ouvir" esses eventos para saber quando agir.
+    public static event Action<float> OnManaChanged; // Disparado quando a mana muda.
+    public static event Action<bool> OnGameOver;    // Disparado no fim do jogo.
 
     void Awake()
     {
-        // Lógica do Singleton
+        // Lógica do Singleton para garantir que só exista um GameManager.
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
-            Debug.Log("<color=green>[GameManager] Instância principal definida e marcada como DontDestroyOnLoad.</color>");
+            DontDestroyOnLoad(gameObject); // Garante que o GameManager persista entre as cenas.
             LoadAllLevelsFromResources();
         }
         else
         {
-            Debug.LogWarning($"[GameManager] Instância duplicada encontrada. Destruindo o objeto '{this.gameObject.name}'.");
+            // Se já existe uma instância, esta é duplicada e deve ser destruída.
             Destroy(gameObject);
-            return; // Retorna para não executar o resto do código
+            return;
         }
     }
 
     private void OnEnable()
     {
-        // Registra o método para ser chamado sempre que uma nova cena for carregada
+        // Se inscreve no evento de carregamento de cena para poder inicializar a mana.
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
-        // É uma boa prática remover o listener quando o objeto é desativado/destruído
+        // Se desinscreve para evitar erros quando o objeto for destruído.
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // Método de debug que você já tinha, para confirmar que o GameManager persiste.
+    /// <summary>
+    /// Chamado automaticamente sempre que uma nova cena é carregada.
+    /// </summary>
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"<color=orange>CENA CARREGADA: '{scene.name}'.</color>");
-        if (currentLevelData != null)
+        Debug.Log($"CENA CARREGADA: '{scene.name}'.");
+
+        // Se carregamos uma cena que corresponde a uma fase, inicializa a mana.
+        if (currentLevelData != null && scene.name == currentLevelData.sceneToLoad)
         {
-            Debug.Log($"<color=green>Dados da fase persistiram! Iniciando fase: '{currentLevelData.levelName}'.</color>");
+            InitializeMana(currentLevelData.startingMana);
         }
     }
 
-    // Sua ótima função para carregar as fases automaticamente. Mantida 100%.
+    /// <summary>
+    /// Carrega todos os ScriptableObjects de LevelData da pasta Resources/Levels.
+    /// </summary>
     private void LoadAllLevelsFromResources()
     {
-        // Carrega todos os ScriptableObjects do tipo LevelData da pasta Resources/Levels
         LevelData[] loadedLevels = Resources.LoadAll<LevelData>("Levels");
-        allLevels = new List<LevelData>(loadedLevels);
-
-        // Ordena a lista pelo 'levelIndex' para garantir que "Fase 1" venha antes da "Fase 2", etc.
-        allLevels = allLevels.OrderBy(level => level.levelIndex).ToList();
-        Debug.Log($"[GameManager] {allLevels.Count} fases foram carregadas da pasta Resources.");
+        allLevels = new List<LevelData>(loadedLevels.OrderBy(level => level.levelIndex));
+        Debug.Log($"[GameManager] {allLevels.Count} fases foram carregadas.");
     }
 
     /// <summary>
-    /// O método principal para carregar uma fase. Recebe os dados do MenuManager.
+    /// Prepara e carrega a cena de uma fase específica.
     /// </summary>
     public void LoadLevel(LevelData levelToLoad)
     {
@@ -89,56 +92,76 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Tentativa de carregar uma fase nula (LevelData)!");
             return;
         }
-
         this.currentLevelData = levelToLoad;
-        isGameOver = false; // Reseta o estado de 'game over'
-
-        Debug.Log($"<color=cyan>[GameManager] Carregando a cena '{levelToLoad.sceneToLoad}' para a fase '{levelToLoad.levelName}'</color>");
+        isGameOver = false;
         SceneManager.LoadScene(levelToLoad.sceneToLoad);
     }
 
     /// <summary>
-    /// Outros scripts (como o Totem) chamarão este método para atualizar a mana.
-    /// O GameManager então notifica a UI através de um evento.
+    /// Define a mana inicial no começo da fase e notifica a UI.
     /// </summary>
-    public void UpdateMana(float newManaValue)
+    private void InitializeMana(float startingAmount)
     {
-        // Dispara o evento, notificando qualquer script que esteja ouvindo (como o UIManager)
-        OnManaChanged?.Invoke(newManaValue);
+        currentMana = startingAmount;
+        OnManaChanged?.Invoke(currentMana); // Dispara o evento para atualizar a UI
+        Debug.Log($"<color=lightblue>Mana da fase inicializada com {currentMana}.</color>");
     }
 
     /// <summary>
-    /// Gerencia o fim do jogo (vitória ou derrota).
+    /// Adiciona mana ao total do jogador e notifica a UI.
     /// </summary>
-    public void HandleGameOver(bool playerWon)
+    public void AddMana(float amountToAdd)
     {
-        if (isGameOver) return; // Evita que o método seja chamado múltiplas vezes
-        isGameOver = true;
+        currentMana += amountToAdd;
+        OnManaChanged?.Invoke(currentMana); // Dispara o evento para atualizar a UI
+    }
 
-        // Dispara o evento de Fim de Jogo. O UIManager vai ouvir isso e mostrar o painel correto.
-        OnGameOver?.Invoke(playerWon);
-
-        if (playerWon)
+    /// <summary>
+    /// Tenta gastar uma quantidade de mana.
+    /// </summary>
+    /// <returns>Retorna 'true' se a mana foi gasta com sucesso, e 'false' se não havia mana suficiente.</returns>
+    public bool SpendMana(float amountToSpend)
+    {
+        if (currentMana >= amountToSpend)
         {
-            Debug.Log("CONDIÇÃO DE VITÓRIA ATINGIDA!");
-            StartCoroutine(EndSequence());
+            currentMana -= amountToSpend;
+            OnManaChanged?.Invoke(currentMana); // Dispara o evento para atualizar a UI
+            return true; // Sucesso
         }
         else
         {
-            Debug.Log("CONDIÇÃO DE DERROTA ATINGIDA!");
-            StartCoroutine(EndSequence());
+            // Opcional: Adicionar um som de "erro" ou feedback visual aqui.
+            Debug.LogWarning("Tentativa de gastar " + amountToSpend + " de mana, mas só tem " + currentMana);
+            return false; // Falha
         }
     }
 
-    // Sequência final que pausa, espera e volta para o menu.
-    private IEnumerator EndSequence()
+    /// <summary>
+    /// Gerencia a lógica de fim de jogo (vitória ou derrota).
+    /// </summary>
+    public void HandleGameOver(bool playerWon)
     {
-        Time.timeScale = 0f; // Pausa o jogo
-        yield return new WaitForSecondsRealtime(3f); // Espera 3 segundos em tempo real
-        Time.timeScale = 1f; // Despausa o jogo
-        SceneManager.LoadScene("MenuScene"); // Volta para o menu
+        if (isGameOver) return; // Evita chamadas múltiplas
+        isGameOver = true;
+
+        OnGameOver?.Invoke(playerWon); // Notifica a UI para mostrar a tela de vitória/derrota
+        StartCoroutine(EndSequence());
     }
 
+    /// <summary>
+    /// Pausa o jogo, espera um tempo e volta para o menu.
+    /// </summary>
+    private IEnumerator EndSequence()
+    {
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(3f); // Espera 3s em tempo real (ignora o timeScale = 0)
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MenuScene"); // Mude "MenuScene" para o nome exato da sua cena de menu
+    }
+
+    /// <summary>
+    /// Reinicia a fase atual.
+    /// </summary>
     public void RestartGame()
     {
         Time.timeScale = 1f;
@@ -148,7 +171,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Caso de segurança: se não souber qual fase reiniciar, volta para o menu
             SceneManager.LoadScene("MenuScene");
         }
     }
