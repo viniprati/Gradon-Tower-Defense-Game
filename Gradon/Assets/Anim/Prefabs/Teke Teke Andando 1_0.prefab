@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7aa2eb0fa0a1646aa9cb43bb3cff9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 10000
   speed: 2
   manaOnKill: 10
   attackRange: 1.5
