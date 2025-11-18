@@ -21,5 +21,5 @@ MonoBehaviour:
     - enemyPrefab: {fileID: 165569247966139183, guid: b654b91cb49dc384e8bd40f5200234d9, type: 3}
       count: 1
       spawnInterval: 0
-    delayBeforeWave: 5
-  initialMana: 500
+    delayBeforeWave: 1
+  startingMana: 2000
