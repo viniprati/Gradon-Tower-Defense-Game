@@ -726,11 +726,11 @@ PlayerSettings:
   m_MobileRenderingPath: 1
   metroPackageName: Prototipo 2
   metroPackageVersion: 
-  metroCertificatePath: 
+  metroCertificatePath: Assets/WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: DefaultCompany
+  metroCertificateIssuer: DefaultCompany
+  metroCertificateNotAfter: 002e15a58477dd01
   metroApplicationDescription: Prototipo 2
   wsaImages: {}
   metroTileShortName: 
