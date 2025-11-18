@@ -1,4 +1,4 @@
-// Enemy.cs
+// Enemy.cs (Com Diagnóstico de Ataque Adicionado)
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -32,7 +32,6 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Start()
     {
         currentHealth = maxHealth;
-        // Inimigos normais ainda mirarão no totem por padrão
         if (Totem.instance != null) { target = Totem.instance.transform; }
     }
 
@@ -60,26 +59,34 @@ public abstract class Enemy : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
     }
 
-    // --- MUDANÇA 1: Adicionada a palavra "virtual" ---
-    // Agora o Boss pode ter seu próprio método de ataque
+    // --- FUNÇÃO MODIFICADA COM O "DEDO DURO" ---
     protected virtual void PerformAttack()
     {
+        // Dedo duro 1: Confirma que o inimigo está no modo de ataque
+        Debug.Log($"[DEDO DURO] {gameObject.name} está no alcance e tentando atacar {target.name}.");
+
         if (attackCooldown <= 0f)
         {
             // Tenta encontrar um componente de vida no alvo para atacar
-            var targetHealth = target.GetComponent<TowerHealth>(); // Supondo que suas torres tenham esse script
+            var targetHealth = target.GetComponent<TowerHealth>();
+
             if (targetHealth != null)
             {
+                // Dedo duro 2: Confirma que o ataque vai acontecer
+                Debug.Log($"<color=green>[DEDO DURO - SUCESSO]</color> {gameObject.name} encontrou o script TowerHealth e vai causar {attackDamage} de dano.");
                 targetHealth.TakeDamage(attackDamage);
             }
-            // A lógica do Totem.instance foi removida para ser mais genérica
+            else
+            {
+                // Dedo duro 3: Grita o erro exato se o ataque falhar
+                Debug.LogError($"<color=red>[DEDO DURO - ERRO CRÍTICO]</color> O ataque de {gameObject.name} FALHOU! O alvo '{target.name}' NÃO TEM o script 'TowerHealth.cs' anexado!");
+            }
 
             attackCooldown = 1f / attackRate;
         }
     }
+    // ---------------------------------------------
 
-    // --- MUDANÇA 2: Adicionada a palavra "virtual" ---
-    // Agora o Boss pode adicionar sua própria lógica ao tomar dano
     public virtual void TakeDamage(float damage)
     {
         if (isDead) return;
