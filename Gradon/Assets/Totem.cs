@@ -46,7 +46,7 @@ public class Totem : MonoBehaviour
     {
         currentHealth = maxHealth;
         currentMana = (GameManager.Instance != null && GameManager.Instance.currentLevelData != null)
-            ? GameManager.Instance.currentLevelData.initialMana
+            ? GameManager.Instance.currentLevelData.startingMana
             : maxMana;
 
         UpdateHealthBar();

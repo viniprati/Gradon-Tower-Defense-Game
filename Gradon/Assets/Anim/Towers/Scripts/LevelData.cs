@@ -1,9 +1,8 @@
-// LevelData.cs (Versão Corrigida para usar List<>)
-
 using UnityEngine;
-// Adicionamos esta linha para poder usar List<>
 using System.Collections.Generic;
 
+// A classe EnemyGroup define as propriedades de um subgrupo de inimigos dentro de uma onda.
+// [System.Serializable] permite que vejamos e editemos suas variáveis no Inspector da Unity.
 [System.Serializable]
 public class EnemyGroup
 {
@@ -17,6 +16,7 @@ public class EnemyGroup
     public float spawnInterval;
 }
 
+// A classe Wave define uma única onda de ataque, que pode conter vários grupos de inimigos.
 [System.Serializable]
 public class Wave
 {
@@ -24,21 +24,23 @@ public class Wave
     public string waveName;
 
     [Tooltip("A lista de grupos de inimigos que compõem esta onda.")]
-    // CORREÇÃO AQUI: Mudamos de Array (EnemyGroup[]) para Lista (List<EnemyGroup>)
     public List<EnemyGroup> enemyGroups;
 
     [Tooltip("O tempo de espera em segundos ANTES desta onda começar.")]
     public float delayBeforeWave;
 }
 
-[CreateAssetMenu(fileName = "New Level", menuName = "Tower Defense/Level")]
+// O ScriptableObject principal que armazena todos os dados de uma fase específica.
+// [CreateAssetMenu] permite que você crie novos arquivos de fase diretamente no menu do Unity
+// (clique com o botão direito na pasta Project > Create > Tower Defense > Level Data).
+[CreateAssetMenu(fileName = "New LevelData", menuName = "Tower Defense/Level Data")]
 public class LevelData : ScriptableObject
 {
     [Header("Informações da Fase")]
-    [Tooltip("O nome que aparecerá para o jogador.")]
+    [Tooltip("O nome que aparecerá para o jogador no menu de seleção.")]
     public string levelName = "Nova Fase";
 
-    [Tooltip("O número de identificação da fase (1, 2, 3...).")]
+    [Tooltip("O número de identificação da fase (1, 2, 3...). Usado para ordenar a lista de fases.")]
     public int levelIndex;
 
     [Tooltip("O nome exato do arquivo de cena a ser carregado para esta fase.")]
@@ -46,10 +48,10 @@ public class LevelData : ScriptableObject
 
     [Header("Configuração das Ondas")]
     [Tooltip("Configure aqui todas as ondas de inimigos para esta fase.")]
-    // CORREÇÃO AQUI: Mudamos de Array (Wave[]) para Lista (List<Wave>)
     public List<Wave> waves;
 
     [Header("Recursos Iniciais")]
     [Tooltip("A quantidade de mana com que o jogador começa a fase.")]
-    public int initialMana = 150;
+    // Esta variável corresponde diretamente à lógica de inicialização de mana no GameManager.
+    public float startingMana = 150f;
 }
