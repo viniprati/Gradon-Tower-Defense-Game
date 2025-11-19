@@ -1,35 +1,62 @@
 using System.Collections.Generic;
+using System.Linq; // Importante: necessário para usar .ToList()
 using UnityEngine;
 
 public class BossController : Enemy
 {
-    [Header("Mecânica Especial do Boss")]
-    [Tooltip("Arraste todos os seus GameObjects de Spawner/Teleporte para esta lista.")]
-    [SerializeField] private List<Transform> teleportPoints = new List<Transform>();
+    // A lista de teleporte agora é privada. Ela será preenchida automaticamente.
+    private List<Transform> teleportPoints;
 
     [Header("Configuração de Alvo do Boss")]
-    [Tooltip("Adicione aqui TODAS as tags que o Boss deve considerar como alvos (ex: DragonTower, SamuraiTower, Totem).")]
+    [Tooltip("Adicione aqui TODAS as tags que o Boss deve considerar como alvos.")]
     [SerializeField] private List<string> targetTags = new List<string>();
 
-    // Sobrescrevemos o Start para o Boss encontrar seu alvo inicial
+    // A tag que usaremos para encontrar os pontos de teleporte
+    private const string TELEPORT_POINT_TAG = "TeleportPoint";
+
+    // Sobrescrevemos o Start para configurar tudo automaticamente
     protected override void Start()
     {
         base.Start();
+
+        // --- NOVA LÓGICA AUTOMÁTICA ---
+        // 1. Encontra todos os GameObjects com a tag "TeleportPoint"
+        GameObject[] teleportObjects = GameObject.FindGameObjectsWithTag(TELEPORT_POINT_TAG);
+
+        // 2. Transforma a lista de GameObjects em uma lista de Transforms
+        teleportPoints = new List<Transform>();
+        foreach (GameObject go in teleportObjects)
+        {
+            teleportPoints.Add(go.transform);
+        }
+
+        // 3. Checagem de segurança e log de diagnóstico
+        if (teleportPoints.Count == 0)
+        {
+            Debug.LogError($"O Boss não encontrou nenhum GameObject com a tag '{TELEPORT_POINT_TAG}'! A mecânica de teleporte não funcionará.");
+        }
+        else
+        {
+            Debug.Log($"Boss encontrou {teleportPoints.Count} pontos de teleporte.");
+        }
+        // ---------------------------------
+
+        // A lógica de encontrar o primeiro alvo continua a mesma
         FindClosestTarget();
     }
 
-    // Sobrescrevemos o Update para sempre procurar um novo alvo se o atual for destruído
+    // O resto do script permanece o mesmo...
+
     protected override void Update()
     {
         if (target == null && !isDead)
         {
             FindClosestTarget();
-            if (target == null) return; // Não há mais alvos
+            if (target == null) return;
         }
-        base.Update(); // Executa a lógica de movimento e ataque da classe Enemy
+        base.Update();
     }
 
-    // Sobrescrevemos a função de tomar dano para adicionar o teleporte
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
@@ -39,43 +66,34 @@ public class BossController : Enemy
 
     private void Teleport()
     {
+        // A checagem de segurança agora é ainda mais importante
         if (teleportPoints == null || teleportPoints.Count == 0)
         {
-            Debug.LogError("O Boss não tem pontos de teleporte definidos no Inspector!");
+            // Se não encontrou nenhum ponto no Start, ele não tenta teleportar.
             return;
         }
+
         int randomIndex = Random.Range(0, teleportPoints.Count);
         transform.position = teleportPoints[randomIndex].position;
-        FindClosestTarget(); // Procura o novo alvo mais próximo
+        FindClosestTarget();
     }
 
-    // --- ESTA FUNÇÃO FOI COMPLETAMENTE REFEITA ---
     private void FindClosestTarget()
     {
-        // 1. Cria uma lista vazia para guardar TODOS os alvos encontrados
         List<GameObject> allPotentialTargets = new List<GameObject>();
-
-        // 2. Loop através de cada tag que definimos no Inspector
         foreach (string tag in targetTags)
         {
-            // Encontra todos os objetos com a tag atual
-            GameObject[] foundObjects = GameObject.FindGameObjectsWithTag(tag);
-            // Adiciona todos eles à nossa lista principal
-            allPotentialTargets.AddRange(foundObjects);
+            allPotentialTargets.AddRange(GameObject.FindGameObjectsWithTag(tag));
         }
 
-        // 3. Se depois de procurar em todas as tags a lista ainda está vazia, não há alvos
         if (allPotentialTargets.Count == 0)
         {
             target = null;
-            Debug.LogWarning("Boss não encontrou NENHUM alvo com as tags especificadas. Verifique a lista 'Target Tags' no Inspector e as tags dos objetos na cena.");
             return;
         }
 
-        // 4. Agora, com a lista completa, encontra o mais próximo
         Transform closestTarget = null;
         float shortestDistance = Mathf.Infinity;
-
         foreach (var potentialTarget in allPotentialTargets)
         {
             float distance = Vector2.Distance(transform.position, potentialTarget.transform.position);
@@ -85,8 +103,6 @@ public class BossController : Enemy
                 closestTarget = potentialTarget.transform;
             }
         }
-
         target = closestTarget;
-        Debug.Log("Novo alvo do Boss: " + target.name);
     }
 }

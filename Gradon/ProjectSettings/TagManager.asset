@@ -10,6 +10,7 @@ TagManager:
   - DragonTower
   - SamuraiTower
   - TotemPrincipal
+  - TeleportPoint
   layers:
   - Default
   - TransparentFX
