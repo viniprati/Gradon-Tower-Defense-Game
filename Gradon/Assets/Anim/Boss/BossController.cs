@@ -4,17 +4,19 @@ using UnityEngine;
 // Herda de Enemy para reutilizar a lógica de vida, movimento base e herança de tipo.
 public class BossController : Enemy
 {
+    // --- O "INTERRUPTOR" GLOBAL ---
+    // 'static' significa que esta variável pertence à classe e pode ser acessada de qualquer lugar.
+    // Qualquer script pode verificar se o Boss está ativo com: if (BossController.isBossActive)
+    public static bool isBossActive { get; private set; }
+    // ---------------------------------
+
     [Header("Mecânica Especial do Boss")]
     [Tooltip("Quantos hits o boss aguenta antes de se teleportar.")]
     [SerializeField] private int hitsBeforeTeleport = 5;
 
-    // As variáveis de alvo foram separadas para criar a lógica de prioridade.
     [Header("Configuração de Alvo do Boss")]
-    [Tooltip("Adicione aqui as tags de TODAS as suas torres (ex: DragonTower, SamuraiTower).")]
-    [SerializeField] private List<string> towerTags = new List<string>();
-
-    [Tooltip("A tag exata do seu Totem Principal.")]
-    [SerializeField] private string totemTag = "Totem";
+    [Tooltip("Adicione aqui TODAS as tags que o Boss deve considerar como alvos.")]
+    [SerializeField] private List<string> targetTags = new List<string>();
 
     // Contador interno para os hits recebidos.
     private int hitsTaken = 0;
@@ -25,41 +27,59 @@ public class BossController : Enemy
     // A constante para a tag dos pontos de teleporte.
     private const string TELEPORT_POINT_TAG = "TeleportPoint";
 
+    // OnEnable é chamado sempre que o Boss é ativado ou criado (spawnado).
+    // É o lugar perfeito para "ligar" o interruptor.
+    private void OnEnable()
+    {
+        isBossActive = true;
+        Debug.Log("<color=red>O BOSS ENTROU EM CAMPO! Torres estão vulneráveis!</color>");
+    }
+
+    // OnDisable é chamado quando o Boss é desativado ou destruído.
+    // É o lugar perfeito para "desligar" o interruptor.
+    private void OnDisable()
+    {
+        isBossActive = false;
+        Debug.Log("<color=green>O Boss foi derrotado ou removido! Torres estão seguras.</color>");
+    }
+
     // Sobrescrevemos o Start para configurar tudo automaticamente.
     protected override void Start()
     {
         base.Start(); // Executa a lógica de Start() da classe mãe (Enemy).
 
-        // Encontra os pontos de teleporte.
         teleportPoints = new List<Transform>();
         GameObject[] teleportGOs = GameObject.FindGameObjectsWithTag(TELEPORT_POINT_TAG);
         foreach (var go in teleportGOs)
         {
             teleportPoints.Add(go.transform);
         }
-        if (teleportPoints.Count == 0) { Debug.LogError($"[BossController] O Boss não encontrou nenhum GameObject com a tag '{TELEPORT_POINT_TAG}'!"); }
 
-        // Encontra o primeiro alvo seguindo a nova lógica de prioridade.
+        if (teleportPoints.Count == 0)
+        {
+            Debug.LogError($"[BossController] O Boss não encontrou nenhum GameObject com a tag '{TELEPORT_POINT_TAG}'!");
+        }
+
         FindClosestTarget();
     }
 
-    // Sobrescrevemos o Update para sempre procurar um novo alvo se o atual for destruído.
+    // Sobrescrevemos o Update para sempre procurar um novo alvo.
     protected override void Update()
     {
         if (target == null && !isDead)
         {
             FindClosestTarget();
-            if (target == null) return; // Não há mais alvos, o boss para.
+            if (target == null) return;
         }
-        base.Update(); // Executa a lógica de movimento e ataque da classe Enemy.
+        base.Update();
     }
 
-    // O Boss tem sua própria lógica de ataque para poder danificar tanto torres quanto o totem.
+    // Lógica de ataque atualizada para procurar pelo script correto (ConditionalTowerHealth).
     protected override void PerformAttack()
     {
         if (attackCooldown <= 0f)
         {
-            var towerHealth = target.GetComponent<TowerHealth>(); // Ou ConditionalTowerHealth
+            var towerHealth = target.GetComponent<ConditionalTowerHealth>();
             if (towerHealth != null)
             {
                 towerHealth.TakeDamage(attackDamage);
@@ -76,7 +96,7 @@ public class BossController : Enemy
         }
     }
 
-    // Sobrescrevemos a função de tomar dano para adicionar o contador de hits.
+    // Lógica de tomar dano com contador de hits.
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
@@ -89,7 +109,7 @@ public class BossController : Enemy
         }
     }
 
-    // A função de teleporte.
+    // Função de teleporte.
     private void Teleport()
     {
         if (teleportPoints.Count == 0) return;
@@ -99,48 +119,33 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // --- FUNÇÃO DE ENCONTRAR ALVO REFEITA COM LÓGICA DE PRIORIDADE ---
+    // Função para encontrar o alvo com prioridade.
     private void FindClosestTarget()
     {
-        // 1. PRIMEIRO, PROCURA POR TORRES (PRIORIDADE 1)
-        List<GameObject> allTowers = new List<GameObject>();
-        foreach (string tag in towerTags)
+        List<GameObject> allPotentialTargets = new List<GameObject>();
+        foreach (string tag in targetTags)
         {
-            allTowers.AddRange(GameObject.FindGameObjectsWithTag(tag));
+            allPotentialTargets.AddRange(GameObject.FindGameObjectsWithTag(tag));
         }
 
-        // 2. SE ENCONTROU PELO MENOS UMA TORRE...
-        if (allTowers.Count > 0)
+        if (allPotentialTargets.Count == 0)
         {
-            Transform closestTower = null;
-            float shortestDistance = Mathf.Infinity;
-            foreach (var tower in allTowers)
-            {
-                float distance = Vector2.Distance(transform.position, tower.transform.position);
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    closestTower = tower.transform;
-                }
-            }
-            target = closestTower;
-            // Opcional: descomente a linha abaixo para ver a decisão do Boss no console
-            // Debug.Log("<color=orange>Prioridade 1: Atacando a torre mais próxima -> " + target.name + "</color>");
-            return; // Sai da função, pois já encontrou o alvo prioritário.
-        }
-
-        // 3. SE NÃO HÁ MAIS TORRES, PROCURA PELO TOTEM (PRIORIDADE 2)
-        GameObject totemObject = GameObject.FindGameObjectWithTag(totemTag);
-        if (totemObject != null)
-        {
-            target = totemObject.transform;
-            // Opcional: descomente a linha abaixo para ver a decisão do Boss no console
-            // Debug.Log("<color=red>PRIORIDADE 2: Todas as torres destruídas! Atacando o Totem!</color>");
-        }
-        else
-        {
-            // 4. Se não há mais torres nem totem, o Boss venceu.
             target = null;
+            return;
         }
+
+        Transform closestTarget = null;
+        float shortestDistance = Mathf.Infinity;
+        foreach (var potentialTarget in allPotentialTargets)
+        {
+            if (potentialTarget == null) continue;
+            float distance = Vector2.Distance(transform.position, potentialTarget.transform.position);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                closestTarget = potentialTarget.transform;
+            }
+        }
+        target = closestTarget;
     }
 }
