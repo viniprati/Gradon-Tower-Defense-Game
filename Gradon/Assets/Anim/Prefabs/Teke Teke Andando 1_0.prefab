@@ -205,8 +205,8 @@ MonoBehaviour:
   attackRate: 1
   attackDamage: 10
   hitsBeforeTeleport: 5
-  targetTags:
+  towerTags:
   - DragonTower
   - SamuraiTower
   - KirinTower
-  - Totem
+  totemTag: Totem

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,6 +27,9 @@ public class BossController : Enemy
 
     // A constante para a tag dos pontos de teleporte.
     private const string TELEPORT_POINT_TAG = "TeleportPoint";
+
+    // Flag para evitar que a busca por alvo seja chamada múltiplas vezes
+    private bool isFindingTarget = false;
 
     private void OnEnable()
     {
@@ -56,29 +60,37 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // --- FUNÇÃO UPDATE MODIFICADA COM "DEDO DURO" ---
+    // --- FUNÇÃO UPDATE CORRIGIDA COM CORROTINA ---
     protected override void Update()
     {
-        // Se o alvo foi destruído, a referência 'target' se torna nula.
-        if (target == null && !isDead)
+        // Se o alvo foi destruído e não estamos já procurando por um novo...
+        if (target == null && !isDead && !isFindingTarget)
         {
-            // O DEDO DURO VAI NOS CONTAR SE ELE ENTROU AQUI
-            Debug.Log("<color=yellow>[DEDO DURO - UPDATE]</color> O alvo atual foi destruído! Procurando por um novo alvo prioritário...");
-            FindClosestTarget();
+            // ...inicia a corrotina para procurar um novo alvo após um pequeno delay.
+            StartCoroutine(FindNewTargetAfterDelay());
 
-            // Se, mesmo depois de procurar, não há mais alvos, ele para.
-            if (target == null)
-            {
-                // DEDO DURO PARA VITÓRIA
-                Debug.Log("<color=green>[DEDO DURO - UPDATE]</color> Não há mais alvos. O Boss venceu e vai parar.");
-                return; // Para a execução do Update para que ele não tente mover para um alvo nulo.
-            }
+            // Pausa o comportamento base para este frame para evitar erros.
+            return;
         }
 
         // Se houver um alvo, executa a lógica de movimento e ataque da classe Enemy.
         base.Update();
     }
-    // --------------------------------------------------
+
+    // --- NOVA CORROTINA PARA BUSCA DE ALVO ---
+    private IEnumerator FindNewTargetAfterDelay()
+    {
+        isFindingTarget = true; // Sinaliza que estamos no processo de busca
+
+        // Espera até o final do frame atual. Neste ponto, a torre destruída já terá sido removida da cena.
+        yield return new WaitForEndOfFrame();
+
+        // Executa a busca pelo novo alvo.
+        FindClosestTarget();
+
+        isFindingTarget = false; // Sinaliza que terminamos a busca
+    }
+    // ---------------------------------------------
 
     protected override void PerformAttack()
     {
@@ -121,7 +133,6 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // --- FUNÇÃO DE ENCONTRAR ALVO COM "DEDO DURO" ---
     private void FindClosestTarget()
     {
         // Lógica de prioridade 1: Torres
@@ -146,8 +157,6 @@ public class BossController : Enemy
                 }
             }
             target = closestTower;
-            // DEDO DURO PARA ALVO PRIORITÁRIO
-            Debug.Log("<color=orange>[DEDO DURO - FindTarget]</color> Prioridade 1: Novo alvo é a torre -> " + target.name);
             return;
         }
 
@@ -156,12 +165,9 @@ public class BossController : Enemy
         if (totemObject != null)
         {
             target = totemObject.transform;
-            // DEDO DURO PARA ALVO FINAL
-            Debug.Log("<color=red>[DEDO DURO - FindTarget]</color> Prioridade 2: Novo alvo é o -> " + target.name);
         }
         else
         {
-            // Se não há mais torres nem totem, o alvo é nulo.
             target = null;
         }
     }
