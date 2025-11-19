@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3979849824986419580}
   - component: {fileID: 8381470430182317283}
   - component: {fileID: 7710692104495849776}
+  - component: {fileID: -5801775972941624942}
   m_Layer: 0
   m_Name: BuffTower
   m_TagString: Untagged
@@ -139,6 +140,19 @@ MonoBehaviour:
   damageMultiplier: 2
   buffDuration: 1000
   checkInterval: 1
+--- !u!114 &-5801775972941624942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1352232675757444498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603f3fc73b5158643bb3b66db53d9b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
 --- !u!1 &5185611511292911656
 GameObject:
   m_ObjectHideFlags: 0
