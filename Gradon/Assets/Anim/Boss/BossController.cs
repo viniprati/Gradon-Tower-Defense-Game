@@ -5,18 +5,18 @@ using UnityEngine;
 public class BossController : Enemy
 {
     // --- O "INTERRUPTOR" GLOBAL ---
-    // 'static' significa que esta variável pertence à classe e pode ser acessada de qualquer lugar.
-    // Qualquer script pode verificar se o Boss está ativo com: if (BossController.isBossActive)
     public static bool isBossActive { get; private set; }
-    // ---------------------------------
 
     [Header("Mecânica Especial do Boss")]
     [Tooltip("Quantos hits o boss aguenta antes de se teleportar.")]
     [SerializeField] private int hitsBeforeTeleport = 5;
 
     [Header("Configuração de Alvo do Boss")]
-    [Tooltip("Adicione aqui TODAS as tags que o Boss deve considerar como alvos.")]
-    [SerializeField] private List<string> targetTags = new List<string>();
+    [Tooltip("Adicione aqui as tags de TODAS as suas torres (ex: DragonTower, SamuraiTower).")]
+    [SerializeField] private List<string> towerTags = new List<string>();
+
+    [Tooltip("A tag exata do seu Totem Principal.")]
+    [SerializeField] private string totemTag = "Totem";
 
     // Contador interno para os hits recebidos.
     private int hitsTaken = 0;
@@ -27,26 +27,19 @@ public class BossController : Enemy
     // A constante para a tag dos pontos de teleporte.
     private const string TELEPORT_POINT_TAG = "TeleportPoint";
 
-    // OnEnable é chamado sempre que o Boss é ativado ou criado (spawnado).
-    // É o lugar perfeito para "ligar" o interruptor.
     private void OnEnable()
     {
         isBossActive = true;
-        Debug.Log("<color=red>O BOSS ENTROU EM CAMPO! Torres estão vulneráveis!</color>");
     }
 
-    // OnDisable é chamado quando o Boss é desativado ou destruído.
-    // É o lugar perfeito para "desligar" o interruptor.
     private void OnDisable()
     {
         isBossActive = false;
-        Debug.Log("<color=green>O Boss foi derrotado ou removido! Torres estão seguras.</color>");
     }
 
-    // Sobrescrevemos o Start para configurar tudo automaticamente.
     protected override void Start()
     {
-        base.Start(); // Executa a lógica de Start() da classe mãe (Enemy).
+        base.Start();
 
         teleportPoints = new List<Transform>();
         GameObject[] teleportGOs = GameObject.FindGameObjectsWithTag(TELEPORT_POINT_TAG);
@@ -63,18 +56,30 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // Sobrescrevemos o Update para sempre procurar um novo alvo.
+    // --- FUNÇÃO UPDATE MODIFICADA COM "DEDO DURO" ---
     protected override void Update()
     {
+        // Se o alvo foi destruído, a referência 'target' se torna nula.
         if (target == null && !isDead)
         {
+            // O DEDO DURO VAI NOS CONTAR SE ELE ENTROU AQUI
+            Debug.Log("<color=yellow>[DEDO DURO - UPDATE]</color> O alvo atual foi destruído! Procurando por um novo alvo prioritário...");
             FindClosestTarget();
-            if (target == null) return;
+
+            // Se, mesmo depois de procurar, não há mais alvos, ele para.
+            if (target == null)
+            {
+                // DEDO DURO PARA VITÓRIA
+                Debug.Log("<color=green>[DEDO DURO - UPDATE]</color> Não há mais alvos. O Boss venceu e vai parar.");
+                return; // Para a execução do Update para que ele não tente mover para um alvo nulo.
+            }
         }
+
+        // Se houver um alvo, executa a lógica de movimento e ataque da classe Enemy.
         base.Update();
     }
+    // --------------------------------------------------
 
-    // Lógica de ataque atualizada para procurar pelo script correto (ConditionalTowerHealth).
     protected override void PerformAttack()
     {
         if (attackCooldown <= 0f)
@@ -96,12 +101,10 @@ public class BossController : Enemy
         }
     }
 
-    // Lógica de tomar dano com contador de hits.
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
         if (isDead) return;
-
         hitsTaken++;
         if (hitsTaken >= hitsBeforeTeleport)
         {
@@ -109,7 +112,6 @@ public class BossController : Enemy
         }
     }
 
-    // Função de teleporte.
     private void Teleport()
     {
         if (teleportPoints.Count == 0) return;
@@ -119,33 +121,48 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // Função para encontrar o alvo com prioridade.
+    // --- FUNÇÃO DE ENCONTRAR ALVO COM "DEDO DURO" ---
     private void FindClosestTarget()
     {
-        List<GameObject> allPotentialTargets = new List<GameObject>();
-        foreach (string tag in targetTags)
+        // Lógica de prioridade 1: Torres
+        List<GameObject> allTowers = new List<GameObject>();
+        foreach (string tag in towerTags)
         {
-            allPotentialTargets.AddRange(GameObject.FindGameObjectsWithTag(tag));
+            allTowers.AddRange(GameObject.FindGameObjectsWithTag(tag));
         }
 
-        if (allPotentialTargets.Count == 0)
+        if (allTowers.Count > 0)
         {
-            target = null;
+            Transform closestTower = null;
+            float shortestDistance = Mathf.Infinity;
+            foreach (var tower in allTowers)
+            {
+                if (tower == null) continue;
+                float distance = Vector2.Distance(transform.position, tower.transform.position);
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    closestTower = tower.transform;
+                }
+            }
+            target = closestTower;
+            // DEDO DURO PARA ALVO PRIORITÁRIO
+            Debug.Log("<color=orange>[DEDO DURO - FindTarget]</color> Prioridade 1: Novo alvo é a torre -> " + target.name);
             return;
         }
 
-        Transform closestTarget = null;
-        float shortestDistance = Mathf.Infinity;
-        foreach (var potentialTarget in allPotentialTargets)
+        // Lógica de prioridade 2: Totem
+        GameObject totemObject = GameObject.FindGameObjectWithTag(totemTag);
+        if (totemObject != null)
         {
-            if (potentialTarget == null) continue;
-            float distance = Vector2.Distance(transform.position, potentialTarget.transform.position);
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                closestTarget = potentialTarget.transform;
-            }
+            target = totemObject.transform;
+            // DEDO DURO PARA ALVO FINAL
+            Debug.Log("<color=red>[DEDO DURO - FindTarget]</color> Prioridade 2: Novo alvo é o -> " + target.name);
         }
-        target = closestTarget;
+        else
+        {
+            // Se não há mais torres nem totem, o alvo é nulo.
+            target = null;
+        }
     }
 }
