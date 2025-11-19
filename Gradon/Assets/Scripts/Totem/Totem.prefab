@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -2628615904987776795}
   m_Layer: 0
   m_Name: Totem
-  m_TagString: Untagged
+  m_TagString: Totem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123,3 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc17aecacaee7784ea3a735162c0f41e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 1000
+  zonaProibidaRaio: 3
+  maxMana: 100
+  healthBar: {fileID: 0}
