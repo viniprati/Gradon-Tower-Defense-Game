@@ -199,17 +199,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 10000
-  speed: 2
+  speed: 6
   manaOnKill: 10
   attackRange: 1.5
   attackRate: 1
   attackDamage: 10
-  teleportPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  hitsBeforeTeleport: 5
   targetTags:
   - DragonTower
   - SamuraiTower
