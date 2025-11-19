@@ -11,6 +11,7 @@ TagManager:
   - SamuraiTower
   - TotemPrincipal
   - TeleportPoint
+  - Totem
   layers:
   - Default
   - TransparentFX
