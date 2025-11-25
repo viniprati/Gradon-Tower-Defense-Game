@@ -28,7 +28,7 @@ public class BossController : Enemy
     // A constante para a tag dos pontos de teleporte.
     private const string TELEPORT_POINT_TAG = "TeleportPoint";
 
-    // Flag para evitar que a busca por alvo seja chamada múltiplas vezes
+    // Flag para evitar que a busca por alvo seja chamada múltiplas vezes no mesmo frame.
     private bool isFindingTarget = false;
 
     private void OnEnable()
@@ -45,6 +45,7 @@ public class BossController : Enemy
     {
         base.Start();
 
+        // Lógica automática para encontrar pontos de teleporte na cena
         teleportPoints = new List<Transform>();
         GameObject[] teleportGOs = GameObject.FindGameObjectsWithTag(TELEPORT_POINT_TAG);
         foreach (var go in teleportGOs)
@@ -60,16 +61,16 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // --- FUNÇÃO UPDATE CORRIGIDA COM CORROTINA ---
+    // --- FUNÇÃO UPDATE COM CORROTINA (EVITA PAUSAS) ---
     protected override void Update()
     {
         // Se o alvo foi destruído e não estamos já procurando por um novo...
         if (target == null && !isDead && !isFindingTarget)
         {
-            // ...inicia a corrotina para procurar um novo alvo após um pequeno delay.
+            // ...inicia a corrotina para procurar um novo alvo após um pequeno delay (fim do frame).
             StartCoroutine(FindNewTargetAfterDelay());
 
-            // Pausa o comportamento base para este frame para evitar erros.
+            // Pausa o comportamento base para este frame para evitar erros de movimento nulo.
             return;
         }
 
@@ -77,18 +78,18 @@ public class BossController : Enemy
         base.Update();
     }
 
-    // --- NOVA CORROTINA PARA BUSCA DE ALVO ---
+    // --- CORROTINA PARA BUSCA DE ALVO ---
     private IEnumerator FindNewTargetAfterDelay()
     {
-        isFindingTarget = true; // Sinaliza que estamos no processo de busca
+        isFindingTarget = true;
 
-        // Espera até o final do frame atual. Neste ponto, a torre destruída já terá sido removida da cena.
+        // Espera até o final do frame atual. Isso garante que o objeto destruído já saiu da memória.
         yield return new WaitForEndOfFrame();
 
         // Executa a busca pelo novo alvo.
         FindClosestTarget();
 
-        isFindingTarget = false; // Sinaliza que terminamos a busca
+        isFindingTarget = false;
     }
     // ---------------------------------------------
 
@@ -96,11 +97,13 @@ public class BossController : Enemy
     {
         if (attackCooldown <= 0f)
         {
+            // Verifica se é uma torre (usa o script de vida condicional)
             var towerHealth = target.GetComponent<ConditionalTowerHealth>();
             if (towerHealth != null)
             {
                 towerHealth.TakeDamage(attackDamage);
             }
+            // Verifica se é o Totem (usa o script de vida normal)
             else
             {
                 var totem = target.GetComponent<Totem>();
@@ -117,6 +120,7 @@ public class BossController : Enemy
     {
         base.TakeDamage(damage);
         if (isDead) return;
+
         hitsTaken++;
         if (hitsTaken >= hitsBeforeTeleport)
         {
@@ -127,25 +131,32 @@ public class BossController : Enemy
     private void Teleport()
     {
         if (teleportPoints.Count == 0) return;
+
         hitsTaken = 0;
         int randomIndex = Random.Range(0, teleportPoints.Count);
         transform.position = teleportPoints[randomIndex].position;
+
+        // Ao teleportar, recalcula qual é o alvo mais próximo da nova posição
         FindClosestTarget();
     }
 
+    // --- LÓGICA DE PRIORIDADE (TORRES > TOTEM) ---
     private void FindClosestTarget()
     {
-        // Lógica de prioridade 1: Torres
+        // 1. PRIORIDADE: Coleta todas as torres vivas
         List<GameObject> allTowers = new List<GameObject>();
         foreach (string tag in towerTags)
         {
             allTowers.AddRange(GameObject.FindGameObjectsWithTag(tag));
         }
 
+        // 2. Se existir ALGUMA torre na cena...
         if (allTowers.Count > 0)
         {
             Transform closestTower = null;
             float shortestDistance = Mathf.Infinity;
+
+            // ...encontra a mais próxima e define como alvo.
             foreach (var tower in allTowers)
             {
                 if (tower == null) continue;
@@ -157,10 +168,14 @@ public class BossController : Enemy
                 }
             }
             target = closestTower;
+
+            // IMPORTANTE: O 'return' aqui faz ele sair da função e IGNORAR o Totem
+            // enquanto houver torres vivas.
             return;
         }
 
-        // Lógica de prioridade 2: Totem
+        // 3. Se chegou aqui, é porque a lista de torres estava vazia (todas destruídas).
+        // Agora ele procura pelo Totem.
         GameObject totemObject = GameObject.FindGameObjectWithTag(totemTag);
         if (totemObject != null)
         {
@@ -168,7 +183,7 @@ public class BossController : Enemy
         }
         else
         {
-            target = null;
+            target = null; // Boss venceu (destruiu tudo).
         }
     }
 }
