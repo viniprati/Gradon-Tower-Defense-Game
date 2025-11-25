@@ -140,14 +140,20 @@ public class BossController : Enemy
         FindClosestTarget();
     }
 
-    // --- LÓGICA DE PRIORIDADE (TORRES > TOTEM) ---
+    // --- LÓGICA DE PRIORIDADE COM DEDO DURO ---
     private void FindClosestTarget()
     {
+        // --- DEDO DURO INICIADO ---
+        Debug.Log("--- [DEDO DURO] INICIANDO BUSCA POR ALVOS ---");
+
         // 1. PRIORIDADE: Coleta todas as torres vivas
         List<GameObject> allTowers = new List<GameObject>();
         foreach (string tag in towerTags)
         {
-            allTowers.AddRange(GameObject.FindGameObjectsWithTag(tag));
+            GameObject[] found = GameObject.FindGameObjectsWithTag(tag);
+            allTowers.AddRange(found);
+            // Dedo duro conta quantos achou de cada tipo
+            Debug.Log($"[DEDO DURO] Procurando por tag '{tag}': Encontrados {found.Length} objetos.");
         }
 
         // 2. Se existir ALGUMA torre na cena...
@@ -169,21 +175,26 @@ public class BossController : Enemy
             }
             target = closestTower;
 
+            Debug.Log($"<color=green>[DEDO DURO] ALVO DEFINIDO (TORRE): {target.name}</color>");
+
             // IMPORTANTE: O 'return' aqui faz ele sair da função e IGNORAR o Totem
             // enquanto houver torres vivas.
             return;
         }
 
-        // 3. Se chegou aqui, é porque a lista de torres estava vazia (todas destruídas).
-        // Agora ele procura pelo Totem.
+        // 3. Se chegou aqui, é porque a lista de torres estava vazia.
+        Debug.Log("[DEDO DURO] Nenhuma torre encontrada. Procurando pelo Totem...");
+
         GameObject totemObject = GameObject.FindGameObjectWithTag(totemTag);
         if (totemObject != null)
         {
             target = totemObject.transform;
+            Debug.Log($"<color=green>[DEDO DURO] ALVO DEFINIDO (TOTEM): {target.name}</color>");
         }
         else
         {
             target = null; // Boss venceu (destruiu tudo).
+            Debug.LogError($"<color=red>[DEDO DURO] ALVO NÃO ENCONTRADO!</color> O Boss procurou por torres e pelo Totem ({totemTag}), mas não achou NADA.");
         }
     }
 }
