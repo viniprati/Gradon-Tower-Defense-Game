@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5801775972941624942}
   m_Layer: 0
   m_Name: BuffTower
-  m_TagString: Untagged
+  m_TagString: KirinTower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
